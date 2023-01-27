@@ -1,4 +1,3 @@
-import doit
 import json
 import os
 import sys

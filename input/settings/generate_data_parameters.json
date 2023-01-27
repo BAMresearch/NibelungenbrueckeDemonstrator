@@ -17,16 +17,17 @@
                 "lambda": 1.25
             },
             "tension_z": 0.0,
-            "boundary_conditions": [{
+            "boundary_conditions": {
+                "bc1":{
                 "model":"clamped_boundary",
                 "side_coord": 0.0,
                 "coord": 2
             },
-            {
+                "bc2":{
                 "model":"clamped_boundary",
                 "side_coord": 95.185,
                 "coord": 2
-            }]
+            }}
         }
     }
     ]

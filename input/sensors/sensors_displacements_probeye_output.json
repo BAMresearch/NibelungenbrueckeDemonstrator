@@ -1,0 +1,23 @@
+{
+    "disp_pilot_1":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "std_model": "sigma"
+    },
+    "disp_span":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 50,
+        "std_model": "sigma"
+    },
+    "disp_pilot_2":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 95,
+        "std_model": "sigma"
+    }
+}

@@ -10,8 +10,10 @@ from utilities.boundary_condition_factory import boundary_condition_factory
 
 class Displacement3DGenerator(GeneratorModel):
     ''' Generates the displacements at the sensors for a given load configuration.'''
+    # TODO: This could probably simplified by using the ForwardModel from probeye or the Problem from FenicsConcrete
+    # TODO: Delete duplicated Displacement model
     
-    def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict):
+    def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
 
         self.material_parameters = model_parameters["material_parameters"]
@@ -59,7 +61,7 @@ class Displacement3DGenerator(GeneratorModel):
     def LoadBCs(self):
 
         bcs = []
-        for bc_model in self.model_parameters["boundary_conditions"]:
+        for bc_name, bc_model in self.model_parameters["boundary_conditions"].items():
             bc = boundary_condition_factory(self.mesh,bc_model["model"],self.V, bc_model)
             bcs.append(bc)
 

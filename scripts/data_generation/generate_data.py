@@ -1,9 +1,5 @@
-import gmsh
-import numpy as np
 import os
 import sys
-import h5py
-
 
 # Get the parent directory of the current script
 root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +19,7 @@ def generate_data(parameters):
     # Sanity checks
     check_path_exists(data_parameters["model_path"])
     if data_parameters["generation_models_list"][0] is None:
-        raise Exception("[Synthetic_data] Error: Generation model not define.")
+        raise Exception("[Synthetic_data] Error: Generation model not defined.")
 
     # Generate several sets of data iteratively
     for model_parameters in data_parameters["generation_models_list"]:

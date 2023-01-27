@@ -1,0 +1,114 @@
+{
+    "model_path": "input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "output/results",
+        "output_format": ".h5"
+    },
+    "print_info": true, 
+    "inverse_problem_parameters":{
+        "name": "Nibelungenbrücke displacements",
+        "print_header": true
+    },
+    "forward_model_parameters": {
+        "name": "Nibelungenbrücke displacements",
+        "experiments": ["TestSeries_1"],
+        "forward_model_path": "probeye_forward_model_bridge",
+        "input_sensors_path": "input/sensors/sensors_displacements_probeye_input.json",
+        "output_sensors_path": "input/sensors/sensors_displacements_probeye_output.json",
+        "problem_parameters": ["rho", "mu", "lambda"], 
+        "parameter_key_paths": [["material_parameters"],["material_parameters"],["material_parameters"]],
+        "model_parameters": {
+            "model_name": "displacements",
+            "material_parameters":{
+                "rho": 10.0,
+                "g": 100,
+                "mu": 1,
+                "lambda": 1.25
+            },
+            "tension_z": 0.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    },
+    "parameter_list_parameters":[
+        {
+            "name":"rho",
+            "tex":"$\\rho$",
+            "info":"Normalized mass",
+            "prior":{
+                "name": "LogNormal",
+                "mean": 2,
+                "std": 0.5
+            }
+        },
+        {
+            "name":"mu",
+            "tex":"$\\mu$",
+            "info":"Lamé constant \\mu",
+            "domain":"(0, 50)",
+            "prior":{
+                "name": "LogNormal",
+                "mean": 1.0,
+                "std": 0.1
+            }
+        },
+        {
+            "name":"lambda",
+            "tex":"$\\lambda$",
+            "info":"Lamé constant \\lambda",
+            "domain":"(0, 50)",
+            "prior":{
+                "name": "LogNormal",
+                "mean": 1.0,
+                "std": 0.1
+            }
+        },
+        {
+            "name":"sigma",
+            "domain": "(0, +oo)",
+            "tex":"$\\sigma$",
+            "info":"Standard deviation, of zero-mean Gaussian noise model",
+            "prior":{
+                "name":"Uniform",
+                "low": 0.0,
+                "high": 0.8
+            }
+        }
+    ],
+    "experiment_list_parameters": [
+        {
+            "name": "TestSeries_1",
+            "input_data_path": "input/data/displacements.h5",
+            "data_format": ".h5",
+            "sensor_names": ["DisplacementSensor0","DisplacementSensor1","DisplacementSensor2"],
+            "data_values": ["Data","Data","Data"],
+            "parameter_names": ["disp_pilot_1", "disp_span", "disp_pilot_2"]
+        }
+    ],
+    "likelihood_model_parameters":{
+        "name": "GaussianLikelihoodModel",
+        "parameters":{
+            "experiment_name":"TestSeries_1",
+            "model_error": "additive"
+        }
+    },
+    "solver_parameters":{
+        "module": "emcee",
+        "name": "EmceeSolver",
+        "show_progress": true
+    },
+    "run_parameters":{
+        "n_steps": 60,
+        "n_initial_steps": 20,
+        "n_walkers": 10
+    }    
+}

@@ -9,7 +9,7 @@ from utilities.offloaders import offload_sensors
 class GeneratorModel:
     ''' Base class for a generator of synthetic data from a model.'''
 
-    def __init__(self, model_path:str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict):
+    def __init__(self, model_path:str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
 
         assert_path_exists(model_path)
         self.model_path = model_path

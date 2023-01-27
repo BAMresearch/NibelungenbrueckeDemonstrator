@@ -11,3 +11,13 @@ def assert_path_exists(path):
     
     assert os.path.exists(path), "Path " + path + " doesn't exist."
 
+def check_lists_same_length(list_1, list_2, m:str):
+    'Checks if two lists/dicts are the same lenght'
+
+    if not len(list_1) == len(list_2):
+        raise Exception(m)
+
+def assert_lists_same_length(list_1, list_2, m:str):
+    'Checks if two lists/dicts are the same lenght'
+
+    assert len(list_1) == len(list_2), m
