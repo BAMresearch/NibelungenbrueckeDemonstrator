@@ -1,8 +1,8 @@
 {
     "model_path": "input/models/mesh.msh",
     "output_parameters":{
-        "output_path": "output/results",
-        "output_format": ".h5"
+        "output_path": "./output/results/inference_results",
+        "output_format": ".nc"
     },
     "print_info": true, 
     "inverse_problem_parameters":{
@@ -57,7 +57,7 @@
             "domain":"(0, 50)",
             "prior":{
                 "name": "LogNormal",
-                "mean": 1.0,
+                "mean": 0.0,
                 "std": 0.1
             }
         },
@@ -65,11 +65,11 @@
             "name":"lambda",
             "tex":"$\\lambda$",
             "info":"Lamé constant \\lambda",
-            "domain":"(0, 50)",
+            "domain":"(0.0, 50)",
             "prior":{
                 "name": "LogNormal",
-                "mean": 1.0,
-                "std": 0.1
+                "mean": 0.0,
+                "std": 0.4
             }
         },
         {
@@ -110,5 +110,22 @@
         "n_steps": 60,
         "n_initial_steps": 20,
         "n_walkers": 10
-    }    
+    },
+    "postprocessing":{
+        "pair_plot": true,
+        "output_pair_plot": "output/figures/pair_plot",
+        "pair_plot_format": ".pdf",
+        "posterior_plot": true,
+        "output_posterior_plot": "output/figures/posterior_plot",
+        "posterior_plot_format": ".pdf",
+        "trace_plot": true,
+        "output_trace_plot": "output/figures/trace_plot",
+        "trace_plot_format": ".pdf",
+        "true_values":{
+            "rho": 10,
+            "mu": 1,
+            "lambda": 1.25,
+            "sigma": 0.5
+        }    
+    }
 }

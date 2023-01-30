@@ -8,6 +8,7 @@ sys.path.append(root_path)
 
 from utilities.checks import check_path_exists
 from inference.forward_model_factory import forward_model_factory
+
 def import_forward_model(model_path, parameters):
     "Imports forward model from a set of parameters"
     

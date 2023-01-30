@@ -23,6 +23,9 @@ from utilities.general_utilities import modify_key
 
 
 class BridgeModel(ForwardModelBase):
+    ''' Bridge forward model class to be used in inference procedures to obtain 
+    parameters of the Nibelungenbrücke given a set of displacements'''
+
     def __init__(self, name: str, *args, **kwargs):
         self.forward_model_parameters = kwargs["forward_model_parameters"]
         super().__init__(name, *args, **kwargs)

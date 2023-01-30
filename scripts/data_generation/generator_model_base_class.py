@@ -54,7 +54,7 @@ class GeneratorModel:
             for sensor in sensors:
                 sensor.measure(self)
 
-            # Output the virtual measurements to a fike
+            # Output the virtual measurements to a file
             offload_sensors(sensors, self.output_parameters["output_path"]+"/"+self.model_parameters["model_name"], self.output_parameters["output_format"])
             
         return wrapper

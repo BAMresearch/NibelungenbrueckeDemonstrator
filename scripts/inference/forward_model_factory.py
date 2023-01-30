@@ -12,7 +12,7 @@ def forward_model_factory(filepath, model_parameters, model_path):
             model_class = obj
             break
     else:
-        raise ValueError(f"No derived class of GeneratorModel found in {filepath}")
+        raise ValueError(f"No derived class of ForwardModelBase found in {filepath}")
     
     # Create an instance of the derived class with the given parameters
     model = model_class(model_parameters["name"], forward_model_parameters = model_parameters)
