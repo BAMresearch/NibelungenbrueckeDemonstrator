@@ -4,7 +4,7 @@ from probeye.definition.forward_model import ForwardModelBase
 
 def forward_model_factory(filepath, model_parameters, model_path):
     # Import the module from the filepath
-    module = importlib.import_module("inference."+filepath)
+    module = importlib.import_module("nibelungenbruecke.scripts.inference."+filepath)
     
     # Find the derived class of ForwardModelBase in the imported module
     for name, obj in module.__dict__.items():

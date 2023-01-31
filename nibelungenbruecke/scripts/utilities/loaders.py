@@ -1,6 +1,6 @@
 import json
 
-from utilities.sensors import *
+from nibelungenbruecke.scripts.utilities.sensors import *
 
 def load_sensors(sensors_path: str):
     ''' Load a list of sensors from a json into Sensor() variables'''

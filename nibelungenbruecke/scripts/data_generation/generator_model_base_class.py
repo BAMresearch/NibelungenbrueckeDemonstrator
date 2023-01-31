@@ -1,11 +1,9 @@
-import json
 import dolfinx
-from dolfinx.io.gmshio import read_from_msh
 from mpi4py import MPI
 
-from utilities.checks import assert_path_exists
-from utilities.loaders import load_sensors
-from utilities.offloaders import offload_sensors
+from nibelungenbruecke.scripts.utilities.checks import assert_path_exists
+from nibelungenbruecke.scripts.utilities.loaders import load_sensors
+from nibelungenbruecke.scripts.utilities.offloaders import offload_sensors
 class GeneratorModel:
     ''' Base class for a generator of synthetic data from a model.'''
 

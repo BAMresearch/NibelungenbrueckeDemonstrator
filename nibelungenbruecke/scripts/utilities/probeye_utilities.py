@@ -4,20 +4,8 @@ import numpy as np
 
 # local imports (problem definition)
 from probeye.definition.inverse_problem import InverseProblem
-from probeye.definition.forward_model import ForwardModelBase
 import probeye.definition.distribution
 from probeye.definition.sensor import Sensor
-from probeye.definition.likelihood_model import GaussianLikelihoodModel
-
-# local imports (problem solving)
-from probeye.inference.scipy.solver import MaxLikelihoodSolver
-from probeye.inference.emcee.solver import EmceeSolver
-from probeye.definition.correlation_model import PrescribedCovModel
-
-# local imports (inference data post-processing)
-from probeye.postprocessing.sampling_plots import create_pair_plot
-from probeye.postprocessing.sampling_plots import create_posterior_plot
-from probeye.postprocessing.sampling_plots import create_trace_plot
 
 def add_parameter_wrapper(problem: InverseProblem, parameters: dict):
     '''Loads a parameter to the inverse problem from its definition in the json file.'''

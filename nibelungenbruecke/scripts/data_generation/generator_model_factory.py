@@ -1,10 +1,10 @@
 import importlib
 
-from data_generation.generator_model_base_class import GeneratorModel
+from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 
 def generator_model_factory(model_path, filepath, sensor_positions, model_parameters, output_parameters=None):
     # Import the module from the filepath
-    module = importlib.import_module("data_generation."+filepath)
+    module = importlib.import_module("nibelungenbruecke.scripts.data_generation."+filepath)
     
     # Find the derived class of GeneratorModel in the imported module
     for name, obj in module.__dict__.items():

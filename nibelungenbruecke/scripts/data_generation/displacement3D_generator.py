@@ -5,8 +5,8 @@ from petsc4py.PETSc import ScalarType
 from dolfinx import fem
 import dolfinx as df
 from mpi4py import MPI
-from data_generation.generator_model_base_class import GeneratorModel
-from utilities.boundary_condition_factory import boundary_condition_factory
+from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
+from nibelungenbruecke.scripts.utilities.boundary_condition_factory import boundary_condition_factory
 
 class Displacement3DGenerator(GeneratorModel):
     ''' Generates the displacements at the sensors for a given load configuration.'''

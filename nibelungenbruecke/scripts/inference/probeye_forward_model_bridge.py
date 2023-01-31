@@ -2,24 +2,20 @@
 import numpy as np
 import ufl
 
-from typing import Optional
-
 from petsc4py.PETSc import ScalarType
 
 from dolfinx import fem
 import dolfinx as df
 from mpi4py import MPI
-from utilities.boundary_condition_factory import boundary_condition_factory
+from nibelungenbruecke.scripts.utilities.boundary_condition_factory import boundary_condition_factory
 
 # local imports (problem definition)
 from probeye.definition.forward_model import ForwardModelBase
-from probeye.definition.sensor import Sensor
-from probeye.subroutines import len_or_one
 
 # utilities imports
-from utilities.probeye_utilities import *
-from utilities.checks import assert_path_exists
-from utilities.general_utilities import modify_key
+from nibelungenbruecke.scripts.utilities.probeye_utilities import *
+from nibelungenbruecke.scripts.utilities.checks import assert_path_exists
+from nibelungenbruecke.scripts.utilities.general_utilities import modify_key
 
 
 class BridgeModel(ForwardModelBase):

@@ -1,14 +1,14 @@
 import gmsh
 import numpy as np
-import os
-import sys
+# import os
+# import sys
 
-# Get the parent directory of the current script
-root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Add the parent directory to sys.path
-sys.path.append(root_path)
+# # Get the parent directory of the current script
+# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# # Add the parent directory to sys.path
+# sys.path.append(root_path)
 
-from utilities.checks import check_path_exists
+from nibelungenbruecke.scripts.utilities.checks import check_path_exists
 
 def create_geometry(parameters):
     "Creates the geometry of the Nibelungenbrücke from a set of parameters and the cross-sections"

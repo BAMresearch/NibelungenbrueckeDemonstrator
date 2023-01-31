@@ -1,13 +1,13 @@
-import os
-import sys
+# import os
+# import sys
 
-# Get the parent directory of the current script
-root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Add the parent directory to sys.path
-sys.path.append(root_path)
+# # Get the parent directory of the current script
+# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# # Add the parent directory to sys.path
+# sys.path.append(root_path)
 
-from utilities.checks import check_path_exists
-from inference.forward_model_factory import forward_model_factory
+from nibelungenbruecke.scripts.utilities.checks import check_path_exists
+from nibelungenbruecke.scripts.inference.forward_model_factory import forward_model_factory
 
 def import_forward_model(model_path, parameters):
     "Imports forward model from a set of parameters"

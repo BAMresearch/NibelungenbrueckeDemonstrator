@@ -1,17 +1,17 @@
-import os
-import sys
+# import os
+# import sys
 import matplotlib.pyplot as plt
 import arviz as az
-# Get the parent directory of the current script
-root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Add the parent directory to sys.path
-sys.path.append(root_path)
+# # Get the parent directory of the current script
+# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# # Add the parent directory to sys.path
+# sys.path.append(root_path)
 
-from utilities.checks import check_lists_same_length
-from utilities.probeye_utilities import add_parameter_wrapper, add_experiment_wrapper
-from inference.import_forward_model import import_forward_model
-from inference.import_likelihood_model import import_likelihood_model
-from inference.import_solver import import_solver
+from nibelungenbruecke.scripts.utilities.checks import check_lists_same_length
+from nibelungenbruecke.scripts.utilities.probeye_utilities import add_parameter_wrapper, add_experiment_wrapper
+from nibelungenbruecke.scripts.inference.import_forward_model import import_forward_model
+from nibelungenbruecke.scripts.inference.import_likelihood_model import import_likelihood_model
+from nibelungenbruecke.scripts.inference.import_solver import import_solver
 
 from probeye.definition.inverse_problem import InverseProblem
 

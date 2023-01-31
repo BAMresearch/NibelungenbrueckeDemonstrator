@@ -146,3 +146,4 @@ output/paraview/*
 ### Keep README.md ###
 !README.md
 .vscode/launch.json
+.doit*
