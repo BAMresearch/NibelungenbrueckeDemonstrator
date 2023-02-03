@@ -1,1 +1,8 @@
-Inference functions.
+This folder contains the scripts to run a Bayesian inference procedure on a model provided with measurements data.
+- `run_inference_problem.py` runs the inference problem following the scheme present in probeye. It initializes the problem, import the forward model, the parameters, the experiments and the likelihood model, adds them to the problem and solves the inference procedure. Currently uses the `InverseProblem` class from probeye, but it could be modified in the future to enable the use of any generic inference package through a wrapper. It also currently controls the plotting of the inference results.
+- `import_forward_model.py` imports the forward model from a set of parameters. It calls the factory to instanciate the especific model. It is used to deal with those characteristics present in every forward model definition without modifying probeye's class.
+- `forward_model_factory.py` factory for instances of a forward model class derived from `ForwardModelBase` of probeye.
+- `import_likelihood_model.py` imports the initialized likelihood model from probeye's definitions.
+- `import_solver.py` imports the initialized solver from probeye's definitions.
+- `probeye_forward_model_bridge.py` derived model of probeye's `ForwardModelBase` for the Nibelungenbrücke. It implements a 3D elastic static FEM simulation of the bridge span that outputs the displacements under self-weight for a set of material and load parameters.
+- `plot_inference_results.py` (WIP) Currently, the plotting of inference results is controlled by the inference problem for the sake of simplicity. There are plans to separate them.

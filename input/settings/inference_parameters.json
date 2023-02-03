@@ -42,7 +42,7 @@
     "parameter_list_parameters":[
         {
             "name":"rho",
-            "tex":"$\\rho$",
+            "tex":"rho",
             "info":"Normalized mass",
             "prior":{
                 "name": "LogNormal",
@@ -52,7 +52,7 @@
         },
         {
             "name":"mu",
-            "tex":"$\\mu$",
+            "tex":"mu",
             "info":"Lamé constant \\mu",
             "domain":"(0, 50)",
             "prior":{
@@ -63,7 +63,7 @@
         },
         {
             "name":"lambda",
-            "tex":"$\\lambda$",
+            "tex":"lambda",
             "info":"Lamé constant \\lambda",
             "domain":"(0.0, 50)",
             "prior":{
@@ -75,7 +75,7 @@
         {
             "name":"sigma",
             "domain": "(0, +oo)",
-            "tex":"$\\sigma$",
+            "tex":"sigma",
             "info":"Standard deviation, of zero-mean Gaussian noise model",
             "prior":{
                 "name":"Uniform",

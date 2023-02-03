@@ -51,21 +51,6 @@ def add_experiment_wrapper(problem: InverseProblem, parameters: dict):
 
     problem.add_experiment(name = input_parameters["name"], sensor_data = data)
 
-def add_forward_model_wrapper(problem: InverseProblem, parameters: dict):
-    '''Loads a parameter to the inverse problem from its definition in the json file.'''
-
-    pass
-
-def add_likelihood_model_wrapper(problem: InverseProblem, parameters: dict):
-    '''Loads a parameter to the inverse problem from its definition in the json file.'''
-
-    pass
-
-def add_solver(problem: InverseProblem, parameters: dict):
-    '''Loads a parameter to the inverse problem from its definition in the json file.'''
-
-    pass
-
 def load_probeye_sensors(sensors_path: str):
     ''' Load a list of probeye sensors from a json into Sensor() variables'''
     # TODO: The sensor definition should be unified, right now probeye and FenicsConcrete sensors are mixed

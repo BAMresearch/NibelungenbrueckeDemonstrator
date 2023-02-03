@@ -1,11 +1,4 @@
 import json
-# import os
-# import sys
-
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
 
 from nibelungenbruecke.scripts.data_generation.generate_data import generate_data
 

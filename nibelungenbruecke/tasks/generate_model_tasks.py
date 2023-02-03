@@ -1,14 +1,6 @@
-import doit
 import json
-# import os
-# import sys
 
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
-
-from nibelungenbruecke.scripts.modelling.create_cross_section import create_cross_section2D, create_cross_section3D
+from nibelungenbruecke.scripts.modelling.create_cross_section import create_cross_section3D
 from nibelungenbruecke.scripts.modelling.create_geometry import create_geometry
 from nibelungenbruecke.scripts.modelling.create_mesh import create_mesh
 

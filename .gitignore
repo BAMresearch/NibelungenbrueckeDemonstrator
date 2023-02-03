@@ -147,3 +147,5 @@ output/paraview/*
 !README.md
 .vscode/launch.json
 .doit*
+*dependencies.pdf
+

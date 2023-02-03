@@ -1,12 +1,6 @@
-# import os
-# import sys
 import matplotlib.pyplot as plt
 import arviz as az
 import numpy as np
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
 
 from nibelungenbruecke.scripts.inference.import_forward_model import import_forward_model
 from nibelungenbruecke.scripts.utilities.offloaders import offload_posterior_predictive

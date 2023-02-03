@@ -1,1 +1,2 @@
-Results postprocessing functions.
+This folder includes scripts used to post-process the results, run posterior-predictive queries and generate graphs and documentation. **Currently only posterior-predictive query.**
+- `posterior_predictive.py` evaluates the response of the updated model sampling from the posterior distribution of the parameters. It generates results at the objective sensors and histograms for the posterior distribution.

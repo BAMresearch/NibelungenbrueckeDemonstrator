@@ -1,12 +1,5 @@
 import h5py
-# import os
-# import sys
 import numpy as np
-
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
 
 def offload_sensors(sensor_list: list, output_path: str, output_format: str):
     ''' Offloads the information of a list of sensors to a file'''

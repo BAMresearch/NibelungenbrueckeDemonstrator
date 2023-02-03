@@ -1,14 +1,6 @@
 import json
-# import os
-# import sys
-
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
 
 from nibelungenbruecke.scripts.inference.run_inference_problem import run_inference_problem
-# from nibelungenbruecke.scripts.inference.plot_inference_results import plot_inference_results
 
 def task_run_inference_problem():
     inference_parameters_path = "input/settings/inference_parameters.json"

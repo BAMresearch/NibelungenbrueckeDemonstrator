@@ -1,11 +1,4 @@
 import json
-# import os
-# import sys
-
-# # Get the parent directory of the current script
-# root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# # Add the parent directory to sys.path
-# sys.path.append(root_path)
 
 from nibelungenbruecke.scripts.postprocessing.posterior_predictive import posterior_predictive
 
@@ -26,5 +19,5 @@ if __name__ == "__main__":
     postprocess_parameters_path = "input/settings/postprocess_parameters.json"
     with open(postprocess_parameters_path, 'r') as f:
         postprocess_parameters = json.load(f)
-        
+
     posterior_predictive(postprocess_parameters["posterior_predictive"])
