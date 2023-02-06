@@ -53,6 +53,10 @@ The following packages are required:
 
 For visualization, [paraview](https://www.paraview.org/) is recommended. These packages may require their own dependencies such as numpy, scipy, pandas, etc.
 
+Alternatively, import the conda environment as
+```
+conda env create -n ENVNAME --file nibelungenbruecke.yml
+```
 *INCLUDE MINIMUM VERSIONS*
 
 # Installation and use
