@@ -98,7 +98,7 @@ Another probable requirement would be the analysis of a different set of sensors
 ### Input and Output data formating
 Properly retrieving and providing data is key for the good performance of the demonstrator. We can differentiate the information provided about the sensors and the data itself. Information for the sensors contains the metadata for the set of sensors. This includes the name and position of the sensor, as well as what quantities it is measuring, the dimension of the measurements and the format in which they are provided. Alternatively, the data itself contains the measurements provided to or from the model following a database or dataframe structure. As a general reference, the values are given with units in the international system (SI units).
 The coordinate system follows:
-- **Coordinate X**: transversal direction of the bridge (same direction as the water flow) with origin on the West shore (Worms) of the river.
+- **Coordinate X**: transversal direction of the bridge (same direction as the water flow) with origin on the West shore (Worms) of the river in the middle point of the section of the deck.
 - **Coordinate Y**: vertical direction of the bridge (height) with origin at the deck height at the western pilot.
 - **Coordinate Z**: longitudinal direction of the bridge (direction accross the river flow) with origin at the western pilot
   
