@@ -10,22 +10,17 @@ from nibelungenbruecke.scripts.utilities.boundary_condition_factory import bound
 
 class Displacement3DGenerator(GeneratorModel):
     ''' Generates the displacements at the sensors for a given load configuration.'''
-    # TODO: This could probably simplified by using the ForwardModel from probeye or the Problem from FenicsConcrete
+    # TODO: This could probably be simplified by using the ForwardModel from probeye or the Problem from FenicsConcrete
     # TODO: Delete duplicated Displacement model
     
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
 
         self.material_parameters = model_parameters["material_parameters"]
+        self.calculate_lame_constants()
 
 
     def GenerateModel(self):
-        # Code to generate the displacement model
-        
-        # self.mesh = df.mesh.create_box(comm=MPI.COMM_WORLD,
-        #                     points=((0.0, 0.0, 0.0), (-8.0, -8.0, 100.0)), n=(16, 16, 100),
-        #                     cell_type=df.mesh.CellType.hexahedron)
-
         # Generate function space
         self.V = fem.VectorFunctionSpace(self.mesh, ("CG", 1))
 
@@ -72,6 +67,12 @@ class Displacement3DGenerator(GeneratorModel):
 
     def sigma(self, u):
         return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(len(u)) + 2*self.material_parameters["mu"]*self.epsilon(u)
+
+    def calculate_lame_constants(self):
+        E_modulus  = self.material_parameters["E"]
+        nu = self.material_parameters["nu"]
+        self.material_parameters["lambda"] = (E_modulus*nu)/((1+nu)*(1-2*nu))
+        self.material_parameters["mu"] = E_modulus/(2*(1+nu))
 
     def _get_default_parameters():
         default_parameters = {

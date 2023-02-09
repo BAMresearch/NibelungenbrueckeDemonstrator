@@ -142,10 +142,14 @@ output/figures/*
 output/results/*
 output/paraview/*
 *.nc
+*.h5
+*.xdmf
+*.msh
+*.geo_unrolled
 
 ### Keep README.md ###
 !README.md
 .vscode/launch.json
 .doit*
-*dependencies.pdf
 
+dependencies.pdf

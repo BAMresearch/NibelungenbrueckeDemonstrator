@@ -1,20 +1,20 @@
 {
-    "model_path": "input/models/mesh.msh",
+    "model_path": "./input/models/mesh.msh",
     "output_parameters":{
-        "output_path": "input/data",
+        "output_path": "./input/data",
         "output_format": ".h5"},
     "generation_models_list": [{
         "generator_path": "displacement3D_generator",
-        "sensors_path": "input/sensors/sensors_displacements.json",
+        "sensors_path": "./input/sensors/sensors_displacements.json",
         "model_parameters": {
             "model_name": "displacements",
             "paraview_output": true,
-            "paraview_output_path": "output/paraview",
+            "paraview_output_path": "./output/paraview",
             "material_parameters":{
-                "rho": 10.0,
-                "g": 100,
-                "mu": 1,
-                "lambda": 1.25
+                "E": 40e12,
+                "g": 9.81,
+                "nu": 0.2,
+                "rho": 2350
             },
             "tension_z": 0.0,
             "boundary_conditions": {
