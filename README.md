@@ -31,7 +31,7 @@ The goal of **NibelungenbrueckeDemonstrator** is to provide a representative and
 Nevertheless, due to its modular structure and user-oriented approach, this demonstrator can be used as the basis for implementing the workflow of any digital twin using a [Bayesian framework](https://en.wikipedia.org/wiki/Bayesian_inference). This repository abides by the principles of [FAIR](https://www.go-fair.org/fair-principles/) (Findable, Accessible, Interoperable and Reusable) scientific software.
 # Bridge description
 ## Location
-Located in the city of [Worms](https://en.wikipedia.org/wiki/Worms,_Germany) (Rheinlad-Palatinate), the Nibelungenbrücke connects it across the river Rhine with the cities of [Lampertheim](https://en.wikipedia.org/wiki/Lampertheim) and [Bürstadt](https://en.wikipedia.org/wiki/B%C3%BCrstadt) (Hesse).
+Located in the city of [Worms](https://en.wikipedia.org/wiki/Worms,_Germany) (Rheinland-Palatinate), the Nibelungenbrücke connects it across the river Rhine with the cities of [Lampertheim](https://en.wikipedia.org/wiki/Lampertheim) and [Bürstadt](https://en.wikipedia.org/wiki/B%C3%BCrstadt) (Hesse).
 It is the only road bridge between Mannheim in the south and Mainz in the north, which leads to the transit of 23000 vehicles every 24h on average.
 
 The DT implemented in this repository focuses on the span closest to the west shore of the Rhein (Worms side) of the ["old" Nibelungenbrücke](https://structurae.net/en/structures/nibelungenbrucke). The measurements and dimensions of the bridge are provided by the organization of the SPP 2388/ 100plus program.
