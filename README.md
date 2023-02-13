@@ -100,10 +100,10 @@ Properly retrieving and providing data is key for the good performance of the de
 The coordinate system follows:
 - **Coordinate X**: transversal direction of the bridge (same direction as the water flow) with origin on the West shore (Worms) of the river in the middle point of the section of the deck.
 - **Coordinate Y**: vertical direction of the bridge (height) with origin at the deck height at the western pilot.
-- **Coordinate Z**: longitudinal direction of the bridge (direction accross the river flow) with origin at the western pilot
+- **Coordinate Z**: longitudinal direction of the bridge (direction across the river flow) with origin at the western pilot
   
 Currently, the following sensors and structures are defined for the demonstrator example:
-- **Input displacement data**: It is provided as a `.h5` file wich includes in the first level the list of sensors used to measure the displacements. In the second level, i.e. for each sensor, we indicate the data, the data series, the position of the sensor, the time values at which the data is sampled and the type of value that we are measuring. As in the example we collect only one measurement per sensor, the data and time series will have only one entry each. Input measurements (for example, loads) must be located in a different file than output ones (for example, displacements). Example:
+- **Input displacement data**: It is provided as a `.h5` file which includes in the first level the list of sensors used to measure the displacements. In the second level, i.e. for each sensor, we indicate the data, the data series, the position of the sensor, the time values at which the data is sampled and the type of value that we are measuring. As in the example we collect only one measurement per sensor, the data and time series will have only one entry each. Input measurements (for example, loads) must be located in a different file than output ones (for example, displacements). Example:
   
 | DisplacementSensor0 |                    |    Units    |
 | :-----------------: | :----------------: | :---------: |
