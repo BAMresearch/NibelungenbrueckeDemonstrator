@@ -17,4 +17,11 @@ for task, load_task in DOIT_CONFIG.items():
         functions = {name: value for name, value in vars(module).items() if callable(value)and name.startswith("task_")}
         for name, value in functions.items():
             globals()[name] = value
-    
+
+# Run tasks if __name__ == '__main__'
+if __name__ == "__main__":
+    from doit.doit_cmd import DoitMain
+    from doit.cmd_base import ModuleTaskLoader
+    import sys
+
+    DoitMain(ModuleTaskLoader(globals())).run(sys.argv[1:])    
