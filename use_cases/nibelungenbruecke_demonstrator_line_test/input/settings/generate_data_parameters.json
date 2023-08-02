@@ -1,0 +1,43 @@
+{
+    "model_path": "./input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "./input/data",
+        "output_format": ".h5"},
+    "generation_models_list": [{
+        "generator_path": "LineTestLoadGenerator",
+        "sensors_path": "./input/sensors/sensors_displacements.json",
+        "model_parameters": {
+            "model_name": "displacements",
+            "paraview_output": true,
+            "paraview_output_path": "./output/paraview",
+            "material_parameters":{
+                "E": 40e12,
+                "g": 9.81,
+                "nu": 0.2,
+                "rho": 2350
+            },
+            "tension_z": 0.0,
+            "mass": 1000,
+            "g": 9.81,
+            "initial_position": 0.0,
+            "speed": 1.0,
+            "length": 1.0,
+            "width": 1.0,
+            "lenght_road": 10.0,
+            "width_road": 10.0,
+            "dt": 1.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    }
+    ]
+}

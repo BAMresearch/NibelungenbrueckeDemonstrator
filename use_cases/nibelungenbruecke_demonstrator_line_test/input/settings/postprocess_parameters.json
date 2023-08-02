@@ -1,0 +1,43 @@
+{
+    "posterior_predictive":{
+        "model_path": "./input/models/mesh.msh",
+        "output_parameters":{
+            "output_path": "./output/results/posterior_predictive_results",
+            "output_format": ".h5"
+        },
+        "inference_data_path": "./output/results/inference_results.nc",
+        "number_of_data_samples": 100,
+        "plot_histogram": true,
+        "output_histogram_path":"./output/figures/",
+        "output_histogram_format" : ".pdf",
+        "forward_model_parameters": {
+            "name": "Nibelungenbrücke displacements",
+            "forward_model_path": "probeye_forward_model_bridge",
+            "input_sensors_path": "./input/sensors/sensors_displacements_posterior_predictive_input.json",
+            "output_sensors_path": "./input/sensors/sensors_displacements_posterior_predictive_output.json",
+            "problem_parameters": ["E", "nu", "rho"], 
+            "parameter_key_paths": [["material_parameters"],["material_parameters"],["material_parameters"]],
+            "model_parameters": {
+                "model_name": "displacements",
+                "material_parameters":{
+                    "E": 30e12,
+                    "g": 9.81,
+                    "nu": 0.2,
+                    "rho": 2350
+                },
+                "tension_z": 0.0,
+                "boundary_conditions": {
+                    "bc1":{
+                    "model":"clamped_boundary",
+                    "side_coord": 0.0,
+                    "coord": 2
+                },
+                    "bc2":{
+                    "model":"clamped_boundary",
+                    "side_coord": 95.185,
+                    "coord": 2
+                }}
+            }
+        }
+    }
+}

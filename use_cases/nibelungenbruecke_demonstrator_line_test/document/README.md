@@ -1,0 +1,1 @@
+This folder contains the files necessary to generate a document in LaTeX.
