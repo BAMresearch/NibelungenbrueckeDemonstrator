@@ -24,20 +24,20 @@ class LineTestLoadGenerator(GeneratorModel):
         self.dt = model_parameters["dt"]
         
         # Initialize the load
-        self.load_value = self.model_parameters["mass"]*self.model_parameters["g"] #Load of the vehicle
-        self.initial_position = [0,0,self.model_parameters["initial_position"]] #Initial position of the front left wheel of the vehicle
+        self.initial_position = self.model_parameters["initial_position"] #Initial position of the front left wheel of the vehicle
         self.current_position = self.initial_position #Current position of the front left wheel of the vehicle
-        self.historic_position = [self.current_position[0]] #Historic X position of the front left wheel of the vehicle
+        self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
         self.speed = self.model_parameters["speed"] #Speed of the vehicle
         self.length_vehicle = self.model_parameters["length"] #Length of the vehicle
         self.width_vehicle = self.model_parameters["width"] #Width of the vehicle
+        self.load_value = self.model_parameters["mass"]*self.model_parameters["g"]/(self.length_vehicle*self.width_vehicle) #Load of the vehicle per surface unit
         self.length_road = self.model_parameters["lenght_road"] #Length of the road
         self.width_road = self.model_parameters["width_road"] #Width of the road
 
         assert self.length_vehicle < self.length_road, "The length of the vehicle is bigger than the length of the road"
         assert self.width_vehicle < self.width_road, "The width of the vehicle is bigger than the width of the road"
-        assert self.initial_position[2] > self.width_road/2, "The initial position of the vehicle is outside the road width (left)"
-        assert self.initial_position[2] + self.width_vehicle < self.width_road/2, "The initial position of the vehicle is outside the road width (right)"
+        assert self.initial_position[0] > -self.width_road/2, "The initial position of the vehicle is outside the road width (left)"
+        assert self.initial_position[0] + self.width_vehicle < self.width_road/2, "The initial position of the vehicle is outside the road width (right)"
 
 
     def GenerateModel(self):
@@ -53,10 +53,10 @@ class LineTestLoadGenerator(GeneratorModel):
         u = ufl.TrialFunction(self.V)
         v = ufl.TestFunction(self.V)
 
-        self.f_field=fem.Function(self.V)
+        f = fem.Constant(self.mesh, ScalarType((0, -self.load_value,0)))
         self.evaluate_load()
         self.a = ufl.inner(self.sigma(u), self.epsilon(v)) * ufl.dx
-        self.L = ufl.dot(self.f_field, v) * ufl.dx + ufl.dot(T, v) * ds
+        self.L = ufl.dot(f, v) * self.dx_load + ufl.dot(T, v) * ds
 
     @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
@@ -98,11 +98,11 @@ class LineTestLoadGenerator(GeneratorModel):
 
     def advance_load(self, dt):
         ''' Advance the load'''
-        self.current_position[0] += self.speed*dt
+        self.current_position[2] += self.speed*dt
         self.historic_position.append(self.current_position[0])
         self.evaluate_load()
 
-        if self.current_position[0] > self.length_road+self.length_vehicle:
+        if self.current_position[2] > self.length_road+self.length_vehicle:
             return False
         else:
             return True    
@@ -110,19 +110,9 @@ class LineTestLoadGenerator(GeneratorModel):
     def evaluate_load(self):
         ''' Evaluate the load'''
 
-        fdim = self.mesh.topology.dim - 1
-
-        if self.current_position[0] < self.length_road:
-            front_left_facets = mesh.locate_entities_boundary(self.mesh, fdim, point_at(self.current_position))
-            self.f_field.x.array[front_left_facets] += np.array([0,-self.load_value/4.00, 0.0], dtype=ScalarType)
-            front_right_facets = mesh.locate_entities_boundary(self.mesh, fdim, point_at([self.current_position[0],self.current_position[1],self.current_position[2]+self.width_vehicle]))
-            self.f_field.x.array[front_right_facets] += np.array([0,-self.load_value/4.00, 0.0], dtype=ScalarType)
-        
-        if self.current_position[0] < self.length_vehicle:
-            back_left_facets = mesh.locate_entities_boundary(self.mesh, fdim, point_at([self.current_position[0],self.current_position[1],self.current_position[2]]))
-            self.f_field.x.array[back_left_facets] += np.array([0,-self.load_value/4.00, 0.0], dtype=ScalarType)
-            back_right_facets = mesh.locate_entities_boundary(self.mesh, fdim, point_at([self.current_position[0]-self.length_vehicle,self.current_position[1],self.current_position[2]+self.width_vehicle]))
-            self.f_field.x.array[back_right_facets] += np.array([0,-self.load_value/4.00, 0.0], dtype=ScalarType)
+        # Apply local load (surface force) in subdomain
+        load_subdomain = LoadSubDomain(corner=self.current_position, length=self.length_vehicle, width=self.width_vehicle)
+        self.dx_load = ufl.dx(subdomain_data=df.MeshTags(self.mesh, 3, load_subdomain.inside, 1))
 
     def _get_default_parameters():
         default_parameters = {
@@ -138,7 +128,7 @@ class LineTestLoadGenerator(GeneratorModel):
             "tension_z": 0.0,
             "mass": 1000,
             "g": 9.81,
-            "initial_position": 0.0,
+            "initial_position": [0.0,0.0,0.0],
             "speed": 1.0,
             "length": 1.0,
             "width": 1.0,
@@ -153,3 +143,20 @@ class LineTestLoadGenerator(GeneratorModel):
         }
 
         return default_parameters
+    
+# Define subdomain where the load should be applied
+class LoadSubDomain:
+    def __init__(self, corner, length, width):
+        self.corner = corner
+        self.length = length
+        self.width = width
+
+    def inside(self, x):
+        return np.logical_and(
+            np.logical_and(
+                np.logical_and(
+                    x[0] > self.corner[0],
+                    x[0] < self.corner[0] + self.width
+                ), x[2] < self.corner[2]
+            ), x[2] > self.corner[2] - self.length
+        )

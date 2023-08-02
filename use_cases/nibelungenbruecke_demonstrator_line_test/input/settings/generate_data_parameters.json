@@ -4,7 +4,7 @@
         "output_path": "./input/data",
         "output_format": ".h5"},
     "generation_models_list": [{
-        "generator_path": "LineTestLoadGenerator",
+        "generator_path": "line_test_load_generator",
         "sensors_path": "./input/sensors/sensors_displacements.json",
         "model_parameters": {
             "model_name": "displacements",
@@ -19,12 +19,12 @@
             "tension_z": 0.0,
             "mass": 1000,
             "g": 9.81,
-            "initial_position": 0.0,
-            "speed": 1.0,
-            "length": 1.0,
-            "width": 1.0,
-            "lenght_road": 10.0,
-            "width_road": 10.0,
+            "initial_position": [0.0,0.0,0.0],
+            "speed": 5.0,
+            "length": 10.0,
+            "width": 3.0,
+            "lenght_road": 95.0,
+            "width_road": 14.0,
             "dt": 1.0,
             "boundary_conditions": {
                 "bc1":{
