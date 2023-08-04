@@ -8,7 +8,8 @@ import dolfinx as df
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 from nibelungenbruecke.scripts.utilities.boundary_condition_factory import boundary_condition_factory
-from nibelungenbruecke.scripts.utilities.boundary_conditions import point_at
+from nibelungenbruecke.scripts.utilities.loaders import load_sensors
+from nibelungenbruecke.scripts.utilities.offloaders import offload_sensors
 
 class LineTestLoadGenerator(GeneratorModel):
     ''' Generates the displacements at the sensors for a given load configuration for a line test.'''
@@ -64,7 +65,7 @@ class LineTestLoadGenerator(GeneratorModel):
         else:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
 
-    @GeneratorModel.sensor_offloader_wrapper
+    # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data
 
@@ -72,7 +73,7 @@ class LineTestLoadGenerator(GeneratorModel):
             pv_file = df.io.XDMFFile(self.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+".xdmf", "w")
 
         # Solve the problem
-        
+        sensors = load_sensors(self.sensor_positions)
         i=0
         converged = False
         while not converged:
@@ -81,7 +82,9 @@ class LineTestLoadGenerator(GeneratorModel):
             self.displacement = problem.solve()
             self.displacement.name = "Displacement"
        
-            # The wrapper takes care of the offloading
+            # Sensor measurement (should be adapted with the wrapper)
+            for sensor in sensors:
+                sensor.measure(self)
 
             # Paraview output
             if self.model_parameters["paraview_output"]:
@@ -92,10 +95,14 @@ class LineTestLoadGenerator(GeneratorModel):
                 L_function = fem.Function(self.V, x=L_vector, name="Load")
                 pv_file.write_function(L_function,i*self.dt)
                 pv_file.close()
+                # Store the value at the sensors
 
             converged = self.advance_load(self.dt)
             i+=1
+        
+        offload_sensors(sensors, self.output_parameters["output_path"]+"/"+self.model_parameters["model_name"], self.output_parameters["output_format"])
 
+        print(f"Number of iterations: {i}")
 
     def LoadBCs(self):
 
@@ -124,10 +131,7 @@ class LineTestLoadGenerator(GeneratorModel):
         self.historic_position.append(self.current_position[2])
         self.evaluate_load()
 
-        if self.current_position[2] > self.length_road+self.length_vehicle:
-            return False
-        else:
-            return True    
+        return self.current_position[2] > self.length_road+self.length_vehicle
 
     def evaluate_load(self):
         ''' Evaluate the load'''
