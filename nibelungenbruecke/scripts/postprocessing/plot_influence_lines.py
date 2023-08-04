@@ -18,8 +18,8 @@ def plot_influence_lines(parameters:dict):
     show = parameters["show"]
     sensors = load_sensors(sensors_path)
     influence_lines = load_influence_lines(influence_lines_path, sensors)
-    for sensor in sensors:
-        plt.plot(influence_lines[sensor]["time"], influence_lines[sensor]["displacements"], label=sensor)
+    for name, sensor in influence_lines.items():
+        plt.plot(sensor["time"], sensor["displacements"][:,1], label=name)
     plt.legend()
     plt.savefig(output_path + "." + output_format)
     if show:

@@ -84,7 +84,7 @@ class LineTestLoadGenerator(GeneratorModel):
        
             # Sensor measurement (should be adapted with the wrapper)
             for sensor in sensors:
-                sensor.measure(self)
+                sensor.measure(self, i*self.dt)
 
             # Paraview output
             if self.model_parameters["paraview_output"]:
