@@ -47,33 +47,55 @@ class LineTestLoadGenerator(GeneratorModel):
         # Load boundary conditions
         self.LoadBCs()
 
-        T = fem.Constant(self.mesh, ScalarType((0, 0, self.model_parameters["tension_z"])))
-        ds = ufl.Measure("ds", domain=self.mesh)
+        if self.model_parameters["tension_z"] != 0.0:
+            T = fem.Constant(self.mesh, ScalarType((0, 0, self.model_parameters["tension_z"])))
+            ds = ufl.Measure("ds", domain=self.mesh)
 
         u = ufl.TrialFunction(self.V)
         v = ufl.TestFunction(self.V)
 
         f = fem.Constant(self.mesh, ScalarType((0, -self.load_value,0)))
+        f_weight = fem.Constant(self.mesh, ScalarType(np.array([0, -self.material_parameters["rho"]*self.model_parameters["g"],0])))
         self.evaluate_load()
         self.a = ufl.inner(self.sigma(u), self.epsilon(v)) * ufl.dx
-        self.L = ufl.dot(f, v) * self.dx_load + ufl.dot(T, v) * ds
+        # self.L = ufl.dot(f, v) * self.dx_load + ufl.dot(T, v) * ds + fem.Constant(self.mesh,ScalarType(0.0))*ufl.dx
+        if self.model_parameters["tension_z"] != 0.0:
+            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx + ufl.dot(T, v) * ds
+        else:
+            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
 
     @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data
 
-        # Solve the problem
-        problem = fem.petsc.LinearProblem(self.a, self.L, bcs=self.bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"})
-        while self.advance_load(self.dt):
-            self.displacement = problem.solve()
-       
-        # The wrapper takes care of the offloading
-
-        # Paraview output
         if self.model_parameters["paraview_output"]:
-            with df.io.XDMFFile(self.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+".xdmf", "w") as xdmf:
-                xdmf.write_mesh(self.mesh)
-                xdmf.write_function(self.displacement)
+            pv_file = df.io.XDMFFile(self.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+".xdmf", "w")
+
+        # Solve the problem
+        
+        i=0
+        converged = False
+        while not converged:
+            self.GenerateModel()
+            problem = fem.petsc.LinearProblem(self.a, self.L, bcs=self.bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"})
+            self.displacement = problem.solve()
+            self.displacement.name = "Displacement"
+       
+            # The wrapper takes care of the offloading
+
+            # Paraview output
+            if self.model_parameters["paraview_output"]:
+                if i ==0:
+                    pv_file.write_mesh(self.mesh)
+                pv_file.write_function(self.displacement,i*self.dt)
+                L_vector = fem.assemble_vector(fem.form(self.L))
+                L_function = fem.Function(self.V, x=L_vector, name="Load")
+                pv_file.write_function(L_function,i*self.dt)
+                pv_file.close()
+
+            converged = self.advance_load(self.dt)
+            i+=1
+
 
     def LoadBCs(self):
 
@@ -99,7 +121,7 @@ class LineTestLoadGenerator(GeneratorModel):
     def advance_load(self, dt):
         ''' Advance the load'''
         self.current_position[2] += self.speed*dt
-        self.historic_position.append(self.current_position[0])
+        self.historic_position.append(self.current_position[2])
         self.evaluate_load()
 
         if self.current_position[2] > self.length_road+self.length_vehicle:
@@ -112,7 +134,10 @@ class LineTestLoadGenerator(GeneratorModel):
 
         # Apply local load (surface force) in subdomain
         load_subdomain = LoadSubDomain(corner=self.current_position, length=self.length_vehicle, width=self.width_vehicle)
-        self.dx_load = ufl.dx(subdomain_data=df.MeshTags(self.mesh, 3, load_subdomain.inside, 1))
+        subdomain = mesh.locate_entities(self.mesh, self.mesh.topology.dim-1, marker= load_subdomain.inside)
+        subdomain_values = np.full_like(subdomain, 1)
+        facet_tags = mesh.meshtags(self.mesh, self.mesh.topology.dim-1, subdomain, subdomain_values)
+        self.ds_load = ufl.Measure('ds', domain = self.mesh, subdomain_data = facet_tags)
 
     def _get_default_parameters():
         default_parameters = {
@@ -121,7 +146,6 @@ class LineTestLoadGenerator(GeneratorModel):
             "paraview_output_path": "output/paraview",
             "material_parameters":{
                 "rho": 1.0,
-                "g": 100,
                 "mu": 1,
                 "lambda": 1.25
             },
@@ -155,8 +179,9 @@ class LoadSubDomain:
         return np.logical_and(
             np.logical_and(
                 np.logical_and(
-                    x[0] > self.corner[0],
-                    x[0] < self.corner[0] + self.width
-                ), x[2] < self.corner[2]
-            ), x[2] > self.corner[2] - self.length
-        )
+                    np.logical_and(
+                        x[0] > self.corner[0],
+                        x[0] < self.corner[0] + self.width
+                    ), x[2] < self.corner[2]
+                ), x[2] > self.corner[2] - self.length
+            ), np.isclose(x[1], self.corner[1]))

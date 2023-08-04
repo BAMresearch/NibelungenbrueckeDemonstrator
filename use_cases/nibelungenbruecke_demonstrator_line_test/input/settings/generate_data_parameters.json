@@ -7,17 +7,16 @@
         "generator_path": "line_test_load_generator",
         "sensors_path": "./input/sensors/sensors_displacements.json",
         "model_parameters": {
-            "model_name": "displacements",
+            "model_name": "line_test",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{
                 "E": 40e12,
-                "g": 9.81,
                 "nu": 0.2,
                 "rho": 2350
             },
             "tension_z": 0.0,
-            "mass": 1000,
+            "mass": 1E10,
             "g": 9.81,
             "initial_position": [0.0,0.0,0.0],
             "speed": 5.0,
