@@ -64,7 +64,7 @@ class LineTestLoadGenerator(GeneratorModel):
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx + ufl.dot(T, v) * ds
         else:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
-
+            # self.L = ufl.dot(f, v) * self.ds_load(1)
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data
@@ -129,7 +129,7 @@ class LineTestLoadGenerator(GeneratorModel):
         ''' Advance the load'''
         self.current_position[2] += self.speed*dt
         self.historic_position.append(self.current_position[2])
-        self.evaluate_load()
+        # self.evaluate_load()
 
         return self.current_position[2] > self.length_road+self.length_vehicle
 
