@@ -31,7 +31,7 @@
         "geometry_path": "./input/models/geometry",
         "geometry_format": ".geo_unrolled",
         "characteristic_length_min": 0.2,
-        "characteristic_length_max": 2.0,
+        "characteristic_length_max": 1.0,
         "mesh_dimension":3,
         "output_path": "./input/models/mesh"
     }
