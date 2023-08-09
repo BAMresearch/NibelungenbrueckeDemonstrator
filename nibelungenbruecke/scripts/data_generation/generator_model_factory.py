@@ -6,13 +6,24 @@ def generator_model_factory(model_path, filepath, sensor_positions, model_parame
     # Import the module from the filepath
     module = importlib.import_module("nibelungenbruecke.scripts.data_generation."+filepath)
     
-    # Find the derived class of GeneratorModel in the imported module
+    # Find all subclasses of GeneratorModel in the imported module
+    subclasses = []
     for name, obj in module.__dict__.items():
         if isinstance(obj, type) and issubclass(obj, GeneratorModel) and obj != GeneratorModel:
-            model_class = obj
-            break
-    else:
+            subclasses.append(obj)
+    
+    # Eliminate those that are superclasses of others
+    for subclass in list(subclasses):  # iterate over a copy so we can modify the original list
+        for potential_subclass in subclasses:
+            if issubclass(potential_subclass, subclass) and potential_subclass != subclass:
+                subclasses.remove(subclass)
+                break
+    
+    if not subclasses:
         raise ValueError(f"No derived class of GeneratorModel found in {filepath}")
     
+    if len(subclasses) > 1:
+        raise ValueError(f"Multiple derived classes of GeneratorModel found in {filepath}")
+    
     # Create an instance of the derived class with the given parameters
-    return model_class(model_path, sensor_positions, model_parameters,output_parameters)
+    return subclasses[0](model_path, sensor_positions, model_parameters,output_parameters)

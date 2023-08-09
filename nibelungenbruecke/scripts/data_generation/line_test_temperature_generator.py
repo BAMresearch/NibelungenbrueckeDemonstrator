@@ -16,19 +16,26 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
 
-        self.temperature_coefficient = self.model_parameters["temperature_coefficient"]
+        self.temperature_coefficient = self.model_parameters["temperature_coefficient"] #For heat transfer, not used for now
         self.temperature_difference = self.model_parameters["temperature_difference"]
+        self.temperature_alpha = self.model_parameters["temperature_alpha"] #Temperature coefficient for the thermal expansion
+        self.reference_temperature = self.model_parameters["reference_temperature"] #Reference temperature for the thermal expansion
+        self.reference_height = self.model_parameters["reference_height"] #Reference height for the thermal expansion
+        self.kappa = self.temperature_alpha*(3*self.material_parameters["lambda"]+2*self.material_parameters["mu"])
 
     def GenerateModel(self):
         # Generate function space
         self.V = fem.VectorFunctionSpace(self.mesh, ("CG", 1))
-
+        tmp_space = fem.FunctionSpace(self.mesh, ("CG", 1))
         # Load boundary conditions
         self.LoadBCs()
 
         # Distribute the temperature field
-        self.temperature_difference_field = df.fem.Function(self.V, name="Temperature_difference")
-        self.temperature_difference_field.vector[:] = self.temperature_difference*self.temperature_coefficient*self.mesh.geometry.x[:,1]
+        self.temperature_difference_field = df.fem.Function(tmp_space, name="Temperature_difference")
+        def temperature_field(x):
+            values = self.temperature_difference * (x[1]-self.reference_height)/self.reference_height
+            return np.full((1, x.shape[1]), values)
+        self.temperature_difference_field.interpolate(temperature_field)
 
         if self.model_parameters["tension_z"] != 0.0:
             T = fem.Constant(self.mesh, ScalarType((0, 0, self.model_parameters["tension_z"])))
@@ -40,24 +47,27 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
         f = fem.Constant(self.mesh, ScalarType((0, -self.load_value,0)))
         f_weight = fem.Constant(self.mesh, ScalarType(np.array([0, -self.material_parameters["rho"]*self.model_parameters["g"],0])))
         self.evaluate_load()
-        self.a = ufl.inner(self.sigma(u, self.temperature_difference_field), self.epsilon(v)) * ufl.dx
+        W_int = ufl.inner(self.sigma(u, self.temperature_difference_field), self.epsilon(v)) * ufl.dx
+        self.a = ufl.lhs(W_int) #Avoids arity error due to function space mismatch
         # self.L = ufl.dot(f, v) * self.dx_load + ufl.dot(T, v) * ds + fem.Constant(self.mesh,ScalarType(0.0))*ufl.dx
         if self.model_parameters["tension_z"] != 0.0:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx + ufl.dot(T, v) * ds
         else:
-            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
-            # self.L = ufl.dot(f, v) * self.ds_load(1)
+            # self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
+            self.L = ufl.dot(f, v) * self.ds_load(1)
+        self.L = ufl.rhs(W_int) + self.L
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data
         super().GenerateData()
         if self.model_parameters["paraview_output"]:
-            pv_file = df.io.XDMFFile(self.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+".xdmf", "w")
+            pv_file = df.io.XDMFFile(self.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+"_temperature.xdmf", "w")
+            pv_file.write_mesh(self.mesh)
             pv_file.write_function(self.temperature_difference_field)
             pv_file.close()
 
     def sigma(self, u, temperature_difference):
-        return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(len(u)) + 2*self.material_parameters["mu"]*self.epsilon(u) - self.temperature_coefficient*temperature_difference*ufl.Identity(len(u))
+        return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(self.V.mesh.geometry.dim) + 2*self.material_parameters["mu"]*self.epsilon(u) - self.kappa*temperature_difference*ufl.Identity(self.V.mesh.geometry.dim)
 
     def _get_default_parameters():
         default_parameters = {
@@ -80,8 +90,9 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
             "width_road": 10.0,
             "dt": 1.0,
             "reference_temperature":300,
-            "temperature_coefficient": 1e-5,
+            "reference_height": -2.5,
             "temperature_difference": 50,
+            "temperature_alpha": 1e-5,
             "boundary_conditions": [{
                 "model":"clamped_boundary",
                 "side_coord": 0.0,
