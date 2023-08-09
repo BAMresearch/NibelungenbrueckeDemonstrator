@@ -143,6 +143,7 @@ class LineTestLoadGenerator(GeneratorModel):
         facet_tags = mesh.meshtags(self.mesh, self.mesh.topology.dim-1, subdomain, subdomain_values)
         self.ds_load = ufl.Measure('ds', domain = self.mesh, subdomain_data = facet_tags)
 
+    @staticmethod
     def _get_default_parameters():
         default_parameters = {
             "model_name":"displacements",

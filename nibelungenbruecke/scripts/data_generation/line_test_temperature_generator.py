@@ -69,6 +69,7 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
     def sigma(self, u, temperature_difference):
         return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(self.V.mesh.geometry.dim) + 2*self.material_parameters["mu"]*self.epsilon(u) - self.kappa*temperature_difference*ufl.Identity(self.V.mesh.geometry.dim)
 
+    @staticmethod
     def _get_default_parameters():
         default_parameters = {
             "model_name":"displacements",
