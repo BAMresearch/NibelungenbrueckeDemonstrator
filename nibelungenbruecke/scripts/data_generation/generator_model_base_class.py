@@ -62,6 +62,7 @@ class GeneratorModel:
             
         return wrapper
     
+    @staticmethod
     def _get_default_parameters():
         ''' Get the default parameters for the model'''
         raise NotImplementedError("_get_default_parameters should be implemented")
