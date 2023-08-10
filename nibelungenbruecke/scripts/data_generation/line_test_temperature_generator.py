@@ -32,10 +32,10 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
 
         # Distribute the temperature field
         self.temperature_difference_field = df.fem.Function(tmp_space, name="Temperature_difference")
-        def temperature_field(x):
-            values = self.temperature_difference * (x[1]-self.reference_height)/self.reference_height
+        def temperature_differences(x):
+            values = self.temperature_difference * (x[1]-self.reference_height)/abs(self.model_parameters["height"])
             return np.full((1, x.shape[1]), values)
-        self.temperature_difference_field.interpolate(temperature_field)
+        self.temperature_difference_field.interpolate(temperature_differences)
 
         if self.model_parameters["tension_z"] != 0.0:
             T = fem.Constant(self.mesh, ScalarType((0, 0, self.model_parameters["tension_z"])))
@@ -53,8 +53,8 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
         if self.model_parameters["tension_z"] != 0.0:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx + ufl.dot(T, v) * ds
         else:
-            # self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
-            self.L = ufl.dot(f, v) * self.ds_load(1)
+            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
+            # self.L = ufl.dot(f, v) * self.ds_load(1)
         self.L = ufl.rhs(W_int) + self.L
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
@@ -87,12 +87,13 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
             "speed": 1.0,
             "length": 1.0,
             "width": 1.0,
+            "height": 2.5,
             "lenght_road": 10.0,
             "width_road": 10.0,
             "dt": 1.0,
             "reference_temperature":300,
             "reference_height": -2.5,
-            "temperature_difference": 50,
+            "temperature_difference": 5,
             "temperature_alpha": 1e-5,
             "boundary_conditions": [{
                 "model":"clamped_boundary",
