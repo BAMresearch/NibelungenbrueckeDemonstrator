@@ -1,5 +1,6 @@
 import ufl
 import numpy as np
+from copy import deepcopy
 
 from petsc4py.PETSc import ScalarType
 
@@ -26,7 +27,7 @@ class LineTestLoadGenerator(GeneratorModel):
         
         # Initialize the load
         self.initial_position = self.model_parameters["initial_position"] #Initial position of the front left wheel of the vehicle
-        self.current_position = self.initial_position #Current position of the front left wheel of the vehicle
+        self.current_position = deepcopy(self.initial_position) #Current position of the front left wheel of the vehicle
         self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
         self.speed = self.model_parameters["speed"] #Speed of the vehicle
         self.length_vehicle = self.model_parameters["length"] #Length of the vehicle
