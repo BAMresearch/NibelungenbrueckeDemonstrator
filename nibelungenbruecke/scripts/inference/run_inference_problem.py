@@ -50,7 +50,8 @@ def run_inference_problem(parameters:dict):
     
         
     # Add likelihood model
-    inverse_problem.add_likelihood_model(import_likelihood_model(parameters["likelihood_model_parameters"]))
+    for likelihood_model in parameters["likelihood_model_parameters"]:
+        inverse_problem.add_likelihood_model(import_likelihood_model(likelihood_model))
 
     # Print info
     if parameters["print_info"]:

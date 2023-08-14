@@ -1,6 +1,7 @@
 import json
 import h5py
 import numpy as np
+import pandas as pd
 
 # local imports (problem definition)
 from probeye.definition.inverse_problem import InverseProblem
@@ -46,6 +47,12 @@ def add_experiment_wrapper(problem: InverseProblem, parameters: dict):
             data = {}
             for parameter, sensor, data_value in zip(input_parameters["parameter_names"],input_parameters["sensor_names"], input_parameters["data_values"]):
                 data[parameter] = np.squeeze(f[sensor][data_value][()])
+    elif input_parameters["data_format"] == "pandash5":
+        with pd.HDFStore(input_parameters["input_data_path"], 'r') as f:
+            data = {}
+            for parameter, sensor, data_value in zip(input_parameters["parameter_names"],input_parameters["sensor_names"], input_parameters["data_values"]):
+                data[parameter] = np.squeeze(f[data_value][sensor].values)
+
     else:
         raise Exception(f"[Add Experiment] Data format {input_parameters['data_format']} not implemented.")
 
