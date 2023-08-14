@@ -56,6 +56,7 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
             # self.L = ufl.dot(f, v) * self.ds_load(1)
         self.L = ufl.rhs(W_int) + self.L
+        
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data
