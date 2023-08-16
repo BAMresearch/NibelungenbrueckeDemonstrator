@@ -119,10 +119,24 @@ class BridgeModel(ForwardModelBase):
 
         # Define bilinear and linear forms
         self.bilinear_form = fem.form(a)
-        self.linear_form = fem.form(self.L)
+        linear_form = fem.form(self.L)
         self.A = fem.petsc.assemble_matrix(self.bilinear_form, bcs=self.bcs)
         self.A.assemble()
-        self.b = fem.petsc.create_vector(self.linear_form)
+        self.b = fem.petsc.create_vector(linear_form)
+
+        # Pre-compute the linear forms for improved efficiency
+        self.list_linear_forms = []
+        self.current_position = deepcopy(self.initial_position) #Current position of the front left wheel of the vehicle
+        self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
+        converged = False
+        i=0
+        while not converged:
+            if i>0:
+                self.evaluate_load()
+            linear_form = fem.form(self.L)
+            self.list_linear_forms.append(linear_form)
+            converged = self.advance_load(self.dt)
+            i+=1
 
         # Define solver
         self.solver = PETSc.KSP().create(self.mesh.comm)
@@ -138,20 +152,16 @@ class BridgeModel(ForwardModelBase):
     def Solve(self):
         # self.displacement = self.problem.solve()
         i=0
-        converged = False
-        self.current_position = deepcopy(self.initial_position) #Current position of the front left wheel of the vehicle
-        self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
+        
         self.response_dict = {}
 
-        while not converged:
-            if i>0:
-                self.evaluate_load()
+        for linear_form in self.list_linear_forms:
 
             # Update the right hand side reusing the initial vector
             with self.b.localForm() as loc_b:
                 loc_b.set(0)
             # fem.petsc.assemble_vector(self.b, fem.form(self.L))
-            fem.petsc.assemble_vector(self.b, self.linear_form)
+            fem.petsc.assemble_vector(self.b, linear_form)
             
             # Apply Dirichlet boundary conditions to the vector
             fem.petsc.apply_lifting(self.b, [self.bilinear_form], [self.bcs])
@@ -167,8 +177,8 @@ class BridgeModel(ForwardModelBase):
                 if i==0:
                     self.response_dict[os.name] = []
                 self.response_dict[os.name].append(self.extrapolate_to_point(point_on_proc, cells_point)[1])
-            converged = self.advance_load(self.dt)
             i+=1
+        print("Stop")
 
     def LoadBCs(self):
 
