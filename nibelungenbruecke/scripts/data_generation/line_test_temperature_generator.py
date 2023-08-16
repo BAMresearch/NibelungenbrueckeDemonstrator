@@ -22,6 +22,7 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
         self.reference_temperature = self.model_parameters["reference_temperature"] #Reference temperature for the thermal expansion
         self.reference_height = self.model_parameters["reference_height"] #Reference height for the thermal expansion
         self.kappa = self.temperature_alpha*(3*self.material_parameters["lambda"]+2*self.material_parameters["mu"])
+        self.thickness = self.model_parameters["thickness_deck"]
 
     def GenerateModel(self):
         # Generate function space
@@ -33,7 +34,10 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
         # Distribute the temperature field
         self.temperature_difference_field = df.fem.Function(tmp_space, name="Temperature_difference")
         def temperature_differences(x):
-            values = self.temperature_difference * (x[1]-self.reference_height)/abs(self.model_parameters["height"])
+            values = np.zeros(len(x[1]))
+            for y_value, i in zip(x[1], range(len(x[1]))):
+                if y_value >= -(self.thickness*1.1): #Safety margin due to irregular mesh
+                    values[i] = self.temperature_difference * y_value/self.thickness
             return np.full((1, x.shape[1]), values)
         self.temperature_difference_field.interpolate(temperature_differences)
 
@@ -56,7 +60,7 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
             # self.L = ufl.dot(f, v) * self.ds_load(1)
         self.L = ufl.rhs(W_int) + self.L
-        
+
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
         # Code to generate displacement data

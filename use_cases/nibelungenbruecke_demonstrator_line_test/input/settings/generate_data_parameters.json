@@ -25,6 +25,7 @@
             "height": 6.5,
             "lenght_road": 95.0,
             "width_road": 14.0,
+            "thickness_deck": 0.2,
             "dt": 1.0,
             "reference_temperature":300,
             "temperature_coefficient": 1e-5,
