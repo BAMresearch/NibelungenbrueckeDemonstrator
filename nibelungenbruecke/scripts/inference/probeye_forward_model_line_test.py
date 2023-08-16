@@ -2,11 +2,12 @@
 import numpy as np
 import ufl
 
-from petsc4py.PETSc import ScalarType
+from petsc4py import PETSc
 
 from dolfinx import fem, mesh
 import dolfinx as df
 from mpi4py import MPI
+from copy import deepcopy
 from nibelungenbruecke.scripts.utilities.boundary_condition_factory import boundary_condition_factory
 
 # local imports (problem definition)
@@ -28,6 +29,24 @@ class BridgeModel(ForwardModelBase):
         self.model_parameters = kwargs["forward_model_parameters"]["model_parameters"]
         self.material_parameters = kwargs["forward_model_parameters"]["model_parameters"]["material_parameters"]
         self.calculate_lame_constants()
+
+        self.dt = self.model_parameters["dt"]
+        
+        # Initialize the load
+        self.initial_position = self.model_parameters["initial_position"] #Initial position of the front left wheel of the vehicle
+        self.current_position = deepcopy(self.initial_position) #Current position of the front left wheel of the vehicle
+        self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
+        self.speed = self.model_parameters["speed"] #Speed of the vehicle
+        self.length_vehicle = self.model_parameters["length"] #Length of the vehicle
+        self.width_vehicle = self.model_parameters["width"] #Width of the vehicle
+        self.load_value = self.model_parameters["mass"]*self.model_parameters["g"]/(self.length_vehicle*self.width_vehicle) #Load of the vehicle per surface unit
+        self.length_road = self.model_parameters["lenght_road"] #Length of the road
+        self.width_road = self.model_parameters["width_road"] #Width of the road
+
+        assert self.length_vehicle < self.length_road, "The length of the vehicle is bigger than the length of the road"
+        assert self.width_vehicle < self.width_road, "The width of the vehicle is bigger than the width of the road"
+        assert self.initial_position[0] > -self.width_road/2, "The initial position of the vehicle is outside the road width (left)"
+        assert self.initial_position[0] + self.width_vehicle < self.width_road/2, "The initial position of the vehicle is outside the road width (right)"
         
     def interface(self):
         self.parameters = self.forward_model_parameters["problem_parameters"]
@@ -43,20 +62,25 @@ class BridgeModel(ForwardModelBase):
         # Update model parameters
         for key, key_path in zip(self.parameters, self.parameter_key_paths):
             modify_key(self.forward_model_parameters["model_parameters"], key, inp[key], path=key_path)
+        self.model_parameters = self.forward_model_parameters["model_parameters"]
+        self.material_parameters = self.forward_model_parameters["model_parameters"]["material_parameters"]
         self.calculate_lame_constants()
 
         # Update possible changes in variables
         self.lambda_.value = float(self.material_parameters["lambda"])
         self.mu.value = float( self.material_parameters["mu"])
-        self.T.value = ScalarType((0, 0, self.forward_model_parameters["model_parameters"]["tension_z"]))
-        self.f.value = ScalarType((0, -self.forward_model_parameters["model_parameters"]["material_parameters"]["rho"]*self.forward_model_parameters["model_parameters"]["material_parameters"]["g"],0))
+        self.T.value = PETSc.ScalarType((0, 0, self.forward_model_parameters["model_parameters"]["tension_z"]))
+        self.f_weight.value = PETSc.ScalarType((0, -self.forward_model_parameters["model_parameters"]["material_parameters"]["rho"]*self.forward_model_parameters["model_parameters"]["material_parameters"]["g"],0))
 
+        # Update bilinear operator
+        self.A = fem.petsc.assemble_matrix(self.bilinear_form, bcs=self.bcs)
+        self.A.assemble()
+        self.solver.setOperators(self.A)
+
+        # Solve the problem
         self.Solve()
 
-        response = {}
-        for os in self.output_sensors:
-            response[os.name] = self.extrapolate_to_point(np.transpose(os.coords))
-        return response
+        return self.response_dict
 
     def LoadGeometry(self, model_path):
         ''' Load the meshed geometry from a .msh file'''
@@ -78,38 +102,73 @@ class BridgeModel(ForwardModelBase):
         self.lambda_ = fem.Constant(self.mesh, np.float64(self.material_parameters["lambda"]))
         self.mu = fem.Constant(self.mesh, np.float64(self.material_parameters["mu"]))
         
-        self.T = fem.Constant(self.mesh, ScalarType((0, 0, self.model_parameters["tension_z"])))
-        ds = ufl.Measure("ds", domain=self.mesh)
+        self.T = fem.Constant(self.mesh, PETSc.ScalarType((0, 0, self.model_parameters["tension_z"])))
+        self.ds = ufl.Measure("ds", domain=self.mesh)
 
-        u = ufl.TrialFunction(self.V)
-        v = ufl.TestFunction(self.V)
-        f = fem.Constant(self.mesh, ScalarType((0, -self.load_value,0)))
-        self.f_weigth = fem.Constant(self.mesh, ScalarType((0, -self.material_parameters["rho"]*self.material_parameters["g"],0)))
+        # Define solution field
+        self.uh = fem.Function(self.V)
+        self.uh.name = "Displacement"
+
+        # Define variational problem
+        self.u = ufl.TrialFunction(self.V)
+        self.v = ufl.TestFunction(self.V)
+        self.f = fem.Constant(self.mesh, PETSc.ScalarType((0, -self.load_value,0)))
+        self.f_weight = fem.Constant(self.mesh, PETSc.ScalarType((0, -self.material_parameters["rho"]*self.material_parameters["g"],0)))
+        a = ufl.inner(self.sigma(self.u), self.epsilon(self.v)) * ufl.dx
         self.evaluate_load()
-        self.a = ufl.inner(self.sigma(u), self.epsilon(v)) * ufl.dx
-        if self.model_parameters["tension_z"] != 0.0:
-            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(self.f_weight, v) * ufl.dx + ufl.dot(self.T, v) * ds
-        else:
-            self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(self.f_weight, v) * ufl.dx 
-        self.problem = fem.petsc.LinearProblem(self.a, self.L, bcs=self.bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"})
 
+        # Define bilinear and linear forms
+        self.bilinear_form = fem.form(a)
+        self.linear_form = fem.form(self.L)
+        self.A = fem.petsc.assemble_matrix(self.bilinear_form, bcs=self.bcs)
+        self.A.assemble()
+        self.b = fem.petsc.create_vector(self.linear_form)
+
+        # Define solver
+        self.solver = PETSc.KSP().create(self.mesh.comm)
+        self.solver.setOperators(self.A)
+        self.solver.setType(PETSc.KSP.Type.PREONLY)
+        self.solver.getPC().setType(PETSc.PC.Type.LU)
+
+        # Evaluate sensor locations
+        for os in self.output_sensors:
+            where =  np.transpose(os.coords)
+            self.points_on_proc, self.cells = self.evaluate_sensor_locations(where)
+            
     def Solve(self):
-        self.displacement = self.problem.solve()
+        # self.displacement = self.problem.solve()
         i=0
         converged = False
+        self.current_position = deepcopy(self.initial_position) #Current position of the front left wheel of the vehicle
+        self.historic_position = [self.current_position[2]] #Historic X position of the front left wheel of the vehicle
+        self.response_dict = {}
+
         while not converged:
-            self.GenerateModel()
-            problem = fem.petsc.LinearProblem(self.a, self.L, bcs=self.bcs, petsc_options={"ksp_type": "preonly", "pc_type": "lu"})
-            self.displacement = problem.solve()
-            self.displacement.name = "Displacement"
+            if i>0:
+                self.evaluate_load()
+
+            # Update the right hand side reusing the initial vector
+            with self.b.localForm() as loc_b:
+                loc_b.set(0)
+            # fem.petsc.assemble_vector(self.b, fem.form(self.L))
+            fem.petsc.assemble_vector(self.b, self.linear_form)
+            
+            # Apply Dirichlet boundary conditions to the vector
+            fem.petsc.apply_lifting(self.b, [self.bilinear_form], [self.bcs])
+            self.b.ghostUpdate(addv=PETSc.InsertMode.ADD_VALUES, mode=PETSc.ScatterMode.REVERSE)
+            fem.petsc.set_bc(self.b, self.bcs)
+
+            # Solve linear problem
+            self.solver.solve(self.b, self.uh.vector)
+            self.uh.x.scatter_forward()
        
             # Sensor measurement (should be adapted with the wrapper)
-            for sensor in self.output_sensors:
-                sensor.measure(self, i*self.dt)
-
+            for os, point_on_proc, cells_point in zip(self.output_sensors, self.points_on_proc, self.cells):
+                if i==0:
+                    self.response_dict[os.name] = []
+                self.response_dict[os.name].append(self.extrapolate_to_point(point_on_proc, cells_point)[1])
             converged = self.advance_load(self.dt)
             i+=1
-        
 
     def LoadBCs(self):
 
@@ -149,6 +208,35 @@ class BridgeModel(ForwardModelBase):
         subdomain_values = np.full_like(subdomain, 1)
         facet_tags = mesh.meshtags(self.mesh, self.mesh.topology.dim-1, subdomain, subdomain_values)
         self.ds_load = ufl.Measure('ds', domain = self.mesh, subdomain_data = facet_tags)
+        self.update_L()
+
+    def update_L(self):
+        if self.model_parameters["tension_z"] != 0.0:
+            self.L = ufl.dot(self.f, self.v) * self.ds_load(1) + ufl.dot(self.f_weight, self.v) * ufl.dx + ufl.dot(self.T, self.v) * self.ds
+        else:
+            self.L = ufl.dot(self.f, self.v) * self.ds_load(1) + ufl.dot(self.f_weight, self.v) * ufl.dx 
+
+    def evaluate_sensor_locations(self, where):
+        # get displacements
+        bb_tree = df.geometry.BoundingBoxTree(self.mesh, self.mesh.topology.dim)
+        cells = []
+        points_on_proc = []
+
+        # Find cells whose bounding-box collide with the the points
+        cell_candidates = df.geometry.compute_collisions(bb_tree, where)
+
+        # Choose one of the cells that contains the point
+        colliding_cells = df.geometry.compute_colliding_cells(self.mesh, cell_candidates, where)
+        for i, point in enumerate(where):
+            if len(colliding_cells)>0:
+                points_on_proc.append(point)
+                cells.append(colliding_cells.array[0])
+        points_on_proc = np.array(points_on_proc, dtype=np.float64)
+        return points_on_proc, cells
+    
+    def extrapolate_to_point(self, point_on_proc, cells):
+        
+        return self.uh.eval(np.squeeze(point_on_proc), cells)
 
     def _get_default_parameters():
         default_parameters = {
@@ -170,24 +258,6 @@ class BridgeModel(ForwardModelBase):
         }
 
         return default_parameters
-
-    def extrapolate_to_point(self, where):
-        # get displacements
-        bb_tree = df.geometry.BoundingBoxTree(self.mesh, self.mesh.topology.dim)
-        cells = []
-        points_on_proc = []
-
-        # Find cells whose bounding-box collide with the the points
-        cell_candidates = df.geometry.compute_collisions(bb_tree, where)
-
-        # Choose one of the cells that contains the point
-        colliding_cells = df.geometry.compute_colliding_cells(self.mesh, cell_candidates, where)
-        for i, point in enumerate(where):
-            if len(colliding_cells)>0:
-                points_on_proc.append(point)
-                cells.append(colliding_cells.array[0])
-        points_on_proc = np.array(points_on_proc, dtype=np.float64)
-        return self.displacement.eval(np.squeeze(points_on_proc), cells)
     
 # Define subdomain where the load should be applied
 class LoadSubDomain:
