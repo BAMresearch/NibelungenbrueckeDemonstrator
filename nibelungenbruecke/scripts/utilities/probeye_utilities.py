@@ -51,8 +51,10 @@ def add_experiment_wrapper(problem: InverseProblem, parameters: dict):
         with pd.HDFStore(input_parameters["input_data_path"], 'r') as f:
             data = {}
             for parameter, sensor, data_value in zip(input_parameters["parameter_names"],input_parameters["sensor_names"], input_parameters["data_values"]):
-                data[parameter] = np.squeeze(f[data_value][sensor].values)
-
+                try:
+                    data[parameter] = np.squeeze(f[data_value][sensor].values)
+                except AttributeError:
+                    data[parameter] = float(f[data_value][sensor]) #TODO: It transforms everything to float because numpy types, which may be a problem in the future
     else:
         raise Exception(f"[Add Experiment] Data format {input_parameters['data_format']} not implemented.")
 
