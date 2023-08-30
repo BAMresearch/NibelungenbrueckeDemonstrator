@@ -40,7 +40,7 @@ class BridgeModel(ForwardModelBase):
         self.length_vehicle = self.model_parameters["length"] #Length of the vehicle
         self.width_vehicle = self.model_parameters["width"] #Width of the vehicle
         self.load_value = self.model_parameters["mass"]*self.model_parameters["g"]/(self.length_vehicle*self.width_vehicle) #Load of the vehicle per surface unit
-        self.length_road = self.model_parameters["lenght_road"] #Length of the road
+        self.length_road = self.model_parameters["length_road"] #Length of the road
         self.width_road = self.model_parameters["width_road"] #Width of the road
 
         assert self.length_vehicle < self.length_road, "The length of the vehicle is bigger than the length of the road"

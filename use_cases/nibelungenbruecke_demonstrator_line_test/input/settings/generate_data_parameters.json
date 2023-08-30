@@ -23,7 +23,7 @@
             "length": 7.5,
             "width": 2.5,
             "height": 6.5,
-            "lenght_road": 95.0,
+            "length_road": 95.0,
             "width_road": 14.0,
             "thickness_deck": 0.2,
             "dt": 1.0,
@@ -68,7 +68,7 @@
             "speed": 1.0,
             "length": 7.5,
             "width": 2.5,
-            "lenght_road": 95.0,
+            "length_road": 95.0,
             "width_road": 14.0,
             "dt": 1.0,
             "boundary_conditions": {

@@ -100,7 +100,7 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
             "length": 1.0,
             "width": 1.0,
             "height": 2.5,
-            "lenght_road": 10.0,
+            "length_road": 10.0,
             "width_road": 10.0,
             "dt": 1.0,
             "reference_temperature":300,
