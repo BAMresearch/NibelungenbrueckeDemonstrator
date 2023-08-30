@@ -118,6 +118,8 @@ def run_inference_problem(parameters:dict):
         fig = plt.gcf()
         fig.savefig(parameters["postprocessing"]["output_trace_plot"]+parameters["postprocessing"]["trace_plot_format"])
 
+    return inference_data, solver.problem
+
 def _get_default_parameters():
 
     default_parameters = {

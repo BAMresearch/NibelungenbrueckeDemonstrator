@@ -246,6 +246,59 @@ class BridgeModel(ForwardModelBase):
     def extrapolate_to_point(self, point_on_proc, cells):
         
         return self.uh.eval(np.squeeze(point_on_proc), cells)
+    
+    def derivative(self, evaluation_point, index=(0,1), increment = 1e9):
+        ''' Calculate the derivative of the model at a given point using finite differences with central scheme'''
+        # TODO: Derivative wrt Youngs modulus only
+        if index[0] == 0:
+            # Calculate left differences
+            left_input = evaluation_point-increment/2.0
+            # Calculate right differences
+            right_input = evaluation_point+increment/2.0
+            
+            # Save current sensors data
+            current_sensors = deepcopy(self.problem.sensors)
+
+            # Calculate left differences
+            ##########################################
+            self.material_parameters["E"] = left_input
+            self.calculate_lame_constants()
+            self.lambda_.value = float(self.material_parameters["lambda"])
+            self.mu.value = float( self.material_parameters["mu"])
+
+            # Update bilinear operator
+            self.A = fem.petsc.assemble_matrix(self.bilinear_form, bcs=self.bcs)
+            self.A.assemble()
+            self.solver.setOperators(self.A)
+
+            self.Solve()
+            left_predictions =  np.array([self.response_dict[measurement.name] for measurement in self.output_sensors])
+            
+            # Calculate right differences
+            ##########################################
+            self.material_parameters["E"] = right_input
+            self.calculate_lame_constants()
+            self.lambda_.value = float(self.material_parameters["lambda"])
+            self.mu.value = float( self.material_parameters["mu"])
+
+            # Update bilinear operator
+            self.A = fem.petsc.assemble_matrix(self.bilinear_form, bcs=self.bcs)
+            self.A.assemble()
+            self.solver.setOperators(self.A)
+
+            self.Solve()
+            right_predictions =  np.array([self.response_dict[measurement.name] for measurement in self.output_sensors])
+            self.problem.clean_sensor_data()
+
+            # Restore current sensors data
+            # self.problem.sensors = current_sensors
+
+            # Calculate derivative
+            dmodel= (right_predictions-left_predictions)/increment
+
+            return dmodel      
+        else:
+            raise ValueError("Only first derivative implemented")
 
     def _get_default_parameters():
         default_parameters = {
