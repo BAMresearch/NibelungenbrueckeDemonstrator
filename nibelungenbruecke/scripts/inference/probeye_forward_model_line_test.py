@@ -176,7 +176,9 @@ class BridgeModel(ForwardModelBase):
             for os, point_on_proc, cells_point in zip(self.output_sensors, self.points_on_proc, self.cells):
                 if i==0:
                     self.response_dict[os.name] = []
+                    offset_factor = self.extrapolate_to_point(point_on_proc, cells_point)[1]
                 self.response_dict[os.name].append(self.extrapolate_to_point(point_on_proc, cells_point)[1])
+                self.response_dict[os.name][-1] = self.response_dict[os.name][-1]-offset_factor
             i+=1
 
     def LoadBCs(self):
