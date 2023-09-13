@@ -254,9 +254,9 @@ class BridgeModel(ForwardModelBase):
         # TODO: Derivative wrt Youngs modulus only
         if index[0] == 0:
             # Calculate left differences
-            left_input = evaluation_point-increment/2.0
+            left_input = evaluation_point[0]-increment/2.0
             # Calculate right differences
-            right_input = evaluation_point+increment/2.0
+            right_input = evaluation_point[0]+increment/2.0
             
             # Save current sensors data
             current_sensors = deepcopy(self.problem.sensors)
