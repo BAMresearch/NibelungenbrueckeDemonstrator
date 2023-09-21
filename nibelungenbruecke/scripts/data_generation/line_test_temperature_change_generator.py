@@ -20,7 +20,7 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
         self.temperature_difference = self.model_parameters["temperature_difference"]
         self.temperature_gradient = self.model_parameters["temperature_gradient"]
         if self.model_parameters["end_temperature_difference"] != 0:
-            self.temperature_gradient = self.model_parameters["end_temperature_difference"]/(self.model_parameters["road_length"]+self.model_parameters["length"])*self.model_parameters["speed"]
+            self.temperature_gradient = self.model_parameters["end_temperature_difference"]/(self.model_parameters["length_road"]+self.model_parameters["length"])*self.model_parameters["speed"]
         self.temperature_alpha = self.model_parameters["temperature_alpha"] #Temperature coefficient for the thermal expansion
         self.reference_temperature = self.model_parameters["reference_temperature"] #Reference temperature for the thermal expansion
         self.reference_height = self.model_parameters["reference_height"] #Reference height for the thermal expansion
@@ -40,7 +40,7 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
             values = np.zeros(len(x[1]))
             for y_value, i in zip(x[1], range(len(x[1]))):
                 if y_value >= -(self.thickness*1.1): #Safety margin due to irregular mesh
-                    values[i] = self.temperature_difference * y_value/self.thickness
+                    values[i] = self.temperature_difference *(1+ y_value/self.thickness)
             return np.full((1, x.shape[1]), values)
         self.temperature_difference_field.interpolate(temperature_differences)
 
