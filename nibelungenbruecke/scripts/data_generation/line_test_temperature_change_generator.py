@@ -39,8 +39,8 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
         def temperature_differences(x):
             values = np.zeros(len(x[1]))
             for y_value, i in zip(x[1], range(len(x[1]))):
-                if y_value >= -(self.thickness*1.1): #Safety margin due to irregular mesh
-                    values[i] = self.temperature_difference *(1+ y_value/self.thickness)
+                if y_value >= (self.reference_height*1.1): #Safety margin due to irregular mesh
+                    values[i] = self.temperature_difference *(1- y_value/self.reference_height)
             return np.full((1, x.shape[1]), values)
         self.temperature_difference_field.interpolate(temperature_differences)
 
