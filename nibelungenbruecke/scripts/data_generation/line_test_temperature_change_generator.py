@@ -9,7 +9,15 @@ from nibelungenbruecke.scripts.data_generation.line_test_load_generator import L
 
 
 class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
-    ''' Generates the displacements at the sensors for a given load configuration for a line test.'''
+    ''' 
+    Generates the displacements at the sensors for a given load configuration for a line test.
+    
+    Args:
+        model_path (str): The path to the model.
+        sensor_positions_path (str): The path to the sensor positions.
+        model_parameters (dict): The parameters of the model.
+        output_parameters (dict, optional): The output parameters. Defaults to None.
+    '''
     # TODO: This could probably be simplified by using the ForwardModel from probeye or the Problem from FenicsConcreteX
     # TODO: Delete duplicated Displacement model
     
@@ -28,6 +36,9 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
         self.thickness = self.model_parameters["thickness_deck"]
 
     def GenerateModel(self):
+        '''
+        Generates the model for the line test temperature change generator.
+        '''
         # Generate function space
         self.V = fem.VectorFunctionSpace(self.mesh, ("CG", 1))
         tmp_space = fem.FunctionSpace(self.mesh, ("CG", 1))
@@ -56,16 +67,16 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
         self.evaluate_load()
         W_int = ufl.inner(self.sigma(u, self.temperature_difference_field), self.epsilon(v)) * ufl.dx
         self.a = ufl.lhs(W_int) #Avoids arity error due to function space mismatch
-        # self.L = ufl.dot(f, v) * self.dx_load + ufl.dot(T, v) * ds + fem.Constant(self.mesh,ScalarType(0.0))*ufl.dx
         if self.model_parameters["tension_z"] != 0.0:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx + ufl.dot(T, v) * ds
         else:
             self.L = ufl.dot(f, v) * self.ds_load(1) + ufl.dot(f_weight, v) * ufl.dx 
-            # self.L = ufl.dot(f, v) * self.ds_load(1)
         self.L = ufl.rhs(W_int) + self.L
 
-    # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
+        '''
+        Generates the data for the line test temperature change generator.
+        '''
         # Code to generate displacement data
         super().GenerateData()
         if self.model_parameters["paraview_output"]:
@@ -75,14 +86,39 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
             pv_file.close()
 
     def sigma(self, u, temperature_difference):
+        '''
+        Calculates the stress tensor for the given displacement and temperature difference.
+        
+        Args:
+            u (ufl.TrialFunction): The displacement.
+            temperature_difference (df.fem.Function): The temperature difference.
+        
+        Returns:
+            ufl.Tensor: The stress tensor.
+        '''
         return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(self.V.mesh.geometry.dim) + 2*self.material_parameters["mu"]*self.epsilon(u) - self.kappa*temperature_difference*ufl.Identity(self.V.mesh.geometry.dim)
 
     def advance_load(self, dt):
+        '''
+        Advances the load based on the given time step.
+        
+        Args:
+            dt (float): The time step.
+        
+        Returns:
+            float: The updated temperature difference.
+        '''
         self.temperature_difference = self.temperature_difference + self.temperature_gradient*dt
         return super().advance_load(dt)
 
     @staticmethod
     def _get_default_parameters():
+        '''
+        Returns the default parameters for the line test temperature change generator.
+        
+        Returns:
+            dict: The default parameters.
+        '''
         default_parameters = {
             "model_name":"displacements",
             "paraview_output": False,
@@ -120,12 +156,32 @@ class LineTestTemperatureChangeGenerator(LineTestLoadGenerator):
     
 # Define subdomain where the load should be applied
 class LoadSubDomain:
+    '''
+    Represents a subdomain where the load should be applied.
+    '''
     def __init__(self, corner, length, width):
+        '''
+        Initializes the LoadSubDomain.
+        
+        Args:
+            corner (list): The corner coordinates of the subdomain.
+            length (float): The length of the subdomain.
+            width (float): The width of the subdomain.
+        '''
         self.corner = corner
         self.length = length
         self.width = width
 
     def inside(self, x):
+        '''
+        Checks if a point is inside the subdomain.
+        
+        Args:
+            x (numpy.ndarray): The coordinates of the point.
+        
+        Returns:
+            numpy.ndarray: An array of boolean values indicating if each point is inside the subdomain.
+        '''
         return np.logical_and(
             np.logical_and(
                 np.logical_and(

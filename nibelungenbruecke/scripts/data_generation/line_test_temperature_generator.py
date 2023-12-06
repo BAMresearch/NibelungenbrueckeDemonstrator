@@ -14,6 +14,15 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
     # TODO: Delete duplicated Displacement model
     
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
+        '''
+        Initialize the LineTestTemperatureGenerator.
+
+        Args:
+            model_path (str): Path to the model file.
+            sensor_positions_path (str): Path to the sensor positions file.
+            model_parameters (dict): Dictionary of model parameters.
+            output_parameters (dict, optional): Dictionary of output parameters. Defaults to None.
+        '''
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
 
         self.temperature_coefficient = self.model_parameters["temperature_coefficient"] #For heat transfer, not used for now
@@ -25,6 +34,9 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
         self.thickness = self.model_parameters["thickness_deck"]
 
     def GenerateModel(self):
+        '''
+        Generate the model for temperature generation.
+        '''
         # Generate function space
         self.V = fem.VectorFunctionSpace(self.mesh, ("CG", 1))
         tmp_space = fem.FunctionSpace(self.mesh, ("CG", 1))
@@ -63,6 +75,9 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
 
     # @GeneratorModel.sensor_offloader_wrapper
     def GenerateData(self):
+        '''
+        Generate the displacement data.
+        '''
         # Code to generate displacement data
         super().GenerateData()
         if self.model_parameters["paraview_output"]:
@@ -72,10 +87,26 @@ class LineTestTemperatureGenerator(LineTestLoadGenerator):
             pv_file.close()
 
     def sigma(self, u, temperature_difference):
+        '''
+        Compute the stress tensor.
+
+        Args:
+            u (ufl.TrialFunction): Trial function.
+            temperature_difference (df.fem.Function): Temperature difference field.
+
+        Returns:
+            ufl.Form: Stress tensor.
+        '''
         return self.material_parameters["lambda"] * ufl.nabla_div(u) * ufl.Identity(self.V.mesh.geometry.dim) + 2*self.material_parameters["mu"]*self.epsilon(u) - self.kappa*temperature_difference*ufl.Identity(self.V.mesh.geometry.dim)
 
     @staticmethod
     def _get_default_parameters():
+        '''
+        Get the default parameters for the LineTestTemperatureGenerator.
+
+        Returns:
+            dict: Default parameters.
+        '''
         default_parameters = {
             "model_name":"displacements",
             "paraview_output": False,
