@@ -155,3 +155,4 @@ output/paraview/*
 dependencies.pdf
 use_cases/nibelungenbruecke_demonstrator_line_test/output/*
 use_cases/nibelungenbruecke_demonstrator_self_weight/output/*
+*.pdf
