@@ -3,6 +3,7 @@ import arviz as az
 
 from nibelungenbruecke.scripts.utilities.checks import check_lists_same_length
 from nibelungenbruecke.scripts.utilities.probeye_utilities import add_parameter_wrapper, add_experiment_wrapper
+from nibelungenbruecke.scripts.inference.import_inverse_problem import import_inverse_problem
 from nibelungenbruecke.scripts.inference.import_forward_model import import_forward_model
 from nibelungenbruecke.scripts.inference.import_likelihood_model import import_likelihood_model
 from nibelungenbruecke.scripts.inference.import_solver import import_solver
@@ -31,7 +32,7 @@ def run_inference_problem(parameters:dict):
                             and in forward model do not coincide.")
 
     # Define problem
-    inverse_problem = InverseProblem(**parameters["inverse_problem_parameters"])
+    inverse_problem = import_inverse_problem(parameters["inverse_problem_parameters"])
 
     # Define forward model
     forward_model = import_forward_model(parameters["model_path"], parameters["forward_model_parameters"])
@@ -50,7 +51,12 @@ def run_inference_problem(parameters:dict):
     
         
     # Add likelihood model
-    inverse_problem.add_likelihood_model(import_likelihood_model(parameters["likelihood_model_parameters"]))
+    for likelihood_model in parameters["likelihood_model_parameters"]:
+        inverse_problem.add_likelihood_model(import_likelihood_model(likelihood_model))
+
+    # Add bias model if needed
+    if "bias_model_parameters" in parameters.keys():
+        inverse_problem.add_bias_model(parameters["bias_model_parameters"]["class"], parameters["bias_model_parameters"]["parameters"])
 
     # Print info
     if parameters["print_info"]:
@@ -111,6 +117,8 @@ def run_inference_problem(parameters:dict):
         )
         fig = plt.gcf()
         fig.savefig(parameters["postprocessing"]["output_trace_plot"]+parameters["postprocessing"]["trace_plot_format"])
+
+    return inference_data, solver
 
 def _get_default_parameters():
 
