@@ -5,21 +5,3 @@ build-backend = "setuptools.build_meta"
 [tool.coverage.run]
 source = ["nibelungenbruecke"]
 
-[project]
-name = "nibelungenbruecke"
-version = "0.0.1"
-authors = [
-  { name="Daniel Andrés Arcones", email="daniel.andres-arcones@bam.de" },
-]
-description = "Demonstrator for the Nibelungenbrücke"
-readme = "README.md"
-requires-python = ">=3.7"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-
-[project.urls]
-"Homepage" = "https://github.com/BAMresearch/NibelungenbrueckeDemonstrator"
-"Bug Tracker" = "https://github.com/BAMresearch/NibelungenbrueckeDemonstrator/issues"

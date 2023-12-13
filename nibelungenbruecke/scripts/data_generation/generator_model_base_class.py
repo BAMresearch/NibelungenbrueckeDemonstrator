@@ -20,15 +20,15 @@ class GeneratorModel:
 
     def Generate(self):
         ''' Generate the data from the start'''
-        self.LoadGeometry()
+        #self.LoadGeometry()
         self.GenerateModel()
         self.GenerateData()
 
     def LoadGeometry(self):
         ''' Load the meshed geometry from a .msh file'''
-        
+        pass
         # Translate mesh from gmsh to dolfinx
-        self.mesh, cell_tags, facet_tags = dolfinx.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
+        #self.mesh, cell_tags, facet_tags = dolfinx.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
         # self.mesh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, mesh.points, mesh.cells)
         
     def GenerateModel(self):
