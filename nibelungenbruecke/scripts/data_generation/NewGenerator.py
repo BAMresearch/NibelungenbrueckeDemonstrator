@@ -8,7 +8,7 @@ from fenicsxconcrete.util import ureg
 
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
-from nibelungenbruecke.scripts.data_generation.NibelüngenExperiment import NibeluengenExperiment
+from nibelungenbruecke.scripts.data_generation.NibelungenExperiment import NibeluengenExperiment
 from nibelungenbruecke.scripts.utilities.new_sensor_translators import *
 
 class NewGenerator(GeneratorModel):
