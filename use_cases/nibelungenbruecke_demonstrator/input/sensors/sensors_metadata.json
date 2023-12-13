@@ -1,0 +1,1 @@
+{"sensors": [{"id": "DisplacementSensor", "type": "DisplacementSensor", "sensor_file": "displacement_sensor", "units": "meter", "dimensionality": "[length]", "where": [1, 0.0, 0.0]}]}

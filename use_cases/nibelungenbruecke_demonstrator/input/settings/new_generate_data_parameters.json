@@ -1,0 +1,31 @@
+{
+    "model_path": "./input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "./input/data",
+        "output_format": ".h5"},
+    "generation_models_list": [{
+        "generator_path": "NewGenerator",
+        "sensors_path": "/home/msoenmez/Desktop/Exper/20230215092338_test.json",
+        "model_parameters": {
+            "model_name": "displacements",
+            "df_output_path":"/home/msoenmez/Desktop/workspce/Demonstrator_02/df_output_D.json",
+            "meta_output_path":"/home/msoenmez/Desktop/workspce/Demonstrator_02/meta_output_D.json",
+            "paraview_output": true,
+            "paraview_output_path": "./output/paraview",
+            "material_parameters":{},
+            "tension_z": 0.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    }
+    ]
+}
