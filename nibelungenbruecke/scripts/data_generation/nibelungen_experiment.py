@@ -12,7 +12,7 @@ from fenicsxconcrete.boundary_conditions.boundary import line_at, point_at
 from fenicsxconcrete.experimental_setup.base_experiment import Experiment
 from fenicsxconcrete.util import Parameters, ureg
 
-^
+
 class NibelungenExperiment(Experiment):
     def __init__(self, model_path, parameters: dict[str, pint.Quantity]) -> None:
     

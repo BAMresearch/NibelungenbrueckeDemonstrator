@@ -4,12 +4,12 @@
         "output_path": "./input/data",
         "output_format": ".h5"},
     "generation_models_list": [{
-        "generator_path": "NewGenerator",
+        "generator_path": "GeneratorFeniCSXConcrete",
         "sensors_path": "/home/msoenmez/Desktop/Exper/20230215092338_test.json",
         "model_parameters": {
             "model_name": "displacements",
-            "df_output_path":"/home/msoenmez/Desktop/workspce/Demonstrator_02/df_output_D.json",
-            "meta_output_path":"/home/msoenmez/Desktop/workspce/Demonstrator_02/meta_output_D.json",
+            "df_output_path":"./input/data/df_output_D.json",
+            "meta_output_path":"./input/data/meta_output_D.json",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{},
