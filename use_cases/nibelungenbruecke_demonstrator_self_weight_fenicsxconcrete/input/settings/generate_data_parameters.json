@@ -8,8 +8,8 @@
         "sensors_path": "/home/msoenmez/Desktop/Exper/20230215092338_test.json",
         "model_parameters": {
             "model_name": "displacements",
-            "df_output_path":"./input/data/df_output_D.json",
-            "meta_output_path":"./input/data/meta_output_D.json",
+            "df_output_path":"./input/output/df_output_D.json",
+            "meta_output_path":"./input/output/meta_output_D.json",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{},
