@@ -8,16 +8,16 @@ from fenicsxconcrete.util import ureg
 
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
-from nibelungenbruecke.scripts.data_generation.NibelungenExperiment import NibeluengenExperiment
-from nibelungenbruecke.scripts.utilities.new_sensor_translators import *
+from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
+from nibelungenbruecke.scripts.utilities.new_sensor_translators import Translator
 
-class NewGenerator(GeneratorModel):
+class GeneratorFeniCSXConcrete(GeneratorModel):
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
         self.material_parameters = self.model_parameters["material_parameters"] # currently it is an empty dict!!
           
     def GenerateModel(self):
-        self.experiment = NibeluengenExperiment(self.model_path, self.material_parameters)
+        self.experiment = NibelungenExperiment(self.model_path, self.material_parameters)
 
         default_p = self.default_parameters()
         default_p.update(self.experiment.default_parameters())

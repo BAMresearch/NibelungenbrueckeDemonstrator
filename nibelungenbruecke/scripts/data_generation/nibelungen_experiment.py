@@ -13,7 +13,7 @@ from fenicsxconcrete.experimental_setup.base_experiment import Experiment
 from fenicsxconcrete.util import Parameters, ureg
 
 
-class NibeluengenExperiment(Experiment):
+class NibelungenExperiment(Experiment):
     def __init__(self, model_path, parameters: dict[str, pint.Quantity]) -> None:
     
         self.model_path = model_path
