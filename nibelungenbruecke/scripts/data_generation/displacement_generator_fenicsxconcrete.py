@@ -9,7 +9,7 @@ from fenicsxconcrete.util import ureg
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
-from nibelungenbruecke.scripts.utilities.new_sensor_translators import Translator
+from nibelungenbruecke.scripts.utilities.sensor_translators import Translator
 
 class GeneratorFeniCSXConcrete(GeneratorModel):
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
