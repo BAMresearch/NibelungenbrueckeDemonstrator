@@ -1,0 +1,88 @@
+{
+    "model_path": "./input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "./input/data",
+        "output_format": ".h5"},
+    "generation_models_list": [{
+        "generator_path": "line_test_temperature_generator",
+        "sensors_path": "./input/sensors/sensors_displacements.json",
+        "model_parameters": {
+            "model_name": "line_test_temperature_50",
+            "paraview_output": true,
+            "paraview_output_path": "./output/paraview",
+            "material_parameters":{
+                "E": 40e12,
+                "nu": 0.2,
+                "rho": 2350
+            },
+            "tension_z": 0.0,
+            "mass": 5E4,
+            "g": 9.81,
+            "initial_position": [0.0,0.0,0.0],
+            "speed": 1.0,
+            "length": 7.5,
+            "width": 2.5,
+            "height": 6.5,
+            "length_road": 95.0,
+            "width_road": 14.0,
+            "thickness_deck": 0.2,
+            "dt": 1.0,
+            "reference_temperature":300,
+            "temperature_coefficient": 1e-5,
+            "temperature_alpha": 1e-5,
+            "temperature_difference": 5.0,
+            "reference_height": -2.5,
+            "boundary_conditions": {
+                "bc1":{
+                    "model":"clamped_edge",
+                    "side_coord_1": 0.0,
+                    "coord_1": 2,
+                    "side_coord_2": 0.0,
+                    "coord_2": 1
+                },
+                "bc2":{
+                "model":"clamped_edge",
+                "side_coord_1": 95.185,
+                "coord_1": 2,
+                "side_coord_2": 0.0,
+                "coord_2": 1
+            }}
+        }
+    },
+    {
+        "generator_path": "line_test_load_generator",
+        "sensors_path": "./input/sensors/sensors_displacements.json",
+        "model_parameters": {
+            "model_name": "line_test",
+            "paraview_output": true,
+            "paraview_output_path": "./output/paraview",
+            "material_parameters":{
+                "E": 40e12,
+                "nu": 0.2,
+                "rho": 2350
+            },
+            "tension_z": 0.0,
+            "mass": 5E4,
+            "g": 9.81,
+            "initial_position": [0.0,0.0,0.0],
+            "speed": 1.0,
+            "length": 7.5,
+            "width": 2.5,
+            "length_road": 95.0,
+            "width_road": 14.0,
+            "dt": 1.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    }
+    ]
+}

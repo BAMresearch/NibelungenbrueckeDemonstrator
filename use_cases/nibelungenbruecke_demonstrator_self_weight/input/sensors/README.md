@@ -1,0 +1,1 @@
+Sensor positions as JSON files. They can be empty if no measurement is required. Notice that the sintaxis depends on the type of sensor to be implemented (i.e. virtual sensor for data generation or for inference using probeye)

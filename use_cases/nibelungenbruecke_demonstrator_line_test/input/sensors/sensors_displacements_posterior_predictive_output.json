@@ -1,0 +1,16 @@
+{
+    "disp_span_new_1":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 25,
+        "std_model": "sigma"
+    },
+    "disp_span_new_2":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 75,
+        "std_model": "sigma"
+    }
+}

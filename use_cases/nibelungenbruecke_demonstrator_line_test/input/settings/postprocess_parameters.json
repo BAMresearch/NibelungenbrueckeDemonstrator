@@ -1,0 +1,9 @@
+{
+    "plot_influence_lines":{
+        "sensors_path": "input/sensors/sensors_displacements.json",
+        "influence_lines_path": "input/data/line_test.h5",
+        "output_path": "output/figures/influence_lines",
+        "output_format": "png",
+        "show": false
+    }
+}

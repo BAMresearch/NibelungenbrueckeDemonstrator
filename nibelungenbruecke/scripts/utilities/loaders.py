@@ -1,4 +1,5 @@
 import json
+import h5py
 
 from nibelungenbruecke.scripts.utilities.sensors import *
 
@@ -21,3 +22,14 @@ def load_sensor(sensor_params: dict):
         sensor = globals()[sensor_params["type"]]()
 
     return sensor
+
+def load_influence_lines(influence_lines_path: str, list_of_sensors: list):
+    ''' Load a list of influence lines from a h5 file into np.arrays'''
+    with h5py.File(influence_lines_path, 'r') as f:
+        influence_lines = {}
+        for sensor in f.keys():
+            displacements = f[sensor]["Data"][:]
+            time = f[sensor]["Time"][:]
+            influence_lines[sensor] = {"displacements": displacements, "time": time}
+
+    return influence_lines

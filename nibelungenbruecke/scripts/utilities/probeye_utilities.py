@@ -1,6 +1,7 @@
 import json
 import h5py
 import numpy as np
+import pandas as pd
 
 # local imports (problem definition)
 from probeye.definition.inverse_problem import InverseProblem
@@ -36,7 +37,8 @@ def add_experiment_wrapper(problem: InverseProblem, parameters: dict):
         "data_format": ".h5",
         "sensor_names": [],
         "data_values": [],
-        "parameter_names": []
+        "parameter_names": [],
+        "index_or_values": []
     }
     for key, value in parameters.items():
         input_parameters[key] = value
@@ -46,6 +48,19 @@ def add_experiment_wrapper(problem: InverseProblem, parameters: dict):
             data = {}
             for parameter, sensor, data_value in zip(input_parameters["parameter_names"],input_parameters["sensor_names"], input_parameters["data_values"]):
                 data[parameter] = np.squeeze(f[sensor][data_value][()])
+    elif input_parameters["data_format"] == "pandash5":
+        with pd.HDFStore(input_parameters["input_data_path"], 'r') as f:
+            data = {}
+            if input_parameters["index_or_values"] == []:
+                input_parameters["index_or_values"] = ["values"]*len(input_parameters["parameter_names"])
+            for parameter, sensor, data_value, index_flag in zip(input_parameters["parameter_names"],input_parameters["sensor_names"], input_parameters["data_values"], input_parameters["index_or_values"]):
+                try:
+                    if index_flag == "index":
+                        data[parameter] = np.squeeze(f[data_value][sensor].index.to_numpy())
+                    elif index_flag == "values":
+                        data[parameter] = np.squeeze(f[data_value][sensor].values)
+                except AttributeError:
+                    data[parameter] = float(f[data_value][sensor]) #TODO: It transforms everything to float because numpy types, which may be a problem in the future
     else:
         raise Exception(f"[Add Experiment] Data format {input_parameters['data_format']} not implemented.")
 
