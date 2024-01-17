@@ -31,12 +31,6 @@ class Translator():
             ]
         }
         return default_parameters_data
-    
-    """
-    def geodesic_to_cartesian(self, geodesic_coordinate):
-        self.kwargs["origin_geodesic"]
-        pass      
-    """ 
 
     def translator_to_sensor(self, df_output_path, meta_output_path):
         
