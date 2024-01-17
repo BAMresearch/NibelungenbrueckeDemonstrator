@@ -32,10 +32,12 @@ class Translator():
         }
         return default_parameters_data
     
+    """
     def geodesic_to_cartesian(self, geodesic_coordinate):
         self.kwargs["origin_geodesic"]
         pass      
-        
+    """ 
+
     def translator_to_sensor(self, df_output_path, meta_output_path):
         
         self.df, self.meta = load_bam(self.path_to_json, self.columns)
@@ -62,7 +64,7 @@ class Translator():
         return df_output_path, meta_output_path
        
         
-    def translator_to_MKP(self, sensor_obj) -> None:   
+    def translator_to_MKP(self, sensor_obj, path) -> None:   
         self.df, self.meta = load_bam(self.path_to_json, self.columns)     
         movement = sensor_obj.sensors["DisplacementSensor"].data[0]
         for i in range(len(movement)):
@@ -70,4 +72,4 @@ class Translator():
 
         self.meta["Move"]["coordinate"] = sensor_obj.sensors["DisplacementSensor"].where
         
-        save_bam(self.df, self.meta)
+        save_bam(self.df, self.meta, path)

@@ -21,12 +21,12 @@ def load_bam(file: Union[str, bytes, PathLike],
     return df_filtered, meta_filtered
 
 
-def save_bam(df: pd.DataFrame, meta: dict) -> None:
+def save_bam(df: pd.DataFrame, meta: dict, path: str) -> None:
     # bring data into required format
     df_dict = json.loads(df.to_json(orient='split'))
     output = json.dumps({'df': df_dict, 'meta': meta})
     # write to file
-    filename = '/home/msoenmez/Desktop/workspce/Demonstrator_02/save_bam - ' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + '.json'
+    filename = path + '/' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + '.json'
     with open(filename, 'x') as f:
         f.write(output)
 

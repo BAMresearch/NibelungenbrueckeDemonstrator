@@ -16,6 +16,10 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
         self.material_parameters = self.model_parameters["material_parameters"] # currently it is an empty dict!!
           
+    def LoadGeometry(self):
+        ''' Load the meshed geometry from a .msh file'''
+        pass
+    
     def GenerateModel(self):
         self.experiment = NibelungenExperiment(self.model_path, self.material_parameters)
 
@@ -40,7 +44,7 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
                 xdmf.write_function(self.problem.fields.displacement)
 
        # Reverse translation to MKP data format
-        T.translator_to_MKP(self.problem)
+        T.translator_to_MKP(self.problem, self.model_parameters["save_to_MKP_path"])
 
     def default_parameters(self):
         default_parameters = {
