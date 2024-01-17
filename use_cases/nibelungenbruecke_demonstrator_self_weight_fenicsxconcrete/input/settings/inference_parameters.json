@@ -1,0 +1,131 @@
+{
+    "model_path": "./input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "./output/results/inference_results",
+        "output_format": ".nc"
+    },
+    "print_info": true, 
+    "inverse_problem_parameters":{
+        "name": "Nibelungenbrücke displacements",
+        "print_header": true
+    },
+    "forward_model_parameters": {
+        "name": "Nibelungenbrücke displacements",
+        "experiments": ["TestSeries_1"],
+        "forward_model_path": "probeye_forward_model_bridge",
+        "input_sensors_path": "./input/sensors/sensors_displacements_probeye_input.json",
+        "output_sensors_path": "./input/sensors/sensors_displacements_probeye_output.json",
+        "problem_parameters": ["E", "nu", "rho"], 
+        "parameter_key_paths": [["material_parameters"],["material_parameters"],["material_parameters"]],
+        "model_parameters": {
+            "model_name": "displacements",
+            "material_parameters":{
+                "E": 30e12,
+                "g": 9.81,
+                "nu": 0.2,
+                "rho": 2350
+            },
+            "tension_z": 0.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    },
+    "parameter_list_parameters":[
+        {
+            "name":"rho",
+            "tex":"rho",
+            "info":"Normalized mass",
+            "prior":{
+                "name": "LogNormal",
+                "mean": 8,
+                "std": 0.5
+            }
+        },
+        {
+            "name":"E",
+            "tex":"E",
+            "info":"Young's modulus",
+            "domain":"(20000000000000, 50000000000000)",
+            "prior":{
+                "name": "LogNormal",
+                "mean": 31.0,
+                "std": 0.5
+            }
+        },
+        {
+            "name":"nu",
+            "tex":"nu",
+            "info":"Poisson's ratio \\nu",
+            "domain":"(0.0, 0.5)",
+            "prior":{
+                "name": "LogNormal",
+                "mean": -1.5,
+                "std": 0.2
+            }
+        },
+        {
+            "name":"sigma",
+            "domain": "(-1.0, +oo)",
+            "tex":"sigma",
+            "info":"Standard deviation, of zero-mean Gaussian noise model",
+            "prior":{
+                "name":"Uniform",
+                "low": -0.2,
+                "high": 0.2
+            }
+        }
+    ],
+    "experiment_list_parameters": [
+        {
+            "name": "TestSeries_1",
+            "input_data_path": "./input/data/displacements.h5",
+            "data_format": ".h5",
+            "sensor_names": ["DisplacementSensor0"],
+            "data_values": ["Data"],
+            "parameter_names": [ "disp_span"]
+        }
+    ],
+    "likelihood_model_parameters":{
+        "name": "GaussianLikelihoodModel",
+        "parameters":{
+            "experiment_name":"TestSeries_1",
+            "model_error": "additive"
+        }
+    },
+    "solver_parameters":{
+        "module": "emcee",
+        "name": "EmceeSolver",
+        "show_progress": true
+    },
+    "run_parameters":{
+        "n_steps": 200,
+        "n_initial_steps": 20,
+        "n_walkers": 10
+    },
+    "postprocessing":{
+        "pair_plot": true,
+        "output_pair_plot": "./output/figures/pair_plot",
+        "pair_plot_format": ".pdf",
+        "posterior_plot": true,
+        "output_posterior_plot": "./output/figures/posterior_plot",
+        "posterior_plot_format": ".pdf",
+        "trace_plot": true,
+        "output_trace_plot": "./output/figures/trace_plot",
+        "trace_plot_format": ".pdf",
+        "true_values":{
+            "E": 40e12,
+            "nu": 0.2,
+            "rho": 2350,
+            "sigma": 0.0
+        }    
+    }
+}

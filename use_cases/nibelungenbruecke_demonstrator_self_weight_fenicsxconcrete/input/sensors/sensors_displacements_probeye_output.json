@@ -1,0 +1,11 @@
+{
+    "disp_span":{
+        "measurand": "displacement",
+        "x": 0,
+        "y": 0,
+        "z": 50,
+        "std_model": "sigma"
+    }
+
+    
+}
