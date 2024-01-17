@@ -23,7 +23,7 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
     def GenerateModel(self):
         self.experiment = NibelungenExperiment(self.model_path, self.material_parameters)
 
-        default_p = self.default_parameters()
+        default_p = self._get_default_parameters()
         default_p.update(self.experiment.default_parameters())
         self.problem = LinearElasticity(self.experiment, default_p)
     
@@ -46,7 +46,8 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
        # Reverse translation to MKP data format
         T.translator_to_MKP(self.problem, self.model_parameters["save_to_MKP_path"])
 
-    def default_parameters(self):
+    @staticmethod
+    def _get_default_parameters():
         default_parameters = {
             "rho":7750 * ureg("kg/m^3"),
             "E":210e9 * ureg("N/m^2"),

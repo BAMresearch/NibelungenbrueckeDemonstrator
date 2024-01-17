@@ -15,6 +15,11 @@ class GeneratorModel:
         assert_path_exists(sensor_positions_path)
         self.sensor_positions = sensor_positions_path
 
+        default_parameters = self._get_default_parameters()
+        for key, value in default_parameters.items():
+            if key not in model_parameters:
+                model_parameters[key] = value
+
         self.model_parameters = model_parameters
         self.output_parameters = output_parameters
 
@@ -26,7 +31,7 @@ class GeneratorModel:
 
     def LoadGeometry(self):
         ''' Load the meshed geometry from a .msh file'''
-    
+        
         # Translate mesh from gmsh to dolfinx
         self.mesh, cell_tags, facet_tags = dolfinx.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
         # self.mesh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, mesh.points, mesh.cells)
@@ -56,3 +61,8 @@ class GeneratorModel:
             offload_sensors(sensors, self.output_parameters["output_path"]+"/"+self.model_parameters["model_name"], self.output_parameters["output_format"])
             
         return wrapper
+    
+    @staticmethod
+    def _get_default_parameters():
+        ''' Get the default parameters for the model'''
+        raise NotImplementedError("_get_default_parameters should be implemented")
