@@ -30,18 +30,3 @@ def save_bam(df: pd.DataFrame, meta: dict, path: str) -> None:
     with open(filename, 'x') as f:
         f.write(output)
 
-
-if __name__ == '__main__':
-    file_ = '/home/msoenmez/Desktop/Exper/20230215092338.json'
-    columns_ = ['Temp', 'Move']
-
-    df, meta = load_bam(file_, columns_)
-    #save_bam(df, meta)
-        
-        
-# file = '20230215092338.json'
-# columns = ['Temp', 'Move']
-
-#df, meta = load_bam(file_, columns_)
-#save_bam(df, meta)
-
