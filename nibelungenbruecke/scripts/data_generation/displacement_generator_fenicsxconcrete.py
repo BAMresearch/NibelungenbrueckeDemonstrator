@@ -8,18 +8,22 @@ from fenicsxconcrete.util import ureg
 
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
-from nibelungenbruecke.scripts.data_generation.NibelungenExperiment import NibelungenExperiment
-from nibelungenbruecke.scripts.utilities.sensor_translators import *
+from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
+from nibelungenbruecke.scripts.utilities.sensor_translators import Translator
 
-class NewGenerator(GeneratorModel):
+class GeneratorFeniCSXConcrete(GeneratorModel):
     def __init__(self, model_path: str, sensor_positions_path: str, model_parameters: dict, output_parameters: dict = None):
         super().__init__(model_path, sensor_positions_path, model_parameters, output_parameters)
         self.material_parameters = self.model_parameters["material_parameters"] # currently it is an empty dict!!
           
+    def LoadGeometry(self):
+        ''' Load the meshed geometry from a .msh file'''
+        pass
+    
     def GenerateModel(self):
         self.experiment = NibelungenExperiment(self.model_path, self.material_parameters)
 
-        default_p = self.default_parameters()
+        default_p = self._get_default_parameters()
         default_p.update(self.experiment.default_parameters())
         self.problem = LinearElasticity(self.experiment, default_p)
     
@@ -40,9 +44,10 @@ class NewGenerator(GeneratorModel):
                 xdmf.write_function(self.problem.fields.displacement)
 
        # Reverse translation to MKP data format
-        T.translator_to_MKP(self.problem)
+        T.translator_to_MKP(self.problem, self.model_parameters["save_to_MKP_path"])
 
-    def default_parameters(self):
+    @staticmethod
+    def _get_default_parameters():
         default_parameters = {
             "rho":7750 * ureg("kg/m^3"),
             "E":210e9 * ureg("N/m^2"),
