@@ -8,7 +8,7 @@ from nibelungenbruecke.scripts.utilities.probeye_utilities import load_probeye_s
 
 # local imports (inference data post-processing)
 
-def posterior_predictive(parameters:dict):
+def posterior_predictive_run(parameters:dict):
     "Generates synthetic data according to a process especified in the parameters"
     
     # Initialize defaults
@@ -70,6 +70,7 @@ def _get_default_parameters():
         "forward_model_path": "probeye_forward_model_bridge",
         "input_sensors_path": "input/sensors/sensors_displacements_probeye_input.json",
         "output_sensors_path": "input/sensors/sensors_displacements_probeye_output.json",
+        "file_dep": ["input/sensors/sensors_displacements_probeye_input.json", "input/sensors/sensors_displacements_probeye_output.json"],
         "problem_parameters": ["rho", "mu", "lambda"], 
         "parameters_key_paths": [[],[],[]],
         "model_parameters": {}
