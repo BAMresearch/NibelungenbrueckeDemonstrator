@@ -169,7 +169,11 @@ def create_cross_section3D(parameters):
 
     gmsh.model.geo.synchronize()
 
-    gmsh.model.addPhysicalGroup(dim=0, tags=[p01,p02,p03,p04,p05,p06,p07,p08,p09,p10,p11,p12], tag=1)
+    gmsh.model.addPhysicalGroup(dim=0, tags=[p02,p03,p06,p07,p10,p11], tag=1)
+    # Add PhysicalGroup for the points at the top of the pilot
+    gmsh.model.addPhysicalGroup(dim=0, tags=[p01,p12], tag=cs_parameters["physical_group_tag_top"])
+    # Add PhysicalGroup for the points at the bottom of the pilot
+    gmsh.model.addPhysicalGroup(dim=0, tags=[p04,p05, p08, p09], tag=cs_parameters["physical_group_tag_bottom"])
 
     # Define the points for the hole
     ph1 =gmsh.model.geo.addPoint(-gap_length/2 - pilot_width + wall_thickness,-deck_thickness, 0, tag=201)
@@ -204,7 +208,11 @@ def create_cross_section3D(parameters):
 
     gmsh.model.geo.synchronize()
 
-    gmsh.model.addPhysicalGroup(dim=1, tags=[l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12], tag=1)
+    gmsh.model.addPhysicalGroup(dim=1, tags=[l01,l02,l03,l05,l06,l07,l09,l10,l11], tag=1)
+    # Create a PhysicalGroup for the lines at the top of the pilot
+    gmsh.model.addPhysicalGroup(dim=1, tags=[l12], tag=cs_parameters["physical_group_tag_top"])
+    # Create a PhysicalGroup for the lines at the bottom of the pilot
+    gmsh.model.addPhysicalGroup(dim=1, tags=[l04,l08], tag=cs_parameters["physical_group_tag_bottom"])
     pilot_curve_loop = gmsh.model.geo.addCurveLoop([l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12], reorient=True, tag = 1)
 
     l13 = gmsh.model.geo.addLine(ph1, ph2, tag=13)
