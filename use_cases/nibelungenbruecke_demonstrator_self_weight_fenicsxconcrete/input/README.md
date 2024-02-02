@@ -1,0 +1,5 @@
+Here the input files for a given example are saved. They should be sufficient for defining the workflow parameters and are unique for each project. The current files belong to the solution of a simple workflow based on the Nibelungenbrücke. However, if a new example is to be implemented after installing `nibelungenbruecke`, it is recommended to copy newly the repository and delete the folder with the package (as it will already be available globaly in the environment). The input files are grouped in several folders:
+- `data` contains the data points to use in the inference procedure.
+- `models` contains the geometry and mesh used in the demonstrator. If they are not provided beforehand, they are generated during the workflow and saved to this folder.
+- `sensors` contains JSON files that indicate the sensor positions and characteristics.
+- `settings` contains JSON files with the settings to run each of the modules of the workflow.
