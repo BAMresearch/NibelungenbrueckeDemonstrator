@@ -25,7 +25,7 @@ class NibelungenExperiment(Experiment):
         
     def setup(self):
         try:
-            self.mesh, cell_tags, facet_tags = df.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
+            self.mesh, self.cell_tags, self.facet_tags = df.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
             
         except Exception as e:
             raise Exception(f"An error occurred during mesh setup: {e}")
