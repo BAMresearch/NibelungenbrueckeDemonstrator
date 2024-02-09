@@ -8,7 +8,7 @@ from mpi4py import MPI
 from petsc4py.PETSc import ScalarType
 
 from fenicsxconcrete.boundary_conditions.bcs import BoundaryConditions
-from fenicsxconcrete.boundary_conditions.boundary import line_at, point_at
+from fenicsxconcrete.boundary_conditions.boundary import line_at, point_at, plane_at
 from fenicsxconcrete.experimental_setup.base_experiment import Experiment
 from fenicsxconcrete.util import Parameters, ureg
 
@@ -58,16 +58,32 @@ class NibelungenExperiment(Experiment):
             # fix line in the left
             bc_generator.add_dirichlet_bc(
                 np.array([0.0, 0.0, 0.0], dtype=ScalarType),
-                boundary=self.boundary_left(),
+                boundary=self.boundary_plane_left(),
+                method="geometrical",
+            )
+            bc_generator.add_dirichlet_bc(
+                np.array([0.0, 0.0, 0.0], dtype=ScalarType),
+                boundary=self.boundary_plane_right(),
                 method="geometrical",
             )
             # line with dof in x direction on the right
-            bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 1, "geometrical", 0)
-            bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 2, "geometrical", 0)
+            # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 1, "geometrical", 0)
+            # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 2, "geometrical", 0)
+        # if self.p["dim"] == 3:
+        #     # fix line in the left
+        #     bc_generator.add_dirichlet_bc(
+        #         np.array([0.0, 0.0, 0.0], dtype=ScalarType),
+        #         boundary=np.array([7]),
+        #         entity_dim=2,
+        #         method="topological",
+        #     )
+            # line with dof in x direction on the right
+            # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 1, "geometrical", 0)
+            # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 2, "geometrical", 0)
 
         return bc_generator.bcs 
     
-    def boundary_left(self) -> Callable:
+    def boundary_line_left(self) -> Callable:
         """specifies boundary at bottom
 
         Returns:
@@ -76,9 +92,9 @@ class NibelungenExperiment(Experiment):
         """
 
         if self.p["dim"] == 3:
-            return line_at([0, 0], ["x", "z"])
+            return line_at([0, 0], ["y", "z"])
 
-    def boundary_right(self) -> Callable:
+    def boundary_line_right(self) -> Callable:
         """specifies boundary at bottom
 
         Returns:
@@ -87,8 +103,29 @@ class NibelungenExperiment(Experiment):
         """
 
         if self.p["dim"] == 3:
-            return line_at([self.p["length"], 0], ["x", "z"])
-        
+            return line_at([ 0, self.p["length"]], ["y", "z"])
+    
+    def boundary_plane_left(self) -> Callable:
+        """specifies boundary at bottom
+
+        Returns:
+            fct defining boundary
+
+        """
+
+        if self.p["dim"] == 3:
+            return plane_at(0.0, "z")
+    
+    def boundary_plane_right(self) -> Callable:
+        """specifies boundary at bottom
+
+        Returns:
+            fct defining boundary
+
+        """
+
+        if self.p["dim"] == 3:
+            return plane_at(self.p["length"], "z")
 
     def create_body_force(self, v: ufl.argument.Argument) -> ufl.form.Form:
         """defines body force
