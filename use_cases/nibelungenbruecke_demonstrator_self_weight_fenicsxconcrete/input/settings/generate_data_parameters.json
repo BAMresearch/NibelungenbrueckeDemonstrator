@@ -8,9 +8,9 @@
         "sensors_path": "./input/sensors/20230215092338.json",
         "model_parameters": {
             "model_name": "displacements",
-            "df_output_path":"./input/sensors/df_output_D.json",
-            "meta_output_path":"./input/sensors/meta_output_D.json",
-            "save_to_MKP_path": "./output/sensors",
+            "df_output_path":"./input/sensors/API_df_output.csv",
+            "meta_output_path":"./input/sensors/API_meta_output.json",
+            "MKP_meta_output_path":"./output/sensors/MKP_meta_output.json",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{},

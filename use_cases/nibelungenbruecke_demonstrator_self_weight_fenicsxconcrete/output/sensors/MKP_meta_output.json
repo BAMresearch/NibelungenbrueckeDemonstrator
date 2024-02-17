@@ -1,0 +1,28 @@
+{
+    "sensors": [
+        {
+            "id": "E_plus_445LVU_HS--o-_Avg1",
+            "type": "DisplacementSensor",
+            "sensor_file": "displacement_sensor",
+            "units": "meter",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_445LVU_HS--u-_Avg1",
+            "type": "DisplacementSensor",
+            "sensor_file": "displacement_sensor",
+            "units": "meter",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        }
+    ]
+}
