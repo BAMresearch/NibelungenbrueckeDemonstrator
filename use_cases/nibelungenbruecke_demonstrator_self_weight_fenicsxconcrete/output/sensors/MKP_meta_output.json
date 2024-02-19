@@ -1,6 +1,162 @@
 {
     "sensors": [
         {
+            "id": "E_plus_413TU_HS--o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.0
+            ]
+        },
+        {
+            "id": "E_plus_413TU_HSS-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.1
+            ]
+        },
+        {
+            "id": "E_plus_413TU_HS--u-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.2
+            ]
+        },
+        {
+            "id": "E_plus_423NU_HSN-o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.3
+            ]
+        },
+        {
+            "id": "E_plus_423NUT_HSN-o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_467NUT_HSN-o_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "F_plus_000TA_KaS-o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.4
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSN-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                1.5
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSS-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--u-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_413TI_HSS-m-_Avg",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TI_HSS-u-_Avg",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[length]",
+            "where": [
+                1,
+                0.0,
+                0.0
+            ]
+        },
+        {
             "id": "E_plus_445LVU_HS--o-_Avg1",
             "type": "DisplacementSensor",
             "sensor_file": "displacement_sensor",
@@ -26,6 +182,110 @@
         }
     ],
     "virtual_sensors": [
+        {
+            "id": "E_plus_413TU_HS--o-_Avg1",
+            "displacement": [
+                -0.0013783880929294327,
+                -0.08999465750083904,
+                0.011753035853528535
+            ]
+        },
+        {
+            "id": "E_plus_413TU_HSS-m-_Avg1",
+            "displacement": [
+                -0.0012825213108156929,
+                -0.1028412305118062,
+                0.011948179626305094
+            ]
+        },
+        {
+            "id": "E_plus_413TU_HS--u-_Avg1",
+            "displacement": [
+                -0.0011978273181087059,
+                -0.11596982355976274,
+                0.01211070222402547
+            ]
+        },
+        {
+            "id": "E_plus_423NU_HSN-o-_Avg1",
+            "displacement": [
+                -0.001124306114808471,
+                -0.1293804366447087,
+                0.012240603646689666
+            ]
+        },
+        {
+            "id": "E_plus_423NUT_HSN-o-_Avg1",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "E_plus_467NUT_HSN-o_Avg1",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "F_plus_000TA_KaS-o-_Avg1",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--o-_Avg1",
+            "displacement": [
+                -0.0010619577009149898,
+                -0.14307306976664405,
+                0.012337883894297685
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSN-m-_Avg1",
+            "displacement": [
+                -0.0010419000735476798,
+                -0.15655827045405615,
+                0.012502381215553802
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSS-m-_Avg1",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--u-_Avg1",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "E_plus_413TI_HSS-m-_Avg",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
+        {
+            "id": "E_plus_040TI_HSS-u-_Avg",
+            "displacement": [
+                -0.0029515593314382296,
+                0.0229599705744136,
+                0.008007433497673029
+            ]
+        },
         {
             "id": "E_plus_445LVU_HS--o-_Avg1",
             "displacement": [

@@ -3,16 +3,13 @@ from petsc4py.PETSc import ScalarType
 from dolfinx import fem
 import dolfinx as df
 import json
+import numpy as np
 from fenicsxconcrete.finite_element_problem.linear_elasticity import LinearElasticity
 from fenicsxconcrete.util import ureg
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
-from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_request
-from nibelungenbruecke.scripts.utilities.API_sensor_storing import saveAPI
-from nibelungenbruecke.scripts.utilities.API_sensor_translator import Translator
-
-
+from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_request, saveAPI, Translator
 class GeneratorFeniCSXConcrete(GeneratorModel):
     """
     A class for generating FEniCS-X Concrete-based models and handling data generation.
@@ -79,6 +76,10 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
         T.translator_to_sensor(MKP_meta_output_path)
 
         self.problem.import_sensors_from_metadata(MKP_meta_output_path)
+        
+        self.problem.fields.temperature = self.problem.fields.displacement
+        #self.problem.sensors["Sensor_3"].data = 273
+
         self.problem.solve()
 
         self.save_displacement_values(self.problem)

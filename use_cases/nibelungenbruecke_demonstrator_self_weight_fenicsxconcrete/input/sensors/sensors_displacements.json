@@ -2,8 +2,9 @@
     "Sensor_2":{
         "type": "DisplacementSensor",
         "where": [[0,0,50]]
+    },
+    "Sensor_3":{
+        "type": "TemperatureSensor",
+        "where": [[0,0,50]]
     }
-
-    
-
 }
