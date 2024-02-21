@@ -7,147 +7,15 @@
   "meta": {
     "Temp": [
       {
-        "name": "E_plus_413TU_HS--o-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          1.0
-        ],
-        "height": 104.105
-      },
-      {
         "name": "E_plus_413TU_HSS-m-_Avg1",
         "unit": "\u00b0C",
         "sample_rate": 0.0016666666666666668,
         "coordinate": [
-          1,
-          0.0,
-          1.1
+          44.4925,
+          3.69,
+          0.0
         ],
         "height": 105
-      },
-      {
-        "name": "E_plus_413TU_HS--u-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          1.2
-        ],
-        "height": 106
-      },
-      {
-        "name": "E_plus_423NU_HSN-o-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          1.3
-        ],
-        "height": 107
-      },
-      {
-        "name": "E_plus_423NUT_HSN-o-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "E_plus_467NUT_HSN-o_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "F_plus_000TA_KaS-o-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "E_plus_040TU_HS--o-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          1.4
-        ],
-        "height": 108
-      },
-      {
-        "name": "E_plus_040TU_HSN-m-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          1.5
-        ],
-        "height": 109
-      },
-      {
-        "name": "E_plus_040TU_HSS-m-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "E_plus_040TU_HS--u-_Avg1",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "E_plus_413TI_HSS-m-_Avg",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
-      },
-      {
-        "name": "E_plus_040TI_HSS-u-_Avg",
-        "unit": "\u00b0C",
-        "sample_rate": 0.0016666666666666668,
-        "coordinate": [
-          1,
-          0.0,
-          0.0
-        ],
-        "height": 104.105
       }
     ],
     "Move": [
@@ -156,8 +24,8 @@
         "unit": "\u00b0C",
         "sample_rate": 0.0016666666666666668,
         "coordinate": [
-          1,
-          0.0,
+          47.5925,
+          4.74,
           0.0
         ],
         "height": 104.105
@@ -167,7 +35,7 @@
         "unit": "\u00b0C",
         "sample_rate": 0.0016666666666666668,
         "coordinate": [
-          1,
+          47.5925,
           0.0,
           0.0
         ],

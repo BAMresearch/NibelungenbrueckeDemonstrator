@@ -13,7 +13,7 @@ import h5py
 
 
 
-class API_request:
+class API_Request:
     
     def __init__(self):
         
@@ -32,13 +32,14 @@ class API_request:
         #self.start_time = datetime.strptime("2023-08-11T08:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
         #self.end_time = datetime.strptime("2023-08-11T08:01:00Z", "%Y-%m-%dT%H:%M:%SZ")
         
-        """    
+           
         self.body = {
             "startTime": "2023-08-11T08:00:00Z",
             "endTime": "2023-09-11T08:01:00Z",
             "meta_channel": True,
             "columns": ['E_plus_445LVU_HS--o-_Avg1',
              'E_plus_445LVU_HS--u-_Avg1',
+             'E_plus_413TU_HSS-m-_Avg1',
              ]
             }
         
@@ -72,7 +73,7 @@ class API_request:
              'E_plus_233BU_HSN-m-_Avg1',
              'E_plus_432BU_HSN-m-_Avg1']
             }
-
+        """ 
 
         """
         TU: Temperaturmessung des Überbaus
@@ -179,9 +180,6 @@ import datetime
 import h5py
 from datetime import datetime, timedelta
 
-# from nibelungenbruecke.scripts.utilities.BAM_Beispieldatensatz import load_bam
-# from nibelungenbruecke.scripts.utilities.BAM_Beispieldatensatz import save_bam
-
 class saveAPI:
     
     def __init__(self, path_meta, df, path_df):
@@ -217,7 +215,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.0],
+                "coordinate": [44.4925, 4.74, 0.0],
                 "height": 104.105                       
             })
 
@@ -229,7 +227,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.1],
+                "coordinate": [44.4925, 3.69, 0.0],
                 "height": 105                       
             })
 
@@ -241,7 +239,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.2],
+                "coordinate": [44.4925, 2.29, 0.0],
                 "height": 106                         
             })
                 
@@ -253,7 +251,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.3],
+                "coordinate": [45.3425, 5.54, 0.0],
                 "height": 107                          
             })
             
@@ -265,7 +263,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.4],
+                "coordinate": [1, 4.74, 0.0],
                 "height": 108                         
             })
 
@@ -277,7 +275,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 1.5],
+                "coordinate": [1, 2.37, 0.005],
                 "height": 109                         
             })
 
@@ -289,7 +287,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [0.92, 2.37, 0.005],
                 "height": 104.105                       
             })
 
@@ -301,7 +299,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [1, 0.0, 0.355],
                 "height": 104.105                       
             })
             
@@ -337,7 +335,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [45.3425, 4.34, 0.0],
                 "height": 104.105                       
             })
 
@@ -349,7 +347,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [49.8925, 4.34, 0.0],
                 "height": 104.105                       
             })
 
@@ -373,7 +371,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [47.5925, 4.74, 0.0],
                 "height": 104.105                       
             })
 
@@ -385,7 +383,7 @@ class saveAPI:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [1, 0.0, 0.0],
+                "coordinate": [47.5925, 0.0, 0.0],
                 "height": 104.105                       
             })
 
@@ -397,7 +395,10 @@ class saveAPI:
         #self.df.to_hdf(self.path_df, key='e',  mode='w')
         
         # Saving dataframe of the request as CSV
-        self.df.to_csv(self.path_df, index=False)
+        self.df.to_csv(self.path_df, index=True)
+            
+        # Saving dataframe of the request as json
+        #self.df.to_json(self.path_df)
         
         
         #print(self.data)
@@ -410,7 +411,8 @@ from typing import Union, Tuple
 import pandas as pd
 import json
 import datetime
-
+import csv
+from math import atan2, cos, sin, sqrt, radians, degrees
 
 class Translator:
     
@@ -459,3 +461,120 @@ class Translator:
             json.dump(default_parameters_data, f, indent=4)
 
         return meta_output_path
+    
+    def save_displacement_values(self, path, disp_values):
+        """
+        Save displacement values corresponding to each sensor ID in the MKP_meta_output_path JSON file.
+
+        Parameters:
+            disp_values: Displacement values.
+        """
+        self.path = path
+        with open(self.path["MKP_meta_output_path"], 'r') as f:
+            metadata = json.load(f)
+
+        virtual_sensors = []
+        for sensor in metadata["sensors"]:
+            sensor_id = sensor["id"]
+            position = sensor["where"]
+            displacement_value = disp_values.sensors.get(sensor_id, None)
+            if displacement_value is not None:
+                displacement_value_list = displacement_value.data[0].tolist()  # Convert ndarray to list
+                virtual_sensors.append({"id": sensor_id, "displacement": displacement_value_list})
+
+        metadata["virtual_sensors"] = virtual_sensors
+
+        with open(self.path["MKP_meta_output_path"], 'w') as f:
+            json.dump(metadata, f, indent=4)
+
+    @staticmethod
+    def cartesian_to_geodesic(cartesian_coord, origin=(49.630742, 8.378049)):
+        origin_lat, origin_lon = radians(origin[0]), radians(origin[1])
+
+        x, y, z = cartesian_coord
+        distance = sqrt(x**2 + y**2 + z**2)
+        geod_lat = atan2(z, sqrt(x**2 + y**2))
+        geod_lon = atan2(y, x)
+
+        geod_lat = degrees(geod_lat)
+        geod_lon = degrees(geod_lon)
+
+        geod_lon = (geod_lon + 540) % 360 - 180
+
+        geod_lat += origin_lat
+        geod_lon += origin_lon
+
+        return [geod_lat, geod_lon, distance]
+
+        """
+        utm_zone = int((geod_lon + 180) / 6) + 1  # Determine UTM zone
+        utm_band = 'C' if 56 > geod_lat > 0 else 'D'  # Determine UTM band
+
+        utm_proj = Proj(proj='utm', zone=utm_zone, ellps='WGS84', datum='WGS84', south=False)
+        utm_x, utm_y = utm_proj(geod_lon, geod_lat)
+
+        return [utm_x, utm_y, distance, utm_zone, utm_band]
+        """
+            
+    def save_to_MKP(self, df, displacement_meta_path, output_path):
+
+        # Create a dictionary representing the JSON structure
+        json_data = {
+            "df": {
+                "columns": df.columns.tolist(),
+                "index": df.index.strftime("%Y-%m-%dT%H:%M:%S.000000Z").tolist(),
+                "data": df.values.tolist()
+            },
+            "meta": {}
+        }
+
+        # Load displacement metadata
+        with open(displacement_meta_path["MKP_meta_output_path"], "r") as file:
+            displacement_data = json.load(file)
+
+        for column in df.columns:
+            sensor_coords = next((sensor["where"] for sensor in displacement_data["sensors"] if sensor["id"] == column), "")
+            geod_coords = self.cartesian_to_geodesic(sensor_coords) if sensor_coords else ""
+            json_data["meta"][column] = {
+                "name": column,
+                "unit": "\u00b0C",  
+                "sample_rate": 0.0016666666666666668,
+                "coordinate": geod_coords,
+                "height": "" 
+            }
+
+        with open(output_path, "w") as json_file:
+            json.dump(json_data, json_file, indent=4)
+
+    def save_VS(self, path, path_02, displacement_values):
+        """
+        Save displacement values corresponding to each sensor ID in the MKP_meta_output_path JSON file.
+
+        Parameters:
+            displacement_values: Displacement values.
+        """
+        with open(path["MKP_meta_output_path"], 'r') as f:
+            metadata = json.load(f)
+
+        with open(path_02, 'r') as f:
+            MKP_data = json.load(f)
+        
+        # Check if "additional_data" already exists, if not, create it
+        if "additional_data" not in MKP_data:
+            MKP_data["additional_data"] = {"virtual_sensors": {}}
+        
+        additional_data = MKP_data["additional_data"]["virtual_sensors"]
+
+        for sensor in metadata["sensors"]:
+            sensor_id = sensor["id"]
+            position = sensor["where"]
+            displacement_value = displacement_values.sensors.get(sensor_id, None)
+            if displacement_value is not None:
+                displacement_value_list = displacement_value.data[0].tolist()  # Convert ndarray to list
+                if sensor_id not in additional_data:
+                    additional_data[sensor_id] = {"displacements": []}
+                # Append the new displacement values list to the existing "displacements" array
+                additional_data[sensor_id]["displacements"].append(displacement_value_list)
+
+        with open(path_02, 'w') as f:
+            json.dump(MKP_data, f, indent=4)
