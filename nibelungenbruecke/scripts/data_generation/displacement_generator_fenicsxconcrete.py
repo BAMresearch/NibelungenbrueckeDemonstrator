@@ -9,7 +9,7 @@ from fenicsxconcrete.util import ureg
 from mpi4py import MPI
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
-from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_Request, saveAPI, Translator
+from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_Request, MetadataSaver, Translator
 class GeneratorFeniCSXConcrete(GeneratorModel):
     """
     A class for generating FEniCS-X Concrete-based models and handling data generation.
@@ -38,33 +38,22 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
 
     def GenerateData(self):
         """Generate data based on the model parameters."""
-        meta_output_path = self.model_parameters["meta_output_path"]
-        df_output_path = self.model_parameters["df_output_path"]
-        self.MKP_meta_output_path = self.model_parameters["MKP_meta_output_path"]
 
         api_request = API_Request()
-        self.api_dataFrame = api_request.API()
+        self.api_dataFrame = api_request.fetch_data()
 
-        savingData = saveAPI(meta_output_path, self.api_dataFrame, df_output_path)
-        savingData.save()
+        metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
+        metadata_saver.saving_metadata()
 
-        self.T = Translator(meta_output_path)
-        self.T.translator_to_sensor(self.MKP_meta_output_path)
+        translator = Translator(self.model_parameters)
+        translator.translator_to_sensor()
 
-        self.problem.import_sensors_from_metadata(self.MKP_meta_output_path)
-        
-        self.problem.fields.temperature = self.problem.fields.displacement
-        #self.problem.sensors["Sensor_3"].data = 273
-
+        self.problem.import_sensors_from_metadata(self.model_parameters["MKP_meta_output_path"])
+        self.problem.fields.temperature = self.problem.fields.displacement #!!
         self.problem.solve()
 
-        #self.T.save_displacement_values(self.model_parameters, self.problem)
-        #self.T.save_disp(self.model_parameters, self.problem)
-        MKP_path = "./output/sensors/MKP_translated.json"
-        self.T.save_to_MKP(self.api_dataFrame, self.model_parameters, MKP_path)
-
-        #self.T.save_virtual_sensor_measurement(self.model_parameters, MKP_path, self.problem)
-        self.T.save_VS(self.model_parameters, MKP_path, self.problem)
+        translator.save_to_MKP(self.api_dataFrame)
+        translator.save_virtual_sensor(self.problem)
 
 
         if self.model_parameters["paraview_output"]:

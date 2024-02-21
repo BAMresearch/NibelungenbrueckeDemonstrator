@@ -7,8 +7,8 @@
             "units": "kelvin",
             "dimensionality": "[length]",
             "where": [
-                44.4925,
-                3.69,
+                41.42,
+                -3.69,
                 0.0
             ]
         },
@@ -19,8 +19,8 @@
             "units": "meter",
             "dimensionality": "[length]",
             "where": [
-                47.5925,
-                4.74,
+                44.52,
+                0.0,
                 0.0
             ]
         },
@@ -31,8 +31,8 @@
             "units": "meter",
             "dimensionality": "[length]",
             "where": [
-                47.5925,
-                0.0,
+                44.52,
+                -4.74,
                 0.0
             ]
         }

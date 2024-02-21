@@ -11,6 +11,7 @@
             "df_output_path":"./input/sensors/API_df_output.csv",
             "meta_output_path":"./input/sensors/API_meta_output.json",
             "MKP_meta_output_path":"./output/sensors/MKP_meta_output.json",
+            "MKP_translated_output_path":"./output/sensors/MKP_translated.json",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{},
