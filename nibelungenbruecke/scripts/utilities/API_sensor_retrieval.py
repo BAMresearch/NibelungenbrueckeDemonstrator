@@ -27,15 +27,11 @@ class API_Request:
         # url parameter 
         self.params = {
             "code": "nv8QrKftsTHj93hPM4-BiaJJYbWU7blfUGz89KdkuEbpAzFuHX1Rmg==" # der Code aus den über Keeper mitgetielten Zugangdaten 
-        }
+        }  
 
-        #self.start_time = datetime.strptime("2023-08-11T08:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
-        #self.end_time = datetime.strptime("2023-08-11T08:01:00Z", "%Y-%m-%dT%H:%M:%SZ")
-        
-           
         self.body = {
             "startTime": "2023-08-11T08:00:00Z",
-            "endTime": "2023-09-11T08:01:00Z",
+            "endTime": "2023-08-11T09:00:00Z",
             "meta_channel": True,
             "columns": ['E_plus_445LVU_HS--o-_Avg1',
              'E_plus_445LVU_HS--u-_Avg1',
@@ -73,7 +69,7 @@ class API_Request:
              'E_plus_233BU_HSN-m-_Avg1',
              'E_plus_432BU_HSN-m-_Avg1']
             }
-        """ 
+        """
 
         """
         TU: Temperaturmessung des Überbaus
@@ -199,7 +195,6 @@ class saveAPI:
         
         self.path_meta = path_meta
         self.path_df = path_df
-        
         self.df = df
          
     def save(self):
@@ -387,7 +382,6 @@ class saveAPI:
                 "height": 104.105                       
             })
 
-        
         with open(self.path_meta, "w") as json_file:
             json.dump(self.data, json_file, indent=2)
             
@@ -412,7 +406,8 @@ import pandas as pd
 import json
 import datetime
 import csv
-from math import atan2, cos, sin, sqrt, radians, degrees
+import math
+from pyproj import Proj, transform
 
 class Translator:
     
@@ -488,34 +483,48 @@ class Translator:
             json.dump(metadata, f, indent=4)
 
     @staticmethod
-    def cartesian_to_geodesic(cartesian_coord, origin=(49.630742, 8.378049)):
-        origin_lat, origin_lon = radians(origin[0]), radians(origin[1])
+    def cartesian_to_geodesic(cartesian, origin=[49.630742, 8.378049]):
+        # Define the Earth's radius in kilometers
+        R = 6371.0
 
-        x, y, z = cartesian_coord
-        distance = sqrt(x**2 + y**2 + z**2)
-        geod_lat = atan2(z, sqrt(x**2 + y**2))
-        geod_lon = atan2(y, x)
+        # Convert origin to radians
+        origin_lat_rad = math.radians(origin[0])
+        origin_lon_rad = math.radians(origin[1])
 
-        geod_lat = degrees(geod_lat)
-        geod_lon = degrees(geod_lon)
+        # Convert Cartesian coordinates to geodesic
+        x, y, z = cartesian
+        distance = math.sqrt(x**2 + y**2 + z**2)
+        
+        # Calculate latitude
+        latitude = math.asin(math.sin(origin_lat_rad) * math.cos(distance / R) +
+                            math.cos(origin_lat_rad) * math.sin(distance / R) * math.cos(0))
 
-        geod_lon = (geod_lon + 540) % 360 - 180
+        # Calculate longitude
+        longitude = origin_lon_rad + math.atan2(math.sin(0) * math.sin(distance / R) * math.cos(origin_lat_rad),
+                                                math.cos(distance / R) - math.sin(origin_lat_rad) * math.sin(latitude))
 
-        geod_lat += origin_lat
-        geod_lon += origin_lon
+        # Convert latitude and longitude to degrees
+        latitude = math.degrees(latitude)
+        longitude = math.degrees(longitude)
 
-        return [geod_lat, geod_lon, distance]
+        return latitude, longitude
+    
+    @staticmethod
+    def geodesic_to_utm(latitude, longitude):
+        # Define the UTM projection using WGS84 datum
+        utm_zone_number = math.floor((longitude + 180) / 6) + 1
+        utm_zone_letter = 'C' if -80 <= latitude < 72 else 'D'
+        utm_proj = Proj(proj='utm', zone=utm_zone_number, ellps='WGS84')
 
-        """
-        utm_zone = int((geod_lon + 180) / 6) + 1  # Determine UTM zone
-        utm_band = 'C' if 56 > geod_lat > 0 else 'D'  # Determine UTM band
+        # Convert latitude and longitude to UTM coordinates
+        utm_easting, utm_northing = utm_proj(longitude, latitude)
 
-        utm_proj = Proj(proj='utm', zone=utm_zone, ellps='WGS84', datum='WGS84', south=False)
-        utm_x, utm_y = utm_proj(geod_lon, geod_lat)
+        # Format UTM coordinates
+        utm_easting_str = "{:.0f}".format(utm_easting)
+        utm_northing_str = "{:.0f}".format(utm_northing)
 
-        return [utm_x, utm_y, distance, utm_zone, utm_band]
-        """
-            
+        return f"{utm_zone_number} {utm_zone_letter} E{utm_easting_str} N{utm_northing_str}"
+    
     def save_to_MKP(self, df, displacement_meta_path, output_path):
 
         # Create a dictionary representing the JSON structure
@@ -535,46 +544,47 @@ class Translator:
         for column in df.columns:
             sensor_coords = next((sensor["where"] for sensor in displacement_data["sensors"] if sensor["id"] == column), "")
             geod_coords = self.cartesian_to_geodesic(sensor_coords) if sensor_coords else ""
+            utm_coords = self.geodesic_to_utm(*geod_coords)
             json_data["meta"][column] = {
                 "name": column,
                 "unit": "\u00b0C",  
                 "sample_rate": 0.0016666666666666668,
-                "coordinate": geod_coords,
+                "coordinate": utm_coords,
                 "height": "" 
             }
 
         with open(output_path, "w") as json_file:
             json.dump(json_data, json_file, indent=4)
 
-    def save_VS(self, path, path_02, displacement_values):
-        """
-        Save displacement values corresponding to each sensor ID in the MKP_meta_output_path JSON file.
-
-        Parameters:
-            displacement_values: Displacement values.
-        """
-        with open(path["MKP_meta_output_path"], 'r') as f:
+    def save_VS(self, path_01, path_02, displacement_values):
+        # Load metadata from path_01
+        with open(path_01["MKP_meta_output_path"], 'r') as f:
             metadata = json.load(f)
 
-        with open(path_02, 'r') as f:
-            MKP_data = json.load(f)
-        
-        # Check if "additional_data" already exists, if not, create it
-        if "additional_data" not in MKP_data:
-            MKP_data["additional_data"] = {"virtual_sensors": {}}
-        
-        additional_data = MKP_data["additional_data"]["virtual_sensors"]
+        # Load existing data from path_02 or create an empty dictionary
+        try:
+            with open(path_02, 'r') as f:
+                MKP_data = json.load(f)
+        except FileNotFoundError:
+            MKP_data = {}
+
+         # Check if "virtual_sensors" already exists, if not, create it
+        if "virtual_sensors" not in MKP_data:
+            MKP_data["virtual_sensors"] = {}
+
+        #virtual_sensors = MKP_data["virtual_sensors"]
 
         for sensor in metadata["sensors"]:
             sensor_id = sensor["id"]
             position = sensor["where"]
-            displacement_value = displacement_values.sensors.get(sensor_id, None)
-            if displacement_value is not None:
-                displacement_value_list = displacement_value.data[0].tolist()  # Convert ndarray to list
-                if sensor_id not in additional_data:
-                    additional_data[sensor_id] = {"displacements": []}
+            if displacement_values is not None:
+                displacement_value_list = displacement_values
+                if sensor_id not in MKP_data["virtual_sensors"]:
+                    MKP_data["virtual_sensors"][sensor_id] = {"displacements": []}
                 # Append the new displacement values list to the existing "displacements" array
-                additional_data[sensor_id]["displacements"].append(displacement_value_list)
+                MKP_data["virtual_sensors"][sensor_id]["displacements"].extend(displacement_value_list)
+
 
         with open(path_02, 'w') as f:
             json.dump(MKP_data, f, indent=4)
+

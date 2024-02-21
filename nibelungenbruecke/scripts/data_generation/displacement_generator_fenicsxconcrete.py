@@ -36,32 +36,6 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
         default_p.update(self.experiment.default_parameters())
         self.problem = LinearElasticity(self.experiment, default_p)
 
-    '''
-    def save_displacement_values(self, displacement_values):
-        """
-        Save displacement values corresponding to each sensor ID in the MKP_meta_output_path JSON file.
-
-        Parameters:
-            displacement_values: Displacement values.
-        """
-        with open(self.model_parameters["MKP_meta_output_path"], 'r') as f:
-            metadata = json.load(f)
-
-        virtual_sensors = []
-        for sensor in metadata["sensors"]:
-            sensor_id = sensor["id"]
-            position = sensor["where"]
-            displacement_value = displacement_values.sensors.get(sensor_id, None)
-            if displacement_value is not None:
-                displacement_value_list = displacement_value.data[0].tolist()  # Convert ndarray to list
-                virtual_sensors.append({"id": sensor_id, "displacement": displacement_value_list})
-
-        metadata["virtual_sensors"] = virtual_sensors
-
-        with open(self.model_parameters["MKP_meta_output_path"], 'w') as f:
-            json.dump(metadata, f, indent=4)
-    '''
-
     def GenerateData(self):
         """Generate data based on the model parameters."""
         meta_output_path = self.model_parameters["meta_output_path"]
