@@ -4,12 +4,14 @@
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
-
+from os import PathLike
+from typing import Union, Tuple
 import matplotlib.pyplot as plt
-
 import numpy as np
 import json
 import h5py
+import math
+from pyproj import Proj, transform
 
 
 
@@ -161,16 +163,6 @@ class API_Request:
         return pd.DataFrame(self.df[self.df.columns], index=pd.to_datetime(self.df.index))
 
 # %%
-    
-from os import PathLike
-from typing import Union, Tuple
-
-import pandas as pd
-import json
-import datetime
-import h5py
-from datetime import datetime, timedelta
-
 class MetadataSaver:
     
     def __init__(self, path, df):
@@ -361,16 +353,6 @@ class MetadataSaver:
         return self.path_meta, self.path_df
     
 # %%
-  
-from os import PathLike
-from typing import Union, Tuple
-import pandas as pd
-import json
-import datetime
-import csv
-import math
-from pyproj import Proj, transform
-
 class Translator:
     
     def __init__(self, path, **kwargs):
