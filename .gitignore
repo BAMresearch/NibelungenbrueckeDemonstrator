@@ -157,7 +157,7 @@ use_cases/nibelungenbruecke_demonstrator_line_test/output/*
 use_cases/nibelungenbruecke_demonstrator_self_weight/output/*
 *.pdf
 
-### api I/O files ###
+### sensor output files ###
 use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/*
 use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json
 use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json
