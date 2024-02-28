@@ -74,34 +74,5 @@
             "coordinate": "32 C E455431 N5539340",
             "height": ""
         }
-    },
-    "virtual_sensors": {
-        "E_plus_413TU_HSS-m-_Avg1": {
-            "displacements": [
-                [
-                    0.0,
-                    5e-324,
-                    1e-323
-                ]
-            ]
-        },
-        "E_plus_445LVU_HS--o-_Avg1": {
-            "displacements": [
-                [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            ]
-        },
-        "E_plus_445LVU_HS--u-_Avg1": {
-            "displacements": [
-                [
-                    4.66250860655015e-310,
-                    0.0,
-                    6.9139867985832e-310
-                ]
-            ]
-        }
     }
 }
