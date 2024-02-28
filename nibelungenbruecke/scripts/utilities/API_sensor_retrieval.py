@@ -360,7 +360,7 @@ class Translator:
         self.path = path
         self.meta_path = self.path["meta_output_path"]
         self.kwargs = kwargs
-    
+
     def _default_parameters(self):
         return {
             "sensors": []
@@ -368,6 +368,7 @@ class Translator:
 
     def translator_to_sensor(self):
         self.MKP_meta_output_path = self.path["MKP_meta_output_path"]
+
         default_parameters_data = self._default_parameters()
         with open(self.meta_path, 'r') as f:
             self.j = json.load(f)    
@@ -447,6 +448,7 @@ class Translator:
     def save_to_MKP(self, df):
         self.MKP_input_path = self.path["MKP_meta_output_path"]
         self.translated_data_path = self.path["MKP_translated_output_path"]
+        
         json_data = {
             "df": {
                 "columns": df.columns.tolist(),
@@ -457,10 +459,10 @@ class Translator:
         }
 
         with open(self.MKP_input_path, "r") as file:
-            displacement_data = json.load(file)
+            self.displacement_data = json.load(file)
 
         for column in df.columns:
-            sensor_coords = next((sensor["where"] for sensor in displacement_data["sensors"] if sensor["id"] == column), "")
+            sensor_coords = next((sensor["where"] for sensor in self.displacement_data["sensors"] if sensor["id"] == column), "")
             geod_coords = self.cartesian_to_geodesic(sensor_coords) if sensor_coords else ""
             utm_coords = self.geodesic_to_utm(*geod_coords)
             json_data["meta"][column] = {
@@ -475,24 +477,31 @@ class Translator:
             json.dump(json_data, json_file, indent=4)
 
     def save_virtual_sensor(self, displacement_values):
+        self.virtual_sensor_added_output_path = self.path["virtual_sensor_added_output_path"]
+
         with open(self.MKP_input_path, 'r') as f:
-            metadata = json.load(f)
+            self.metadata = json.load(f)
 
         with open(self.translated_data_path, 'r') as f:
             MKP_data = json.load(f)
-        
-        if "virtual_sensors" not in MKP_data:
-            MKP_data["virtual_sensors"] = {}
+        try:    
+            with open(self.virtual_sensor_added_output_path, 'r') as f:
+                VS_data = json.load(f)
+        except:
+            VS_data = MKP_data
+            
+        if "virtual_sensors" not in VS_data:
+            VS_data["virtual_sensors"] = {}
 
-        for sensor in metadata["sensors"]:
+        for sensor in self.metadata["sensors"]:
             sensor_id = sensor["id"]
             position = sensor["where"]
             displacement_value = displacement_values.sensors.get(sensor_id, None)
             if displacement_value is not None:
                 displacement_value_list = displacement_value.data[0].tolist()
-                if sensor_id not in MKP_data["virtual_sensors"]:
-                    MKP_data["virtual_sensors"][sensor_id] = {"displacements": []}
-                MKP_data["virtual_sensors"][sensor_id]["displacements"].append(displacement_value_list)
+                if sensor_id not in VS_data["virtual_sensors"]:
+                    VS_data["virtual_sensors"][sensor_id] = {"displacements": []}
+                VS_data["virtual_sensors"][sensor_id]["displacements"].append(displacement_value_list)
 
-        with open(self.translated_data_path, 'w') as f:
-            json.dump(MKP_data, f, indent=4)
+        with open(self.virtual_sensor_added_output_path, 'w') as f:
+            json.dump(VS_data, f, indent=4)
