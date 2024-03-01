@@ -78,3 +78,10 @@ def load_probeye_sensors(sensors_path: str):
 
     return loaded_sensors
 
+def parameter_name_tex_map(parameter_list_parameters: dict):
+    def map_parameter_name_tex(name):
+        for parameter in parameter_list_parameters:
+            if parameter["name"] == name:
+                return parameter["tex"]
+        return None
+    return map_parameter_name_tex
