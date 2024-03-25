@@ -228,9 +228,9 @@ def create_cross_section3D(parameters):
 
     gmsh.model.geo.synchronize()
 
-    gmsh.model.addPhysicalGroup(dim=1, tags=[l13,l14,l15,l16], tag=2)
-    # gmsh.model.addPhysicalGroup(dim=1, tags=[l13,l14,l15,l16,l17,l18,l19,l20], tag=2)
-    gmsh.model.addPhysicalGroup(dim=1, tags=[l17,l18,l19,l20], tag=3)
+    # gmsh.model.addPhysicalGroup(dim=1, tags=[l13,l14,l15,l16], tag=2)
+    gmsh.model.addPhysicalGroup(dim=1, tags=[l13,l14,l15,l16,l17,l18,l19,l20], tag=2)
+    # gmsh.model.addPhysicalGroup(dim=1, tags=[l17,l18,l19,l20], tag=3)
 
     pilot_hole_loop_1 = gmsh.model.geo.addCurveLoop([l13, l14, l15, l16], reorient=True, tag = 2)
     pilot_hole_loop_2 = gmsh.model.geo.addCurveLoop([l17, l18, l19, l20], reorient=True, tag = 3)
