@@ -75,11 +75,16 @@ class WeatherAPIGenerator(GeneratorModel):
                     df_data.index = pd.to_datetime(df_data.index)
         
         ## Preprocessing
+
+
         # Fill in missing values to the same rate
         df_data = df_data.ffill().bfill()
 
         # Downsample the data to the specified sample rate
         df_data = df_data.resample(self.model_parameters["sample_rate"]).mean()
+        
+        # Fill in missing values with intermediate values
+        df_data = df_data.interpolate()
 
         # Save DataFrame to HDF5 with metadata
         sensor_metadata = {sensor["data_name"]: sensor for sensor in self.model_parameters["sensors"]}
