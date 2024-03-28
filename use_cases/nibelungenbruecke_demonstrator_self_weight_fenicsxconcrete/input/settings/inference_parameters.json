@@ -94,13 +94,13 @@
             "parameter_names": [ "disp_span"]
         }
     ],
-    "likelihood_model_parameters":{
+    "likelihood_model_parameters":[{
         "name": "GaussianLikelihoodModel",
         "parameters":{
             "experiment_name":"TestSeries_1",
             "model_error": "additive"
         }
-    },
+    }],
     "solver_parameters":{
         "module": "emcee",
         "name": "EmceeSolver",
