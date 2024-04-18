@@ -54,6 +54,15 @@ class BaseModel:
     def GenerateData(self):
         ''' Run the FEM model and generate the data'''
         raise NotImplementedError("GenerateData should be implemented")
+    
+    def update_input(self, sensor_input):
+        raise NotImplementedError("update_input should be implemented")
+        
+    def solve(self):
+        raise NotImplementedError("solve should be implemented")
+        
+    def export_output(self):
+        raise NotImplementedError("export_output should be implemented")
 
     """
     @staticmethod

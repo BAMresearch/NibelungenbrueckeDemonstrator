@@ -1,0 +1,20 @@
+[
+    {
+        "name": "Displacement_1",
+        "type": "DisplacementModel",
+        "parameters": {
+            "rho":7750,
+            "E":210e9,
+            "nu":0.28
+        }
+    },
+    {
+        "name": "Displacement_2",
+        "type": "DisplacementModel",
+        "parameters": {
+            "rho":7750,
+            "E":210e9,
+            "nu":0.28
+        }
+    }
+]

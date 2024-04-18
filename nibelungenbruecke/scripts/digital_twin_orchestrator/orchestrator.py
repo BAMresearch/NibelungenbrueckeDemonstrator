@@ -24,3 +24,9 @@ class Orchestrator:
         input_value = 10
         prediction = self.predict_digital_twin(dt, input_value)
         print("Prediction:", prediction)
+
+#%%
+if __name__ == "__main__":
+    o = Orchestrator()
+    dt = DigitalTwin()
+    o.predict_dt(dt, input)

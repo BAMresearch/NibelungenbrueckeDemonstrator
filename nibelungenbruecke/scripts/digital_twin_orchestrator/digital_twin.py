@@ -1,12 +1,17 @@
-from model import Model
+from displacement_model import DisplacementModel
+
 
 class  DigitalTwin:
     def __init__(self, model_path, model_parameters):
-        self.model = Model(model_path, model_parameters)
+        self.model = {}
+
+    def set_model(self):
+        for param_models in model_list:
+            self.model["{param_models['name']}"] = param_models["type"]
         
     def predict(self, input_value):
-        if self.model.update_input(input_value):
-            self.model.solve()
-            return self.model.export_output()
+        if self.DisplacementModel.update_input(input_value):
+            self.DisplacementModel.solve()
+            return self.DisplacementModel.export_output()
         else:
             return None
