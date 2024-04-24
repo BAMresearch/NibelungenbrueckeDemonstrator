@@ -38,7 +38,7 @@ class BaseModel:
 
         #assert_path_exists(model_path)
         self.model_path = model_path
-        
+
         #assert_path_exists(model_parameters)
         self.model_parameters = model_parameters
     
@@ -62,6 +62,15 @@ class BaseModel:
     def GenerateData(self):
         ''' Run the FEM model and generate the data'''
         raise NotImplementedError("GenerateData should be implemented")
+    
+    def update_input(self, sensor_input):
+        raise NotImplementedError("update_input should be implemented")
+        
+    def solve(self):
+        raise NotImplementedError("solve should be implemented")
+        
+    def export_output(self):
+        raise NotImplementedError("export_output should be implemented")
 
     """
     @staticmethod
@@ -86,16 +95,18 @@ class BaseModel:
     def _get_default_parameters():
         ''' Get the default parameters for the model'''
         raise NotImplementedError("_get_default_parameters should be implemented")
-    """        
+    """
 
 
 #%%
+
 class DisplacementModel(BaseModel):
     
-    def __init__(self, model_path: str, model_parameters: dict):
+    def __init__(self, model_path: str, model_parameters: dict, dt_path: str):
         super().__init__(model_path, model_parameters)
         self.material_parameters = self.model_parameters["material_parameters"]
         self.default_p = self._get_default_parameters()
+        self.dt_path = dt_path
         
     def LoadGeometry(self):
         pass
@@ -126,14 +137,11 @@ class DisplacementModel(BaseModel):
         translator.save_virtual_sensor(self.problem)
         print("GenerateData has succesfully run until the paraview part!")
 
-        """
         if self.model_parameters["paraview_output"]:
             with df.io.XDMFFile(self.problem.mesh.comm, self.model_parameters["paraview_output_path"]+"/"+self.model_parameters["model_name"]+".xdmf", "w") as xdmf:
                 xdmf.write_mesh(self.problem.mesh)
                 xdmf.write_function(self.problem.fields.displacement)
         print("GenerateData has succesfully run after the paraview part!")
-        """
-        
         
     @staticmethod
     def _get_default_parameters():
@@ -149,36 +157,75 @@ class DisplacementModel(BaseModel):
             "nu":0.28 * ureg("")
         }
         return default_parameters
-
-#%%
-
-class Model:
-    def __init__(self, model_path, model_parameters):
-        self.DM = DisplacementModel(model_path, model_parameters)
-        
-    def reinitialize(self):
-        self.DM.LoadGeometry()
-        self.DM.GenerateModel()
-        self.DM.GenerateData()    
     
     def update_input(self, sensor_input):
+        
+        with open(self.dt_path, 'r') as f:
+            dt_params = json.load(f)
+            
+       # For now its only update E value
+        #TODO: Make this part more automated/flexible!    
         if isinstance(sensor_input, (int, float)):
-            self.DM.default_p["E"] = sensor_input * ureg("N/m^2")
-            #self.sensor_in = sensor_input
+            dt_params[0]["parameters"]["E"] = sensor_input
+            
+            with open(self.dt_path, 'w') as file:
+                json.dump(dt_params, file, indent=4)
             return True
         else:
             return False
         
     def solve(self):
-        self.reinitialize()
-        self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
+        #self.reinitialize()
+        #self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
         
-        file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
-        with open(file_path, 'r') as file:
-            vs_data = json.load(file)
+        #file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
+        #with open(file_path, 'r') as file:
+        #    vs_data = json.load(file)
         
-        self.vs_sensor_out = vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
+        #self.vs_sensor_out = vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
         
+        """
+        import sys
+        sys.path.append('/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/combined.py')
+        
+        import json
+        dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+        with open(dt_path, 'r') as f:
+            model_options = json.load(f)
+            
+        #module_name = model_options[0]["type"]
+        module_name = "displacement_model"
+        
+        import importlib
+        
+        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + module_name)
+        
+        myPrint_class = getattr(module, "myPrint")
+        """
+        '''
+        import json
+        import importlib
+        
+        dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+                
+        # Load the JSON file
+        with open(dt_path, 'r') as json_file:
+            parameters = json.load(json_file)
+        
+        # Loop through each entry in the JSON
+        for entry in parameters:
+            # Get the type of the entry
+            type_name = entry['type']
+            
+            # Import the corresponding Python module dynamically
+            module = importlib.import_module(type_name)
+            
+            method_to_run = getattr(module.DisplacementModel, 'GenerateModel', None) # Include others as well
+            method_to_run()
+            
+        '''
+        pass
+
     def export_output(self):
         json_path = "output_data.json"
         
@@ -189,6 +236,9 @@ class Model:
         except FileNotFoundError:
             output_data = {}
             
+        self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
+        self.vs_sensor_out = vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
+            
         output_data.setdefault('real_sensor_data', []).append(self.sensor_out)
         output_data.setdefault('virtual_sensor_data', []).append(self.vs_sensor_out)
         
@@ -196,24 +246,56 @@ class Model:
             json.dump(output_data, file)
             
         return json_path
-    
-   
+  
 #%%        
+
+import json
+import importlib
+
+
 class  DigitalTwin:
-    def __init__(self, model_path, model_parameters):
-        self.model = Model(model_path, model_parameters)
+    def __init__(self, model_path, model_parameters, path, model_to_run):
+        self.model = []
+        self.path = path
+        self.model_to_run = model_to_run
+
+    def set_model(self, json_file):
+        path = dt_path
+        with open(path, 'r') as json_file:
+            self.parameters = json.load(json_file)
+        
+        for i in range(len(self.parameters)):
+            params = {}
+            for task, task_model in self.parameters[i].items():
+                if task != "parameters":
+                    params[task] = task_model
+                print(params)
+            self.model.append(params)
+        
+        for i in self.model:
+            if self.model_to_run == i["name"]:
+                self.model_name = i["type"]
+                
+        return self.model_name
         
     def predict(self, input_value):
-        if self.model.update_input(input_value):
-            self.model.solve()
-            return self.model.export_output()
+        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + self.model_name)
+        if module.update_input(input_value):
+            module.solve()
+            return module.export_output()
         else:
             return None
-    
         
+        """
+        if self.DisplacementModel.update_input(input_value):
+            self.DisplacementModel.solve()
+            return self.DisplacementModel.export_output()
+        else:
+            return None
+        """
 #%%
 
-class Ocrhestrator:
+class Orchestrator:
     def __init__(self):
         self.updated = False
         
@@ -230,7 +312,19 @@ class Ocrhestrator:
 
     def compare(self, output, input_value):
         self.updated = (output == 2 * input_value)
+
+    def run(self):
         
+        dt = DigitalTwin()
+        input_value = 10
+        prediction = self.predict_digital_twin(dt, input_value)
+        print("Prediction:", prediction)
+
+#%%
+if __name__ == "__main__":
+    o = Orchestrator()
+    dt = DigitalTwin()
+    o.predict_dt(dt, input)
 
 #%%
 
@@ -264,6 +358,8 @@ output_parameters = {
         "output_path": "./input/data",
         "output_format": ".h5"}
 
+dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+
 
 o = Ocrhestrator()
 dt = DigitalTwin(model_path, model_parameters)
@@ -291,3 +387,37 @@ if __name__ == "__main__":
 
  
 """      
+
+
+
+#%%
+
+
+import sys
+sys.path.append("/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts")
+
+import importlib
+
+# Define a function to load modules dynamically
+def load_module(module_name):
+    try:
+        return importlib.import_module(module_name)
+    except ImportError:
+        print(f"Failed to import module {module_name}")
+        return None
+
+# Load the JSON data
+json_data = [
+    {'name': 'Displacement_1', 'type': 'displacement_model', 'parameters': {'rho': 7750, 'E': 230000000000, 'nu': 0.28}},
+    {'name': 'Displacement_2', 'type': 'displacement_model', 'parameters': {'rho': 7750, 'E': 210000000000.0, 'nu': 0.28}}
+]
+
+# Iterate through the JSON data and instantiate classes
+for item in json_data:
+    class_name = item['name']
+    module_name = f"nibelungenbruecke.scripts.digital_twin_orchestrator.{item['type']}"
+    module = load_module(module_name)
+    if module:
+        class_instance = getattr(module, class_name)(**item['parameters'])
+        # Now you have the class instance, you can use it as needed
+        # For example, you can call methods on it or access its attributes

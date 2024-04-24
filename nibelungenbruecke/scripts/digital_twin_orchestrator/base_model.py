@@ -27,10 +27,8 @@ class BaseModel:
     """   
     
     def __init__(self, model_path: str, model_parameters: dict):
-
         #assert_path_exists(model_path)
         self.model_path = model_path
-
         #assert_path_exists(model_parameters)
         self.model_parameters = model_parameters
     
@@ -41,8 +39,7 @@ class BaseModel:
         self.GenerateData()
 
     def LoadGeometry(self):
-        ''' Load the meshed geometry from a .msh file'''
-        
+        ''' Load the meshed geometry from a .msh file'''        
         # Translate mesh from gmsh to dolfinx
         self.mesh, cell_tags, facet_tags = dolfinx.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
         # self.mesh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, mesh.points, mesh.cells)

@@ -1,7 +1,6 @@
 {
     "generate_model": "false",
     "generate_synthetic_data": "false",
-    "digital_twin_data": "false",
     "preprocess_data": "false",
     "run_inference": "false",
     "postprocess_results": "false",

@@ -1,0 +1,34 @@
+{
+    "model_path": "./input/models/mesh.msh",
+    "output_parameters":{
+        "output_path": "./input/data",
+        "output_format": ".h5"},
+    "generation_models_list": [{
+        "generator_path": "displacement_generator_fenicsxconcrete",
+        "sensors_path": "./input/sensors/20230215092338.json",
+        "model_parameters": {
+            "model_name": "displacements",
+            "df_output_path":"./input/sensors/API_df_output.csv",
+            "meta_output_path":"./input/sensors/API_meta_output.json",
+            "MKP_meta_output_path":"./output/sensors/MKP_meta_output.json",
+            "MKP_translated_output_path":"./output/sensors/MKP_translated.json",
+            "virtual_sensor_added_output_path":"./output/sensors/virtual_sensor_added_translated.json",
+            "paraview_output": true,
+            "paraview_output_path": "./output/paraview",
+            "material_parameters":{},
+            "tension_z": 0.0,
+            "boundary_conditions": {
+                "bc1":{
+                "model":"clamped_boundary",
+                "side_coord": 0.0,
+                "coord": 2
+            },
+                "bc2":{
+                "model":"clamped_boundary",
+                "side_coord": 95.185,
+                "coord": 2
+            }}
+        }
+    }
+    ]
+}
