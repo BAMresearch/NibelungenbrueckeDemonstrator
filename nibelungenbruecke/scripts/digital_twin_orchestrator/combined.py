@@ -175,14 +175,19 @@ class DisplacementModel(BaseModel):
             return False
         
     def solve(self):
-        #self.reinitialize()
-        #self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
         
-        #file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
-        #with open(file_path, 'r') as file:
-        #    vs_data = json.load(file)
+        DispModel = DisplacementModel(self.model_path, self.model_parameters, self.dt_path)
+        DispModel.LoadGeometry()
+        DispModel.GenerateModel()
+        DispModel.GenerateData()
         
-        #self.vs_sensor_out = vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
+        self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
+        
+        file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
+        with open(file_path, 'r') as file:
+            self.vs_data = json.load(file)
+        
+        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
         
         """
         import sys
@@ -224,7 +229,6 @@ class DisplacementModel(BaseModel):
             method_to_run()
             
         '''
-        pass
 
     def export_output(self):
         json_path = "output_data.json"
@@ -237,7 +241,7 @@ class DisplacementModel(BaseModel):
             output_data = {}
             
         self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
-        self.vs_sensor_out = vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
+        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
             
         output_data.setdefault('real_sensor_data', []).append(self.sensor_out)
         output_data.setdefault('virtual_sensor_data', []).append(self.vs_sensor_out)
@@ -246,88 +250,8 @@ class DisplacementModel(BaseModel):
             json.dump(output_data, file)
             
         return json_path
-  
-#%%        
-
-import json
-import importlib
-
-
-class  DigitalTwin:
-    def __init__(self, model_path, model_parameters, path, model_to_run):
-        self.model = []
-        self.path = path
-        self.model_to_run = model_to_run
-
-    def set_model(self, json_file):
-        path = dt_path
-        with open(path, 'r') as json_file:
-            self.parameters = json.load(json_file)
-        
-        for i in range(len(self.parameters)):
-            params = {}
-            for task, task_model in self.parameters[i].items():
-                if task != "parameters":
-                    params[task] = task_model
-                print(params)
-            self.model.append(params)
-        
-        for i in self.model:
-            if self.model_to_run == i["name"]:
-                self.model_name = i["type"]
-                
-        return self.model_name
-        
-    def predict(self, input_value):
-        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + self.model_name)
-        if module.update_input(input_value):
-            module.solve()
-            return module.export_output()
-        else:
-            return None
-        
-        """
-        if self.DisplacementModel.update_input(input_value):
-            self.DisplacementModel.solve()
-            return self.DisplacementModel.export_output()
-        else:
-            return None
-        """
-#%%
-
-class Orchestrator:
-    def __init__(self):
-        self.updated = False
-        
-    def predict_dt(self, digital_twin, input_value):
-        return digital_twin.predict(input_value)
     
-    def predict_last_week(self, digital_twin, inputs):
-        predictions = []
-        for input_value in inputs:
-            prediction = digital_twin.predict(input_value)
-            if prediction is not None:
-                predictions.append(prediction)
-        return predictions
-
-    def compare(self, output, input_value):
-        self.updated = (output == 2 * input_value)
-
-    def run(self):
-        
-        dt = DigitalTwin()
-        input_value = 10
-        prediction = self.predict_digital_twin(dt, input_value)
-        print("Prediction:", prediction)
-
 #%%
-if __name__ == "__main__":
-    o = Orchestrator()
-    dt = DigitalTwin()
-    o.predict_dt(dt, input)
-
-#%%
-
 
 model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
 sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
@@ -360,64 +284,80 @@ output_parameters = {
 
 dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
 
+DM = DisplacementModel(model_path, model_parameters, dt_path)
 
-o = Ocrhestrator()
-dt = DigitalTwin(model_path, model_parameters)
-o.predict_dt(dt, 2)
-#o.predict_last_week(digital_twin, inputs)
-#o.compare(output, input_value)
-
-
-"""
-if __name__ == "__main__":
-    d = DisplacementModel(model_path, model_parameters)
-    d.LoadGeometry()
-    print()
-    print("first part")
-    print()
-    d.GenerateModel()
-    print()
-    print("second part")
-    print()
-    d.GenerateData()
-    print()
-    print("third part")
-    print()   
-    #d.problem.sensors.get('E_plus_413TU_HSS-m-_Avg1', None).data[0].tolist()
-
- 
-"""      
+DM.LoadGeometry()
+DM.GenerateModel()
+DM.GenerateData()
+DM.update_input(210*10**6)  #that part works
+DM.solve()  # work on this!!
+DM.export_output()  # work on this!!
 
 
 
-#%%
 
+  
+#%%        
 
-import sys
-sys.path.append("/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts")
-
+import json
 import importlib
 
-# Define a function to load modules dynamically
-def load_module(module_name):
-    try:
-        return importlib.import_module(module_name)
-    except ImportError:
-        print(f"Failed to import module {module_name}")
-        return None
 
-# Load the JSON data
-json_data = [
-    {'name': 'Displacement_1', 'type': 'displacement_model', 'parameters': {'rho': 7750, 'E': 230000000000, 'nu': 0.28}},
-    {'name': 'Displacement_2', 'type': 'displacement_model', 'parameters': {'rho': 7750, 'E': 210000000000.0, 'nu': 0.28}}
-]
+class  DigitalTwin:
+    def __init__(self, model_path, model_parameters, path, model_to_run):   #place path and model_to_run paramters into the JSON!!
+        self.model = []
+        self.path = path
+        self.model_to_run = model_to_run
 
-# Iterate through the JSON data and instantiate classes
-for item in json_data:
-    class_name = item['name']
-    module_name = f"nibelungenbruecke.scripts.digital_twin_orchestrator.{item['type']}"
-    module = load_module(module_name)
-    if module:
-        class_instance = getattr(module, class_name)(**item['parameters'])
-        # Now you have the class instance, you can use it as needed
-        # For example, you can call methods on it or access its attributes
+    def set_model(self, json_file):
+        with open(self.path, 'r') as json_file:
+            self.parameters = json.load(json_file)
+        
+        for i in range(len(self.parameters)):
+            params = {}
+            for task, task_model in self.parameters[i].items():
+                if task != "parameters":
+                    params[task] = task_model
+                print(params)
+            self.model.append(params)
+        
+        for i in self.model:
+            if self.model_to_run == i["name"]:
+                self.model_name = i["type"]
+                
+        return self.model_name
+        
+    def predict(self, input_value):
+        self.model_name = self.set_model(self.path)
+        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + self.model_name)
+        if module.update_input(input_value):
+            module.solve()
+            return module.export_output()
+        else:
+            return None
+#%%
+
+class Orchestrator:
+    def __init__(self):
+        self.updated = False
+        
+    def predict_dt(self, digital_twin, input_value):
+        return digital_twin.predict(input_value)
+    
+    def predict_last_week(self, digital_twin, inputs):
+        predictions = []
+        for input_value in inputs:
+            prediction = digital_twin.predict(input_value)
+            if prediction is not None:
+                predictions.append(prediction)
+        return predictions
+
+    def compare(self, output, input_value):
+        self.updated = (output == 2 * input_value)
+
+    def run(self):
+        
+        dt = DigitalTwin()
+        input_value = 10
+        prediction = self.predict_digital_twin(dt, input_value)
+        print("Prediction:", prediction)

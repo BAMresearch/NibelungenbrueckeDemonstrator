@@ -79,9 +79,9 @@ class BaseModel:
             offload_sensors(sensors, self.output_parameters["output_path"]+"/"+self.model_parameters["model_name"], self.output_parameters["output_format"])
             
         return wrapper
-    
+    """    
     @staticmethod
     def _get_default_parameters():
         ''' Get the default parameters for the model'''
         raise NotImplementedError("_get_default_parameters should be implemented")
-    """
+
