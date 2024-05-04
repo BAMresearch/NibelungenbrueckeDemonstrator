@@ -38,9 +38,9 @@ class API_Request:
             "startTime": "2023-08-11T08:00:00Z",
             "endTime": "2023-08-11T09:00:00Z",
             "meta_channel": True,
-            "columns": ['E_plus_445LVU_HS--o-_Avg1',
-             'E_plus_445LVU_HS--u-_Avg1',
-             'E_plus_413TU_HSS-m-_Avg1',
+            "columns": ['E_plus_413TU_HSS-m-_Avg1',
+             'E_plus_080DU_HSN-o-_Avg1',
+             'E_plus_080DU_HSN-u-_Avg1'
              ]
             }
         
@@ -333,7 +333,27 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [44.52, -4.74, 0.0],
+                "coordinate": [44.52, 0.0, 0.0],
+                "height": 102.698                       
+            })
+            
+            elif self.df.columns[i] == 'E_plus_080DU_HSN-o-_Avg1':
+                column_name = self.df.columns[i]
+                self.data["meta"]["Move"].append({
+                "name": column_name,
+                "unit": "\u00b0C",
+                "sample_rate": 0.0016666666666666668,   
+                "coordinate": [80, 0.0, 0.0],
+                "height": 107.438                        
+            })
+                
+            elif self.df.columns[i] == 'E_plus_080DU_HSN-u-_Avg1':
+                column_name = self.df.columns[i]
+                self.data["meta"]["Move"].append({
+                "name": column_name,
+                "unit": "\u00b0C",
+                "sample_rate": 0.0016666666666666668,   
+                "coordinate": [80, -4.74, 0.0],
                 "height": 102.698                       
             })
 

@@ -26,11 +26,11 @@ class BaseModel:
         self.output_parameters = output_parameters
     """   
     
-    def __init__(self, model_path: str, model_parameters: dict):
+    def __init__(self, model_path: str, model_parameters_path: str):
         #assert_path_exists(model_path)
         self.model_path = model_path
         #assert_path_exists(model_parameters)
-        self.model_parameters = model_parameters
+        self.model_parameters_path = model_parameters_path
     
     def Generate(self):
         ''' Generate the data from the start'''

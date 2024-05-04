@@ -2,8 +2,9 @@
 from digital_twin import DigitalTwin
 
 class Orchestrator:
-    def __init__(self):
+    def __init__(self, model_parameters: dict):
         self.updated = False
+        self.model_parameters = model_parameters
         
     def predict_dt(self, digital_twin, input_value):
         return digital_twin.predict(input_value)
@@ -19,13 +20,27 @@ class Orchestrator:
     def compare(self, output, input_value):
         self.updated = (output == 2 * input_value)
 
-    def run(self, model_path, model_parameters, path, model_to_run, input_value=2.7*10**6):
-        digital_twin = DigitalTwin(model_path, model_parameters, path, model_to_run)  # Assuming these parameters are available
+    def run(self, input_value=2.7*10**6):
+        model_path = self.model_parameters["model_path"]
+        model_parameters = self.model_parameters["generation_models_list"][0]["model_parameters"]
+        path = self.model_parameters["generation_models_list"][0]["digital_twin_parameters_path"]
+        digital_twin = DigitalTwin(model_path, model_parameters, path, model_to_run = "Displacement_1")
         prediction = self.predict_dt(digital_twin, input_value)
         print("Prediction:", prediction)
+        
 
 
 #%%
+
+
+
+
+
+
+
+
+#%%
+        '''
 if __name__ == "__main__":
     model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
     sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
@@ -60,3 +75,17 @@ if __name__ == "__main__":
 
     orch = Orchestrator()
     orch.run(model_path, model_parameters, dt_path, model_to_run= "Displacement_1")
+
+    '''
+
+#%%
+import json
+
+if __name__ == "__main__":
+    
+    data_parameters_path = "/input/settings/generate_data_parameters.json"
+    with open(data_parameters_path, 'r') as f:
+        data_parameters = json.load(f)
+        
+    orchestrator = Orchestrator(data_parameters)
+    orchestrator.run()

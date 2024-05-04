@@ -12,11 +12,17 @@ import importlib
 
 class DisplacementModel(BaseModel):
     
-    def __init__(self, model_path: str, model_parameters: dict, dt_path: str):
-        super().__init__(model_path, model_parameters)
+    def __init__(self, model_path: str, model_parameters_path: str, dt_path: str):
+        super().__init__(model_path, model_parameters_path)
+        
+
+        with open(self.model_parameters_path, "r") as file:
+            parameters = json.load(file)
+
         self.material_parameters = self.model_parameters["material_parameters"]
         self.default_p = self._get_default_parameters()
         self.dt_path = dt_path
+        self.vs_path = self.model_parameters["material_parameters"]
         
     def LoadGeometry(self):
         pass
@@ -30,7 +36,7 @@ class DisplacementModel(BaseModel):
     def GenerateData(self):
         """Generate data based on the model parameters."""
 
-        api_request = API_Request()     #TODO: Include DU:dehnung sensor for vertical displacement!!
+        api_request = API_Request()     #TODO: Include DU:dehnung sensor for vertical displacement!! -> DONE!!
         self.api_dataFrame = api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
@@ -87,16 +93,20 @@ class DisplacementModel(BaseModel):
     def solve(self):
         
         vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
-                
-        self.LoadGeometry()
-        self.GenerateModel()
-        self.GenerateData()
+         #TODO: vs.file_path as a json parameter       
+        #self.LoadGeometry()
+        #self.GenerateModel()
+        #self.GenerateData()
+
+        print(self.api_dataFrame)
+        print()
+        print(self.api_dataFrame['E_plus_080DU_HSN-o-_Avg1'])
         
-        self.sensor_out = self.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1] #TODO: DU: dehnung sensor to import from API
+        self.sensor_out = self.api_dataFrame['E_plus_080DU_HSN-o-_Avg1'].iloc[-1] #TODO: DU: dehnung sensor to import from API -> DONE!!
                 
         with open(vs_file_path, 'r') as file:
             self.vs_data = json.load(file)        
-        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
+        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_080DU_HSN-o-_Avg1']['displacements'][-1][0]
         
     def export_output(self): #TODO: json_path as a input parameters!!
         json_path = "output_data.json" #TODO: move to json file
@@ -151,16 +161,18 @@ if __name__ == "__main__":
 
 
     DispModel = DisplacementModel(model_path, model_parameters, dt_path)
-    DispModel.LoadGeometry()
-    DispModel.GenerateModel()
-    DispModel.GenerateData()
+    #DispModel.LoadGeometry()
+    #DispModel.GenerateModel()
+    #DispModel.GenerateData()
     
     vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
-    DispModel.solve(vs_file_path)
+    DispModel.solve()
     
     DispModel.export_output()
 
 #%%
+    
+    '''
 if __name__ == "__main__":
     path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/generate_data_parameters.json"
     with open(path, "r") as file:
@@ -181,4 +193,4 @@ if __name__ == "__main__":
     vs_file_path = generation_list["virtual_sensor_added_output_path"]
     DispModel.solve(vs_file_path)
     DispModel.export_output()
-    
+    '''
