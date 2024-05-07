@@ -6,7 +6,6 @@
     "generation_models_list": [{
         "generator_path": "displacement_generator_fenicsxconcrete",
         "sensors_path": "./input/sensors/20230215092338.json",
-        "digital_twin_parameters_path" : "./input/settings/digital_twin_parameters.json",
         "model_parameters": {
             "model_name": "displacements",
             "df_output_path":"./input/sensors/API_df_output.csv",
