@@ -1,17 +1,9 @@
+import ufl
+from petsc4py.PETSc import ScalarType
+from dolfinx import fem
 import dolfinx
 from mpi4py import MPI
-import dolfinx as df
-import json
-
-from nibelungenbruecke.scripts.utilities.checks import assert_path_exists
-from nibelungenbruecke.scripts.utilities.loaders import load_sensors
-from nibelungenbruecke.scripts.utilities.offloaders import offload_sensors
-
-
-from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
-from fenicsxconcrete.finite_element_problem.linear_elasticity import LinearElasticity
 from fenicsxconcrete.util import ureg
-from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_Request, MetadataSaver, Translator
 
 class BaseModel:
     ''' Base class for a generator of synthetic data from a model.'''
@@ -35,10 +27,8 @@ class BaseModel:
     """   
     
     def __init__(self, model_path: str, model_parameters: dict):
-
         #assert_path_exists(model_path)
         self.model_path = model_path
-
         #assert_path_exists(model_parameters)
         self.model_parameters = model_parameters
     
@@ -49,8 +39,7 @@ class BaseModel:
         self.GenerateData()
 
     def LoadGeometry(self):
-        ''' Load the meshed geometry from a .msh file'''
-        
+        ''' Load the meshed geometry from a .msh file'''        
         # Translate mesh from gmsh to dolfinx
         self.mesh, cell_tags, facet_tags = dolfinx.io.gmshio.read_from_msh(self.model_path, MPI.COMM_WORLD, 0)
         # self.mesh = dolfinx.mesh.create_mesh(MPI.COMM_WORLD, mesh.points, mesh.cells)
@@ -90,15 +79,28 @@ class BaseModel:
             offload_sensors(sensors, self.output_parameters["output_path"]+"/"+self.model_parameters["model_name"], self.output_parameters["output_format"])
             
         return wrapper
-    
+    """    
     @staticmethod
     def _get_default_parameters():
         ''' Get the default parameters for the model'''
         raise NotImplementedError("_get_default_parameters should be implemented")
-    """
+
 
 
 #%%
+
+
+#from nibelungenbruecke.scripts.digital_twin_orchestrator.base_model import BaseModel
+from base_model import BaseModel
+import dolfinx as df
+import json
+from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
+from fenicsxconcrete.finite_element_problem.linear_elasticity import LinearElasticity
+from fenicsxconcrete.util import ureg
+from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_Request, MetadataSaver, Translator
+from nibelungenbruecke.scripts.utilities.loaders import load_sensors
+from nibelungenbruecke.scripts.utilities.offloaders import offload_sensors
+import importlib
 
 class DisplacementModel(BaseModel):
     
@@ -120,7 +122,7 @@ class DisplacementModel(BaseModel):
     def GenerateData(self):
         """Generate data based on the model parameters."""
 
-        api_request = API_Request()
+        api_request = API_Request()     #TODO: Include DU:dehnung sensor for vertical displacement!!
         self.api_dataFrame = api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
@@ -163,8 +165,8 @@ class DisplacementModel(BaseModel):
         with open(self.dt_path, 'r') as f:
             dt_params = json.load(f)
             
-       # For now its only update E value
-        #TODO: Make this part more automated/flexible!    
+       # currently, only updates E value
+        #TODO: Make this part more automated/flexible!  
         if isinstance(sensor_input, (int, float)):
             dt_params[0]["parameters"]["E"] = sensor_input
             
@@ -176,62 +178,20 @@ class DisplacementModel(BaseModel):
         
     def solve(self):
         
-        DispModel = DisplacementModel(self.model_path, self.model_parameters, self.dt_path)
-        DispModel.LoadGeometry()
-        DispModel.GenerateModel()
-        DispModel.GenerateData()
+        vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
+                
+        self.LoadGeometry()
+        self.GenerateModel()
+        self.GenerateData()
         
-        self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
-        
-        file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
-        with open(file_path, 'r') as file:
-            self.vs_data = json.load(file)
-        
+        self.sensor_out = self.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1] #TODO: DU: dehnung sensor to import from API
+                
+        with open(vs_file_path, 'r') as file:
+            self.vs_data = json.load(file)        
         self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
         
-        """
-        import sys
-        sys.path.append('/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/combined.py')
-        
-        import json
-        dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
-        with open(dt_path, 'r') as f:
-            model_options = json.load(f)
-            
-        #module_name = model_options[0]["type"]
-        module_name = "displacement_model"
-        
-        import importlib
-        
-        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + module_name)
-        
-        myPrint_class = getattr(module, "myPrint")
-        """
-        '''
-        import json
-        import importlib
-        
-        dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
-                
-        # Load the JSON file
-        with open(dt_path, 'r') as json_file:
-            parameters = json.load(json_file)
-        
-        # Loop through each entry in the JSON
-        for entry in parameters:
-            # Get the type of the entry
-            type_name = entry['type']
-            
-            # Import the corresponding Python module dynamically
-            module = importlib.import_module(type_name)
-            
-            method_to_run = getattr(module.DisplacementModel, 'GenerateModel', None) # Include others as well
-            method_to_run()
-            
-        '''
-
-    def export_output(self):
-        json_path = "output_data.json"
+    def export_output(self): #TODO: json_path as a input parameters!!
+        json_path = "output_data.json" #TODO: move to json file
         
         try:
             with open(json_path, 'r') as file:
@@ -239,9 +199,6 @@ class DisplacementModel(BaseModel):
                 
         except FileNotFoundError:
             output_data = {}
-            
-        self.sensor_out = self.DM.api_dataFrame['E_plus_445LVU_HS--u-_Avg1'].iloc[-1]
-        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_445LVU_HS--u-_Avg1']['displacements'][-1][0]
             
         output_data.setdefault('real_sensor_data', []).append(self.sensor_out)
         output_data.setdefault('virtual_sensor_data', []).append(self.vs_sensor_out)
@@ -252,90 +209,160 @@ class DisplacementModel(BaseModel):
         return json_path
     
 #%%
+if __name__ == "__main__":
+    model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
+    sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
+    model_parameters =  {
+                "model_name": "displacements",
+                "df_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+                "meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+                "MKP_meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+                "MKP_translated_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+                "virtual_sensor_added_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
+                "paraview_output": True,
+                "paraview_output_path": "./output/paraview",
+                "material_parameters":{},
+                "tension_z": 0.0,
+                "boundary_conditions": {
+                    "bc1":{
+                    "model":"clamped_boundary",
+                    "side_coord": 0.0,
+                    "coord": 2
+                },
+                    "bc2":{
+                    "model":"clamped_boundary",
+                    "side_coord": 95.185,
+                    "coord": 2
+                }}
+            }
+    output_parameters = {
+            "output_path": "./input/data",
+            "output_format": ".h5"}
 
-model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
-sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
-model_parameters =  {
-            "model_name": "displacements",
-            "df_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
-            "meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
-            "MKP_meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
-            "MKP_translated_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
-            "virtual_sensor_added_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
-            "paraview_output": True,
-            "paraview_output_path": "./output/paraview",
-            "material_parameters":{},
-            "tension_z": 0.0,
-            "boundary_conditions": {
-                "bc1":{
-                "model":"clamped_boundary",
-                "side_coord": 0.0,
-                "coord": 2
-            },
-                "bc2":{
-                "model":"clamped_boundary",
-                "side_coord": 95.185,
-                "coord": 2
-            }}
-        }
-output_parameters = {
-        "output_path": "./input/data",
-        "output_format": ".h5"}
-
-dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
-
-DM = DisplacementModel(model_path, model_parameters, dt_path)
-
-DM.LoadGeometry()
-DM.GenerateModel()
-DM.GenerateData()
-DM.update_input(210*10**6)  #that part works
-DM.solve()  # work on this!!
-DM.export_output()  # work on this!!
+    dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
 
 
+    DispModel = DisplacementModel(model_path, model_parameters, dt_path)
+    DispModel.LoadGeometry()
+    DispModel.GenerateModel()
+    DispModel.GenerateData()
+    
+    vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
+    DispModel.solve(vs_file_path)
+    
+    DispModel.export_output()
 
+#%%
+if __name__ == "__main__":
+    path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/generate_data_parameters.json"
+    with open(path, "r") as file:
+        data = json.load(file)
+    model_path = data["model_path"]
 
-  
-#%%        
+    generation_list = data["generation_models_list"][0]
+    sensor_positions_path = generation_list["sensors_path"]
+    model_parameters = generation_list["model_parameters"]
+    output_parameters = ""
+    dt_path = generation_list["digital_twin_parameters_path"]
 
+    DispModel = DisplacementModel(model_path, model_parameters, dt_path)
+    DispModel.LoadGeometry()
+    DispModel.GenerateModel()
+    DispModel.GenerateData()
+    
+    vs_file_path = generation_list["virtual_sensor_added_output_path"]
+    DispModel.solve(vs_file_path)
+    DispModel.export_output()
+    
+    
+#%%
+
+from displacement_model import DisplacementModel
 import json
 import importlib
 
-
 class  DigitalTwin:
-    def __init__(self, model_path, model_parameters, path, model_to_run):   #place path and model_to_run paramters into the JSON!!
-        self.model = []
+    def __init__(self, model_path, model_parameters, path, model_to_run = "Displacement_1"):   #TODO: place path and model_to_run paramters into the JSON!!
+        self.model_path = model_path
+        self.model_parameters = model_parameters
         self.path = path
         self.model_to_run = model_to_run
-
-    def set_model(self, json_file):
+        self.load_models()
+        
+    def load_models(self):
         with open(self.path, 'r') as json_file:
-            self.parameters = json.load(json_file)
+            self.models = json.load(json_file)
         
-        for i in range(len(self.parameters)):
-            params = {}
-            for task, task_model in self.parameters[i].items():
-                if task != "parameters":
-                    params[task] = task_model
-                print(params)
-            self.model.append(params)
-        
-        for i in self.model:
-            if self.model_to_run == i["name"]:
-                self.model_name = i["type"]
-                
-        return self.model_name
-        
+    def set_model(self):
+        for model_info in self.models:
+            if model_info["name"] == self.model_to_run:
+                self.model_name = model_info["type"]
+                self.object_name = model_info["class"]
+                return True
+        return False
+    
     def predict(self, input_value):
-        self.model_name = self.set_model(self.path)
-        module = importlib.import_module("nibelungenbruecke.scripts.digital_twin_orchestrator." + self.model_name)
-        if module.update_input(input_value):
-            module.solve()
-            return module.export_output()
-        else:
-            return None
+        if self.set_model():
+            module = importlib.import_module(self.model_name)
+            digital_twin_model = getattr(module, self.object_name)(self.model_path, self.model_parameters, self.path)
+            if digital_twin_model.update_input(input_value):
+                digital_twin_model.solve()
+                return digital_twin_model.export_output()
+            
+        return None
+  
 #%%
+
+if __name__ == "__main__":
+    model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
+    sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
+    model_parameters =  {
+                "model_name": "displacements",
+                "df_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+                "meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+                "MKP_meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+                "MKP_translated_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+                "virtual_sensor_added_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
+                "paraview_output": True,
+                "paraview_output_path": "./output/paraview",
+                "material_parameters":{},
+                "tension_z": 0.0,
+                "boundary_conditions": {
+                    "bc1":{
+                    "model":"clamped_boundary",
+                    "side_coord": 0.0,
+                    "coord": 2
+                },
+                    "bc2":{
+                    "model":"clamped_boundary",
+                    "side_coord": 95.185,
+                    "coord": 2
+                }}
+            }
+    output_parameters = {
+            "output_path": "./input/data",
+            "output_format": ".h5"}
+
+    dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+
+
+    DTM = DigitalTwin(model_path, model_parameters, dt_path)
+    DTM.set_model()
+    DTM.predict(3*10**9)
+    DTM.GenerateData()
+    
+    vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
+    DTM.solve(vs_file_path)
+    
+    DTM.export_output()
+
+
+
+
+#%%
+
+#from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
+from digital_twin import DigitalTwin
 
 class Orchestrator:
     def __init__(self):
@@ -355,9 +382,46 @@ class Orchestrator:
     def compare(self, output, input_value):
         self.updated = (output == 2 * input_value)
 
-    def run(self):
-        
-        dt = DigitalTwin()
-        input_value = 10
-        prediction = self.predict_digital_twin(dt, input_value)
+    def run(self, model_path, model_parameters, path, model_to_run, input_value=2.7*10**6):
+        digital_twin = DigitalTwin(model_path, model_parameters, path, model_to_run)  # Assuming these parameters are available
+        prediction = self.predict_dt(digital_twin, input_value)
         print("Prediction:", prediction)
+
+
+#%%
+if __name__ == "__main__":
+    model_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh"
+    sensor_positions_path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json"
+    model_parameters =  {
+                "model_name": "displacements",
+                "df_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+                "meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+                "MKP_meta_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+                "MKP_translated_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+                "virtual_sensor_added_output_path":"/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
+                "paraview_output": True,
+                "paraview_output_path": "./output/paraview",
+                "material_parameters":{},
+                "tension_z": 0.0,
+                "boundary_conditions": {
+                    "bc1":{
+                    "model":"clamped_boundary",
+                    "side_coord": 0.0,
+                    "coord": 2
+                },
+                    "bc2":{
+                    "model":"clamped_boundary",
+                    "side_coord": 95.185,
+                    "coord": 2
+                }}
+            }
+    output_parameters = {
+            "output_path": "./input/data",
+            "output_format": ".h5"}
+
+    dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+
+    orch = Orchestrator()
+    orch.run(model_path, model_parameters, dt_path, model_to_run= "Displacement_1")
+
+

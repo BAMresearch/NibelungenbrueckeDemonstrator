@@ -1,20 +1,21 @@
 {
-    "model_path": "./input/models/mesh.msh",
+    "model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
     "output_parameters":{
         "output_path": "./input/data",
         "output_format": ".h5"},
     "generation_models_list": [{
         "generator_path": "displacement_generator_fenicsxconcrete",
-        "sensors_path": "./input/sensors/20230215092338.json",
+        "sensors_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json",
+        "digital_twin_parameters_path" : "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json",
         "model_parameters": {
             "model_name": "displacements",
-            "df_output_path":"./input/sensors/API_df_output.csv",
-            "meta_output_path":"./input/sensors/API_meta_output.json",
-            "MKP_meta_output_path":"./output/sensors/MKP_meta_output.json",
-            "MKP_translated_output_path":"./output/sensors/MKP_translated.json",
-            "virtual_sensor_added_output_path":"./output/sensors/virtual_sensor_added_translated.json",
+            "df_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+            "meta_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+            "MKP_meta_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+            "MKP_translated_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+            "virtual_sensor_added_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
             "paraview_output": true,
-            "paraview_output_path": "./output/paraview",
+            "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
             "material_parameters":{},
             "tension_z": 0.0,
             "boundary_conditions": {

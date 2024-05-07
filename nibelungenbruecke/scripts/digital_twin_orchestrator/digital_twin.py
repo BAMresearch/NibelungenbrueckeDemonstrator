@@ -3,15 +3,15 @@ import json
 import importlib
 
 class  DigitalTwin:
-    def __init__(self, model_path, model_parameters, path, model_to_run = "Displacement_1"):   #TODO: place path and model_to_run paramters into the JSON!!
+    def __init__(self, model_path, model_parameters, dt_path, model_to_run):
         self.model_path = model_path
         self.model_parameters = model_parameters
-        self.path = path
+        self.dt_path = dt_path
         self.model_to_run = model_to_run
         self.load_models()
         
     def load_models(self):
-        with open(self.path, 'r') as json_file:
+        with open(self.dt_path, 'r') as json_file:
             self.models = json.load(json_file)
         
     def set_model(self):
@@ -31,6 +31,7 @@ class  DigitalTwin:
                 return digital_twin_model.export_output()
             
         return None
+    
   
 #%%
 
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     DTM = DigitalTwin(model_path, model_parameters, dt_path)
     DTM.set_model()
     DTM.predict(3*10**9)
-    DTM.GenerateData()
+
     
     vs_file_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json'
     DTM.solve(vs_file_path)

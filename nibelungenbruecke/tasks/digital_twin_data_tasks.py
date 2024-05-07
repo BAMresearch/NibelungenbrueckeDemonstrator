@@ -26,6 +26,22 @@ def task_digital_twin():
 
     """
 
+
+#%%
+
+def task():
+    data_parameters_path = "./input/settings/generate_data_parameters.json"
+    with open(data_parameters_path, 'r') as f:
+        data_parameters = json.load(f)
+        
+    orchestrator = Orchestrator()
+    orchestrator.run(data_parameters)
+    
+    
+
+
 if __name__ == "__main__":
         
-    task_digital_twin()
+    task()
+    
+    
