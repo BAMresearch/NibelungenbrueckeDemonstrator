@@ -75,3 +75,10 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
             "nu":0.28 * ureg("")
         }
         return default_parameters
+
+
+#
+    
+api = API_Request()
+api.fetch_data()
+print(api.df)

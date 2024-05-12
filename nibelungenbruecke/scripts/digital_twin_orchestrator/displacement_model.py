@@ -144,3 +144,7 @@ if __name__ == "__main__":
     DM.solve()
     a = DM.api_dataFrame
     print(a)
+    
+    K = DisplacementModel(model_path, model_parameters, dt_path)
+    
+    print(id(DM) == id(K))
