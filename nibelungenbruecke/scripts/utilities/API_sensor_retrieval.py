@@ -157,7 +157,8 @@ class API_Request:
         data = response.json()
         self.df = pd.DataFrame(data["rows"], columns=[col["ColumnName"] for col in data["columns"]])
         #self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"], format="ISO8601")
-        self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"])
+        #format_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+        self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"], format='ISO8601', utc=True)
         self.df = self.df.set_index("Timestamp")
         # print(self.df)
         return pd.DataFrame(self.df[self.df.columns], index=pd.to_datetime(self.df.index))

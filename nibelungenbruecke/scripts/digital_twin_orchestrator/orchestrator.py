@@ -31,6 +31,7 @@ class Orchestrator:
         dt_path = self.model_parameters["generation_models_list"][0]["digital_twin_parameters_path"]
         digital_twin = DigitalTwin(model_path, model_parameters, dt_path, model_to_run = "Displacement_1")
         prediction = self.predict_dt(digital_twin, input_value)
+        #prediction = self.predict_last_week(digital_twin, input_value)
         print("Prediction:", prediction) #TODO: Remove this!!
         
 

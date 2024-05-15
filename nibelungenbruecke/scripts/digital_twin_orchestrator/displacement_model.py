@@ -1,5 +1,5 @@
-#from nibelungenbruecke.scripts.digital_twin_orchestrator.base_model import BaseModel
-from base_model import BaseModel
+from nibelungenbruecke.scripts.digital_twin_orchestrator.base_model import BaseModel
+#from base_model import BaseModel
 import dolfinx as df
 import json
 from nibelungenbruecke.scripts.data_generation.nibelungen_experiment import NibelungenExperiment
@@ -90,16 +90,17 @@ class DisplacementModel(BaseModel):
         self.GenerateData()
         
         #TODO: API Request output error!!
-        #self.sensor_out = self.api_dataFrame['E_plus_080DU_HSN-o-_Avg1'].iloc[-1]
-        self.sensor_out = self.api_dataFrame['E_plus_413TU_HSS-m-_Avg1'].iloc[-1]     
+        self.sensor_out = self.api_dataFrame['E_plus_080DU_HSN-u-_Avg1'].iloc[-1] # *1000 #Convertion from meter to milimeter
+        #self.sensor_out = self.api_dataFrame['E_plus_413TU_HSS-m-_Avg1'].iloc[-1]
+   
         
         vs_file_path = self.model_parameters["virtual_sensor_added_output_path"]
         with open(vs_file_path, 'r') as file:
             self.vs_data = json.load(file)        
         
         #TODO: API Request output error!!
-        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_413TU_HSS-m-_Avg1']['displacements'][-1][0]
-        #self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_080DU_HSN-o-_Avg1']['displacements'][-1][0]
+        #self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_413TU_HSS-m-_Avg1']['displacements'][-1][0]
+        self.vs_sensor_out = self.vs_data['virtual_sensors']['E_plus_080DU_HSN-u-_Avg1']['displacements'][-1][0]
         
     def export_output(self): #TODO: json_path as a input parameters!!
         json_path = "output_data.json" #TODO: move to json file
@@ -111,8 +112,8 @@ class DisplacementModel(BaseModel):
         except FileNotFoundError:
             output_data = {}
             
-        output_data.setdefault('real_sensor_data', []).append(self.sensor_out)
-        output_data.setdefault('virtual_sensor_data', []).append(self.vs_sensor_out)
+        output_data.setdefault('real_sensor_output', []).append(self.sensor_out)
+        output_data.setdefault('virtual_sensor_output', []).append(self.vs_sensor_out)
         
         with open(json_path, 'w') as file:
             json.dump(output_data, file)

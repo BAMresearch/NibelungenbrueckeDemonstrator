@@ -1,7 +1,7 @@
 from displacement_model import DisplacementModel
 import json
 import importlib
-from cache_saver import ObjectCache
+from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
 
 class  DigitalTwin:
     def __init__(self, model_path, model_parameters, dt_path, model_to_run):
@@ -13,8 +13,8 @@ class  DigitalTwin:
         self.current_model = {}
         
         #TODO: !!
-        checkpoint_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/pickle_data.pkl'
-        self.cache = ObjectCache(checkpoint_path)
+        checkpointing_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/pickle_data.pkl'
+        self.cache = ObjectCache(checkpointing_path)
         
     def load_models(self):
         with open(self.dt_path, 'r') as json_file:
@@ -43,29 +43,6 @@ class  DigitalTwin:
                 return digital_twin_model.export_output()
             
         return None
-
-    
-    
-    
-
-    """
-    def get_model_instance(self):
-        if self.current_model is None or self.current_model.__class__.__name__ != self.object_name:
-            module = importlib.import_module(self.model_name)
-            self.current_model = getattr(module, self.object_name)(self.model_path, self.model_parameters, self.dt_path)
-        return self.current_model
-    """
-    """
-    def predict(self, input_value):
-        if self.set_model():
-            digital_twin_model = self.get_model_instance()
-            if digital_twin_model.update_input(input_value):
-                digital_twin_model.solve()
-                return digital_twin_model.export_output()
-        return None
-    """
-    
-  
 #%%
 import pickle
 
