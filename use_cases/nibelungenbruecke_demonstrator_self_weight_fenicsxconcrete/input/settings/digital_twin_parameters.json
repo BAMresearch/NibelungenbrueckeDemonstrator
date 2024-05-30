@@ -5,9 +5,10 @@
         "class": "DisplacementModel",
         "parameters": {
             "rho": 7750,
-            "E": 2700000.0,
+            "E": 270000000000.0,
             "nu": 0.28
-        }
+        },
+        "path": "Displacement_1.pkl"
     },
     {
         "name": "Displacement_2",
@@ -17,6 +18,7 @@
             "rho": 7750,
             "E": 210000000000.0,
             "nu": 0.28
-        }
+        },
+        "path": "Displacement_2.pkl"
     }
 ]

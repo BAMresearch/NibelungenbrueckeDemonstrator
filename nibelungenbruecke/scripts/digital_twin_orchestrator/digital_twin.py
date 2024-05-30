@@ -3,18 +3,14 @@ import json
 import importlib
 from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
 
-class  DigitalTwin:
+class DigitalTwin:
     def __init__(self, model_path, model_parameters, dt_path, model_to_run):
         self.model_path = model_path
         self.model_parameters = model_parameters
         self.dt_path = dt_path
         self.model_to_run = model_to_run
         self.load_models()
-        self.current_model = {}
-        
-        #TODO: !!
-        checkpointing_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/pickle_data.pkl'
-        self.cache = ObjectCache(checkpointing_path)
+        self.cache_object = ObjectCache()
         
     def load_models(self):
         with open(self.dt_path, 'r') as json_file:
@@ -23,26 +19,72 @@ class  DigitalTwin:
     def set_model(self):
         for model_info in self.models:
             if model_info["name"] == self.model_to_run:
-                self.model_name = model_info["type"]
-                self.object_name = model_info["class"]
+                self.cache_model_name = model_info["type"]
+                self.cache_object_name = model_info["class"]
+                self.cache_model_path = model_info["path"]
                 return True
         return False
-    
+  #%%
+    # def predict(self, input_value):
+    #     if self.set_model():
+    #         self.cache_object = ObjectCache(self.cache_model_path)
+    #         cached_model = self.cache_object.get_object(self.cache_model_name, self.cache_object_name)
+    #         if cached_model:
+    #             digital_twin_model = cached_model
+    #         else:
+    #             digital_twin_model = self.load_and_cache_model()
+            
+    #         if digital_twin_model and digital_twin_model.update_input(input_value):
+    #             digital_twin_model.solve()
+    #             #self.cache.save_cache()
+    #             return digital_twin_model.export_output()
+            
+    #     return None
+
+    # def load_and_cache_model(self):
+    #     try:
+    #         module = importlib.import_module(self.cache_model_name)
+    #         model_class = getattr(module, self.cache_object_name)
+    #         digital_twin_model = model_class(self.model_path, self.model_parameters, self.dt_path)
+    #         self.cache.add_object(self.cache_model_name, self.cache_object_name, digital_twin_model)
+    #         return digital_twin_model
+    #     except (ModuleNotFoundError, AttributeError) as e:
+    #         print(f"Error loading model: {e}")
+    #         return None
+  #%%      
     def predict(self, input_value):
         if self.set_model():
-            cached_model = self.cache.get_object(self.model_name, self.object_name)
-            if cached_model:
-                digital_twin_model = cached_model
+            
+            if not self.cache_object.cache_model:
+                digital_twin_model = self.cache_object.load_cache(self.cache_model_path, self.cache_model_name)
+                
+                if not digital_twin_model:
+                    module = importlib.import_module(self.cache_model_name)
+                    digital_twin_model = getattr(module, self.cache_object_name)(self.model_path, self.model_parameters, self.dt_path)
+                    #self.cache.add_object(self.model_name, self.object_name, digital_twin_model)
+                    #export_output = self.model_to_run + ".pkl"
+                    with open(self.cache_model_path, 'wb') as f:
+                        pickle.dump(digital_twin_model, f)
+                        
+                self.cache_object.cache_model =  digital_twin_model
+                
             else:
-                module = importlib.import_module(self.model_name)
-                digital_twin_model = getattr(module, self.object_name)(self.model_path, self.model_parameters, self.dt_path)
-                self.cache.add_object(self.model_name, self.object_name, digital_twin_model)
-
+                if self.cache_object.model_name == self.cache_object:
+                    digital_twin_model = self.cache_object.cache_model
+                    
+                else:
+                    digital_twin_model = self.cache_object.load_cache(self.cache_model_path, self.cache_model_name)
+                    self.cache_object.cache_model =  digital_twin_model 
+                    
+            
+            self.cache_object.update_store(digital_twin_model)
+                    
             if digital_twin_model.update_input(input_value):
                 digital_twin_model.solve()
                 return digital_twin_model.export_output()
             
         return None
+    
 #%%
 import pickle
 

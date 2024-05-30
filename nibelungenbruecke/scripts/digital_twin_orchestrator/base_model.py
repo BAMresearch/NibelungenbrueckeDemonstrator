@@ -5,6 +5,8 @@ import dolfinx
 from mpi4py import MPI
 from fenicsxconcrete.util import ureg
 
+from nibelungenbruecke.scripts.utilities.checks import assert_path_exists
+
 class BaseModel:
     ''' Base class for a generator of synthetic data from a model.'''
 
@@ -27,9 +29,9 @@ class BaseModel:
     """   
     
     def __init__(self, model_path: str, model_parameters: dict):
-        #assert_path_exists(model_path)
+        assert_path_exists(model_path)
         self.model_path = model_path
-        #assert_path_exists(model_parameters)
+        assert_path_exists(model_parameters)
         self.model_parameters = model_parameters
     
     def Generate(self):

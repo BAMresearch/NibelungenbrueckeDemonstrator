@@ -7,10 +7,10 @@ def fetch_and_process_data(api_request):
     output_data = api_request.fetch_data()
     DU_data_api = output_data["E_plus_413TU_HS--o-_Avg1"]
 
-    # Convert to numpy array for easier manipulation
+    # Convertion to numpy array
     data_array = np.array(DU_data_api)
 
-    # Check if the length of the data is a multiple of 10, if not, truncate the excess
+    # Check and equal the data toa  multiple of 10
     remainder = len(data_array) % 10
     if remainder != 0:
         data_array = data_array[:-remainder]
@@ -18,10 +18,10 @@ def fetch_and_process_data(api_request):
     # Reshape the array to have 10 columns
     reshaped_data = data_array.reshape(-1, 10)
 
-    # Calculate the average across the columns (axis 1)
+    # Calculate the average across the column
     averaged_data = reshaped_data.mean(axis=1)
 
-    # Convert back to list if necessary
+    # Convert back to list
     averaged_data_list = averaged_data.tolist()
 
     return averaged_data_list
