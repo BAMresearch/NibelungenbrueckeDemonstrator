@@ -3,6 +3,7 @@ from nibelungenbruecke.scripts.digital_twin_orchestrator.displacement_model impo
 import json
 import importlib
 from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
+import pickle
 
 class DigitalTwin:
     def __init__(self, model_path: str, model_parameters: dict, dt_path: str, model_to_run = "Displacement_1"):
@@ -36,7 +37,7 @@ class DigitalTwin:
                 if not digital_twin_model:
                     module = importlib.import_module(self.cache_model_name)
                     digital_twin_model = getattr(module, self.cache_object_name)(self.model_path, self.model_parameters, self.dt_path)
-                    sys.path.append(module.__path__)
+                    #sys.path.append(module.__path__)
                     with open(self.cache_model_path, 'wb') as f:
                         pickle.dump(digital_twin_model, f)
                         

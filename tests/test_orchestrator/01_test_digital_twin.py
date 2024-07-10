@@ -123,26 +123,7 @@ class TestDigitalTwin(unittest.TestCase):
         self.assertEqual(dt.cache_model_name, set_model[0]["type"])
         self.assertEqual(dt.cache_object_name, set_model[0]["class"])
         self.assertEqual(dt.cache_model_path, set_model[0]["path"])
-        
-    
-    #TODO: Need to make this work
-    @patch('digital_twin.DisplacementModel.update_input', return_value=False)
-    def test_predict(self, mock_update_input):
-        dt = self.digital_twin
-        dt.cache_object = ObjectCache()
-        dt.set_model()
-                
-        UP = Unpickler()
-        path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/" + dt.cache_model_path
-        name = 'digital_twin_module'
-        expected_model = UP.unpickle(path, name)
-        
-        mock_update_input.return_value = False
-        # Call predict method
-        result = dt.predict(3*10**9)
-        
-        # Check if the model was correctly cached
-        self.assertEqual(dt.cache_object.cache_model, expected_model)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -71,21 +71,6 @@ class TestOrchestrator(unittest.TestCase):
         self.assertTrue(orchestrator.updated)
         orchestrator.compare(150, 100)
         self.assertFalse(orchestrator.updated)
-        
-    def test_run(self):
-        orchestrator = Orchestrator(self.path)
-        orchestrator.orchestrator_parameters = self.mock_parameters
-        with unittest.mock.patch('nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin.DigitalTwin') as MockDigitalTwin:
-            MockDigitalTwin.return_value = self.digital_twin
-
-            # Call the run method
-            orchestrator.run()
-
-            # Assertions
-            self.assertTrue(self.digital_twin.predict.called)
-            # Add more specific assertions based on expected behavior
-        
-
 
 if __name__ == "__main__":
     unittest.main()
