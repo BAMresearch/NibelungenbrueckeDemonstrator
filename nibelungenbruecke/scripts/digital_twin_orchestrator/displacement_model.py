@@ -119,33 +119,4 @@ class DisplacementModel(BaseModel):
             json.dump(output_data, file)
             
         return json_path
-    
-#%%
-
-if __name__ == "__main__":
-    model_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh'
-    model_parameters = {'model_name': 'displacements',
-     'df_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv',
-     'meta_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json',
-     'MKP_meta_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json',
-     'MKP_translated_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json',
-     'virtual_sensor_added_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json',
-     'paraview_output': True,
-     'paraview_output_path': '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview',
-     'material_parameters': {},
-     'tension_z': 0.0,
-     'boundary_conditions': {'bc1': {'model': 'clamped_boundary',
-       'side_coord': 0.0,
-       'coord': 2},
-      'bc2': {'model': 'clamped_boundary', 'side_coord': 95.185, 'coord': 2}}}
-    
-    dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
-    
-    DM = DisplacementModel(model_path, model_parameters, dt_path)
-    DM.solve()
-    a = DM.api_dataFrame
-    print(a)
-    
-    K = DisplacementModel(model_path, model_parameters, dt_path)
-    
-    print(id(DM) == id(K))
+ 
