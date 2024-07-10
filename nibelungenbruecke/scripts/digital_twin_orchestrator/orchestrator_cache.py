@@ -1,5 +1,6 @@
 import pickle
 import os
+from nibelungenbruecke.scripts.digital_twin_orchestrator.displacement_model import DisplacementModel
 
 class ObjectCache:
     def __init__(self):
@@ -45,12 +46,12 @@ class ObjectCache:
 
 #%%
 if __name__ == "__main__":
-    path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/pickle_data.pkl"
+    path = "/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/nibelungenbruecke/scripts/digital_twin_orchestrator/Displacement_1.pkl"
     
     model_name = "Displacement_1"
         
-    Model = ObjectCache(path, model_name)
-
+    Model = ObjectCache()
+    Model.load_cache(path, model_name)
 
 
 #%%

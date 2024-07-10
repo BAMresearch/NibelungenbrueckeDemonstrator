@@ -1,5 +1,5 @@
 #from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
-from digital_twin import DigitalTwin
+from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
 import json
 
 class Orchestrator:

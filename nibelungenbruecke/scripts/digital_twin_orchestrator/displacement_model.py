@@ -71,8 +71,8 @@ class DisplacementModel(BaseModel):
         
         with open(self.dt_path, 'r') as f:
             dt_params = json.load(f)
-            
-       # currently, only updates E value
+        
+        # currently, only updates E value
         #TODO: Make this part more automated/flexible!  
         if isinstance(sensor_input, (int, float)):
             dt_params[0]["parameters"]["E"] = sensor_input

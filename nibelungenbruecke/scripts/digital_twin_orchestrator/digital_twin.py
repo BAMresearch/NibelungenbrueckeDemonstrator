@@ -1,16 +1,18 @@
-from displacement_model import DisplacementModel
+import sys
+from nibelungenbruecke.scripts.digital_twin_orchestrator.displacement_model import DisplacementModel
 import json
 import importlib
 from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
 
 class DigitalTwin:
-    def __init__(self, model_path, model_parameters, dt_path, model_to_run):
+    def __init__(self, model_path: str, model_parameters: dict, dt_path: str, model_to_run = "Displacement_1"):
         self.model_path = model_path
         self.model_parameters = model_parameters
         self.dt_path = dt_path
         self.model_to_run = model_to_run
         self.load_models()
         self.cache_object = ObjectCache()
+        
         
     def load_models(self):
         with open(self.dt_path, 'r') as json_file:
@@ -24,35 +26,8 @@ class DigitalTwin:
                 self.cache_model_path = model_info["path"]
                 return True
         return False
-  #%%
-    # def predict(self, input_value):
-    #     if self.set_model():
-    #         self.cache_object = ObjectCache(self.cache_model_path)
-    #         cached_model = self.cache_object.get_object(self.cache_model_name, self.cache_object_name)
-    #         if cached_model:
-    #             digital_twin_model = cached_model
-    #         else:
-    #             digital_twin_model = self.load_and_cache_model()
             
-    #         if digital_twin_model and digital_twin_model.update_input(input_value):
-    #             digital_twin_model.solve()
-    #             #self.cache.save_cache()
-    #             return digital_twin_model.export_output()
-            
-    #     return None
-
-    # def load_and_cache_model(self):
-    #     try:
-    #         module = importlib.import_module(self.cache_model_name)
-    #         model_class = getattr(module, self.cache_object_name)
-    #         digital_twin_model = model_class(self.model_path, self.model_parameters, self.dt_path)
-    #         self.cache.add_object(self.cache_model_name, self.cache_object_name, digital_twin_model)
-    #         return digital_twin_model
-    #     except (ModuleNotFoundError, AttributeError) as e:
-    #         print(f"Error loading model: {e}")
-    #         return None
-  #%%      
-    def predict(self, input_value):
+    def predict(self, input_value):      
         if self.set_model():
             
             if not self.cache_object.cache_model:
@@ -63,6 +38,7 @@ class DigitalTwin:
                     digital_twin_model = getattr(module, self.cache_object_name)(self.model_path, self.model_parameters, self.dt_path)
                     #self.cache.add_object(self.model_name, self.object_name, digital_twin_model)
                     #export_output = self.model_to_run + ".pkl"
+                    sys.path.append(module.__path__)
                     with open(self.cache_model_path, 'wb') as f:
                         pickle.dump(digital_twin_model, f)
                         
@@ -119,7 +95,6 @@ if __name__ == "__main__":
             "output_format": ".h5"}
 
     dt_path = '/home/msoenmez/Desktop/NibelungenbrueckeDemonstrator/use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
-
 
     DTM = DigitalTwin(model_path, model_parameters, dt_path, model_to_run="Displacement_1")
 

@@ -31,7 +31,7 @@ class BaseModel:
     def __init__(self, model_path: str, model_parameters: dict):
         assert_path_exists(model_path)
         self.model_path = model_path
-        assert_path_exists(model_parameters)
+        #assert_path_exists(model_parameters)
         self.model_parameters = model_parameters
     
     def Generate(self):
