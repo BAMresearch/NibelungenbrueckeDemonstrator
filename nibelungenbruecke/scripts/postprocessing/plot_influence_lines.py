@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from nibelungenbruecke.scripts.utilities.loaders import load_influence_lines, load_sensors
 
-def plot_influence_lines(parameters:dict):
+def plot_influence_lines_run(parameters:dict):
     ''' Plot a list of influence lines from a h5 file into np.arrays'''
 
     input_parameters = _get_default_parameters()
@@ -30,6 +30,7 @@ def _get_default_parameters():
     return {
         "sensors_path": "input/sensors/sensors_displacements.json",
         "influence_lines_path": "input/data/line_test.h5",
+        "file_dep": ["input/sensors/sensors_displacements.json", "input/data/line_test.h5"],
         "output_path": "output/figures/influence_lines",
         "output_format": "png"
     }
