@@ -39,8 +39,8 @@ class GeneratorFeniCSXConcrete(GeneratorModel):
     def GenerateData(self):
         """Generate data based on the model parameters."""
 
-        api_request = API_Request()
-        self.api_dataFrame = api_request.fetch_data()
+        self.api_request = API_Request(self.model_parameters["secret_path"])
+        self.api_dataFrame = self.api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
         metadata_saver.saving_metadata()
