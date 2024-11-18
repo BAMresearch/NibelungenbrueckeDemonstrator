@@ -13,7 +13,7 @@
             "MKP_meta_output_path":"./output/sensors/MKP_meta_output.json",
             "MKP_translated_output_path":"./output/sensors/MKP_translated.json",
             "virtual_sensor_added_output_path":"./output/sensors/virtual_sensor_added_translated.json",
-            "secret_path" : "/home/msoenmez/Desktop/API_request_password",
+            "secret_path" : "./input/API_request_password",
             "paraview_output": true,
             "paraview_output_path": "./output/paraview",
             "material_parameters":{},
