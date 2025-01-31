@@ -176,7 +176,7 @@ def create_geometry_half(parameters):
         external_surfaces = []   
         for key, val in grouped_dict_surfs.items():
             external_surfaces.append(val)
-        external_surfaces = external_surfaces[0] + [end_surface_cs]
+        external_surfaces = external_surfaces[0] + external_surfaces[2] + external_surfaces[1] + [end_surface_cs]
         external_surface_loops = gmsh.model.geo.addSurfaceLoop(external_surfaces)
         volume_surfaceloops = [external_surface_loops] + hole_surface_loops_list
         volume = gmsh.model.geo.addVolume(volume_surfaceloops)
