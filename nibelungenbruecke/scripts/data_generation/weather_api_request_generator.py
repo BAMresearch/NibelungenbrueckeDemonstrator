@@ -3,7 +3,6 @@ from nibelungenbruecke.scripts.utilities.request_api import request_sensor_data_
 from nibelungenbruecke.scripts.data_generation.generator_model_base_class import GeneratorModel
 import pandas as pd
 
-
 class WeatherAPIGenerator(GeneratorModel):
     ''' Generator of weather data from MKP API.'''
 
@@ -38,8 +37,8 @@ class WeatherAPIGenerator(GeneratorModel):
         mkp_sensors = [sensor for sensor in self.model_parameters["sensors"] if sensor["sensor_origin"] == "MKP_API"]
         pvgis_sensors = [sensor for sensor in self.model_parameters["sensors"] if sensor["sensor_origin"] == "PVGIS"]
         other_sensors = [sensor for sensor in self.model_parameters["sensors"] if sensor["sensor_origin"] not in ["MKP_API", "PVGIS"]]
-        if len(other_sensors) != 0:
-            raise ValueError("Unknown sensor origin: {}".format([sensor["sensor_origin"] for sensor in other_sensors]))
+        # if len(other_sensors) != 0:
+        #     raise ValueError("Unknown sensor origin: {}".format([sensor["sensor_origin"] for sensor in other_sensors]))
 
         df_data = None
         # Call the APIs
@@ -93,6 +92,8 @@ class WeatherAPIGenerator(GeneratorModel):
         storedata.get_storer(self.output_parameters["output_key"]).attrs.metadata = sensor_metadata
         storedata.close()
 
+        if self.output_parameters["return"]:
+            return df_data
 
     @staticmethod
     def _get_default_parameters():

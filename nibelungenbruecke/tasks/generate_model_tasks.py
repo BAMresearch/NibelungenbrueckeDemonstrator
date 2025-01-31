@@ -2,6 +2,7 @@ import json
 
 from nibelungenbruecke.scripts.modelling.create_cross_section import create_cross_section3D
 from nibelungenbruecke.scripts.modelling.create_geometry import create_geometry
+from nibelungenbruecke.scripts.modelling.create_geometry_half import create_geometry_half
 from nibelungenbruecke.scripts.modelling.create_mesh import create_mesh
 
 model_parameters_path = "./input/settings/model_parameters.json"
@@ -18,18 +19,37 @@ def task_generate_cross_section():
 
 def task_generate_geometry():
 
-    return {'actions': [(create_geometry,[],{'parameters':model_parameters["geometry"]})],
-            'file_dep':[model_parameters["geometry"]["cross_section_path"]+"_span"+model_parameters["geometry"]["cross_section_format"],
-                        model_parameters["geometry"]["cross_section_path"]+"_pilot"+model_parameters["geometry"]["cross_section_format"],
-                        model_parameters_path],
-            'targets': [model_parameters["geometry"]["output_path"]+model_parameters["geometry"]["output_format"]],
-            'uptodate': [True]}
+    if "geometry_half" in model_parameters:
+
+        return {'actions': [(create_geometry_half,[],{'parameters':model_parameters["geometry_half"]})],
+                'file_dep':[model_parameters["geometry_half"]["cross_section_path"]+"_span"+model_parameters["geometry_half"]["cross_section_format"],
+                            model_parameters["geometry_half"]["cross_section_path"]+"_pilot"+model_parameters["geometry_half"]["cross_section_format"],
+                            model_parameters_path],
+                'targets': [model_parameters["geometry_half"]["output_path"]+model_parameters["geometry_half"]["output_format"]],
+                'uptodate': [True]}
+    else:
+
+        return {'actions': [(create_geometry,[],{'parameters':model_parameters["geometry"]})],
+                'file_dep':[model_parameters["geometry"]["cross_section_path"]+"_span"+model_parameters["geometry"]["cross_section_format"],
+                            model_parameters["geometry"]["cross_section_path"]+"_pilot"+model_parameters["geometry"]["cross_section_format"],
+                            model_parameters_path],
+                'targets': [model_parameters["geometry"]["output_path"]+model_parameters["geometry"]["output_format"]],
+                'uptodate': [True]}
 
 def task_generate_mesh():
 
+    if "geometry_half" in model_parameters:
+
+        file_dep = [model_parameters["geometry_half"]["output_path"]+model_parameters["geometry_half"]["output_format"],
+                    model_parameters_path]
+        
+    else:
+
+        file_dep = [model_parameters["geometry"]["output_path"]+model_parameters["geometry"]["output_format"],
+                    model_parameters_path]
+
     return {'actions': [(create_mesh,[],{'parameters':model_parameters["mesh"]})],
-            'file_dep': [model_parameters["geometry"]["output_path"]+model_parameters["geometry"]["output_format"],
-                        model_parameters_path],
+            'file_dep': file_dep,
             'targets': [model_parameters["mesh"]["output_path"]+".msh"],
             'uptodate': [True]}
 
