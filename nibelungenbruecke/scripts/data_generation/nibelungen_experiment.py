@@ -170,11 +170,21 @@ class CantileverNibelungenExperiment(NibelungenExperiment):
                 boundary=self.boundary_plane_left(),
                 method="geometrical",
             )
-            # bc_generator.add_dirichlet_bc(
-            #     np.array([0.0, 0.0, 0.0], dtype=ScalarType),
-            #     boundary=self.boundary_plane_right(),
-            #     method="geometrical",
-            # )
+            bc_generator.add_dirichlet_bc(
+                np.array(0.0, dtype=ScalarType),  # Fix displacement to zero
+                boundary=self.boundary_plane_right(),
+                method="topological",
+                sub=0,  # Fix x-displacement
+                entity_dim=0
+            )
+
+            bc_generator.add_dirichlet_bc(
+                np.array(0.0, dtype=ScalarType),  # Fix displacement to zero
+                boundary=self.boundary_plane_right(),
+                method="topological",
+                sub=1,  # Fix y-displacement
+                entity_dim=0
+            )
             # line with dof in x direction on the right
             # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 1, "geometrical", 0)
             # bc_generator.add_dirichlet_bc(np.float64(0.0), self.boundary_right(), 2, "geometrical", 0)
