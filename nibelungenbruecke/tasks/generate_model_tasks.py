@@ -26,7 +26,7 @@ def task_generate_geometry():
                             model_parameters["geometry_half"]["cross_section_path"]+"_pilot"+model_parameters["geometry_half"]["cross_section_format"],
                             model_parameters_path],
                 'targets': [model_parameters["geometry_half"]["output_path"]+model_parameters["geometry_half"]["output_format"]],
-                'uptodate': [False]}
+                'uptodate': [True]}
     else:
 
         return {'actions': [(create_geometry,[],{'parameters':model_parameters["geometry"]})],
