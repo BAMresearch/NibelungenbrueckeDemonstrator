@@ -145,3 +145,19 @@ class NibelungenExperiment(Experiment):
         L = ufl.dot(f, v) * ufl.dx
 
         return L
+    
+class CantileverNibelungenExperiment(NibelungenExperiment):
+
+    def create_displacement_boundary(self, V):
+        
+        bc_generator = BoundaryConditions(self.mesh, V)
+
+        if self.p["dim"] == 3:
+            # fix line in the left
+            bc_generator.add_dirichlet_bc(
+                np.array([0.0, 0.0, 0.0], dtype=ScalarType),
+                boundary=self.boundary_plane_left(),
+                method="geometrical",
+            )
+
+        return bc_generator.bcs
