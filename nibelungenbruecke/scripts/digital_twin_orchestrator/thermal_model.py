@@ -400,5 +400,5 @@ if __name__ == "__main__":
     
     
     dm = ThermalModel(model_path, model_parameters, dt_path)
-    api_key = "REDACTED"
+    api_key = ""
     dm.solve(api_key)

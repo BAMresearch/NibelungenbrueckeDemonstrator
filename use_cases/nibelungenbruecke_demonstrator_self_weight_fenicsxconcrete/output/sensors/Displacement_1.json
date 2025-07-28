@@ -28,8 +28,8 @@
                 "paraview_displacement_output_name": "Nibelungenbruecke_displacement",
                 "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
                 "material_parameters": {
-                    "rho": 2700,
-                    "E": 330000000000,
+                    "rho": 2900,
+                    "E": 260000000000,
                     "nu": 0.28
                 },
                 "bias_model_parameters": {

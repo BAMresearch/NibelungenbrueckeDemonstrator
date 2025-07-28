@@ -399,8 +399,9 @@ if __name__ == "__main__":
 
     #orchestrator =  Orchestrator(simulation_parameters)
     #key = input("\nEnter the code to connect API: ").strip()
-    key = "REDACTED"
-    #orchestrator.set_api_key(key)
+    #
+    
+    orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
     
     orchestrator.plot_virtual_sensor_data()
@@ -428,7 +429,6 @@ if __name__ == "__main__":
 
     orchestrator =  Orchestrator(simulation_parameters)
     #key = input("\nEnter the code to connect API: ").strip()
-    key = "REDACTED"
     orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
     

@@ -349,5 +349,5 @@ if __name__ == "__main__":
     
     
     dm = ThermalModelUQ(model_path, model_parameters, dt_path)
-    api_key = "REDACTED"
+    api_key = ""
     dm.solve(api_key=api_key)

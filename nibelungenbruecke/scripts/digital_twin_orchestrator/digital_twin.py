@@ -296,34 +296,3 @@ class DigitalTwin:
                 triggered = True
                 
         return triggered
-     
-#%%
-
-
-if __name__ == "__main__":
-    
-    path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json"
-
-
-    import random
-
-    def generate_random_rho():
-        """
-        Generates a random parameters (currently only 'rho') value for vehicles passing through the bridge.
-        rho: between 5000 and 10000
-        """
-        params = dict()
-        random_value = random.randint(5000 // 50, 10000 // 50) * 50
-        params["rho"] =random_value
-        
-        return params
-    
-    model_to_run = "Displacement_1"
-    #dt = DigitalTwin(model_path, model_parameters, dt_path, model_to_run)
-    dt = DigitalTwin(path, model_to_run)  
-    
-    #input_value=round(2.0*10**11, 1)
-    input_value = generate_random_rho()
-    
-    dt.predict(input_value)
-
