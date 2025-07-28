@@ -128,7 +128,7 @@ class LinearElasticityNibelungenbrueckeDemonstrator(MaterialProblem):
             self.solve()
             
             # Execute remaining callbacks after solving the system
-            self.callbacks[1]() ##TODO: Canceled out for temperature sensor!!
+            self.callbacks[1]()
                 
             self.callbacks[2]()
                 

@@ -59,6 +59,54 @@
                 -0.20000000000000004,
                 0.7932083333333336
             ]
+        },
+        {
+            "id": "Sensor_u",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "Sensor_o",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "Sensor_n",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "id": "Sensor_s",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                0,
+                0,
+                0
+            ]
         }
     ]
 }

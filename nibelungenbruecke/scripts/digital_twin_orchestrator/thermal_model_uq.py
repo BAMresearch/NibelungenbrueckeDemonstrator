@@ -1,9 +1,10 @@
 import chaospy
 import numpy as np
 from tqdm import tqdm
+from tqdm import trange
 from copy import deepcopy
 import matplotlib.pyplot as plt
-from nibelungenbruecke.scripts.digital_twin_orchestrator.thermal_model_OLD import ThermalModel
+from nibelungenbruecke.scripts.digital_twin_orchestrator.thermal_model import ThermalModel
 
 class ThermalModelUQ(ThermalModel):
     """
@@ -39,10 +40,14 @@ class ThermalModelUQ(ThermalModel):
         else:
             self.parameter_key_paths = self.forward_model_parameters["parameter_key_paths"]
         # Assumes load_probeye_sensors is imported/available in this scope
-        self.output_sensor_names_list = ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]
-
+        self.output_sensor_names = ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]
+        
 
     def SolveMethod(self):
+        # self.input_sensor_names = list(self.problem.sensors.keys())
+        #self.input_sensor_names = ['additional_heat_constant', 'additional_heat_constant_bias', 'wind_forced_convection_parameter_constant', 'wind_forced_convection_parameter_constant_bias', 'air_temperature', 'inner_temperature', 'shortwave_irradiation', 'calculate_shortwave_irradiation']
+        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
+
         """
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
         """
@@ -75,12 +80,12 @@ class ThermalModelUQ(ThermalModel):
         # Run surrogate
         # FIXME: The embedding formulation should be flexible from the input parameters
         for param_dict in self.bias_model_parameters["parameters"]:
-            if param_dict["variable_name"]=="additional_heat_constant":
-                b_dist_list.append(chaospy.Normal(inp[param_dict["variable_name"]], inp[param_dict["bias_name"]]))
-            else:
-                std_lognormal = np.sqrt(np.log(1+np.exp(-2*np.log(inp[param_dict["variable_name"]])+2*np.log(inp[param_dict["bias_name"]]))))
-                mean_lognormal = np.log(inp[param_dict["variable_name"]]) - std_lognormal**2/2
-                b_dist_list.append(chaospy.LogNormal(mean_lognormal, std_lognormal))
+            #if param_dict["variable_name"]=="additional_heat_constant":
+            b_dist_list.append(chaospy.Normal(inp[param_dict["variable_name"]], inp[param_dict["bias_name"]]))
+            #else:
+             #   std_lognormal = np.sqrt(np.log(1+np.exp(-2*np.log(inp[param_dict["variable_name"]])+2*np.log(inp[param_dict["bias_name"]]))))
+             #   mean_lognormal = np.log(inp[param_dict["variable_name"]]) - std_lognormal**2/2
+             #   b_dist_list.append(chaospy.LogNormal(mean_lognormal, std_lognormal))
         b_dist = chaospy.J(*b_dist_list)
 
         # Generate quadrature and expansion
@@ -98,7 +103,7 @@ class ThermalModelUQ(ThermalModel):
             theta_quads.append(input_node)
 
 
-        input_nodes = [{key: value for key, value in node.items() if key in self.parameters_minus_bias}for node in theta_quads]
+        input_nodes = [{key: value for key, value in node.items() if key in self.parameters_minus_bias} for node in theta_quads]
         # Evaluate the nodes
         sparse_evals = {key: [] for key in self.output_sensor_names}
         for node in input_nodes:
@@ -106,12 +111,18 @@ class ThermalModelUQ(ThermalModel):
             self.problem.update_parameters(node)
             self.problem.reset_fields()
             self.problem.reset_sensors()
+            
 
+#%%
             if not "ic_temperature_field" in self.__dict__:
-                for entry in range(self.model_parameters["initial_condition_steps"]):
+                total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+
+                for entry in trange(total_steps, desc="Solving IC steps"):
                     new_parameters = {}
                     for channel in self.input_sensor_names:
-                        new_parameters[channel] = inp[channel][entry]
+                        new_parameters[channel] = inp[channel][entry]  ## XXX
+                        #new_parameters[channel] = inp[channel]
+
 
                     # FIXME: The unit should be read from the metadata, for now this is a hack
                     try:
@@ -125,14 +136,21 @@ class ThermalModelUQ(ThermalModel):
 
                     self.problem.update_parameters(new_parameters)
                     self.problem.solve()
+                    
                 self.problem.fields.temperature.vector.assemble()
                 self.ic_temperature_field = deepcopy(self.problem.fields.temperature.vector)
                 self.problem.reset_sensors()
                 self.problem.reset_fields()
             self.problem.u_old.vector[:] = self.ic_temperature_field
             self.problem.fields.temperature.vector[:] = self.ic_temperature_field
+            #%%
             # Run timeseries problem
-            for entry in range(self.model_parameters["initial_condition_steps"],len(inp[self.input_channel_names[0]])): 
+            #for entry in range(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"],len(inp[self.input_channel_names[0]])): 
+            
+            start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+            end_idx = len(inp[self.input_sensor_names[0]])      
+            
+            for entry in trange(start_idx, end_idx, desc="Solving time steps"):
                 new_parameters = {}
                 for channel in self.input_sensor_names:
                     new_parameters[channel] = inp[channel][entry]
@@ -151,14 +169,14 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.solve()
 
             for ikey, key in enumerate(self.output_sensor_names):
-                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["burn_in_steps"]:]-273.15)
+                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:]-273.15)
         
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}
         for key in self.output_sensor_names:
             fitted_sparse[key] = chaospy.fit_quadrature(expansion, np.array(sparse_quads[0]), np.array(sparse_quads[1]), sparse_evals[key])
 
-        return_dict = {key: fitted_sparse[key] for key in self.output_sensor_names_list if key in fitted_sparse}
+        return_dict = {key: fitted_sparse[key] for key in self.output_sensor_names if key in fitted_sparse}
         return_dict["dist"] = b_dist
 
         # Compute mean and std for each sensor for plotting
@@ -173,6 +191,25 @@ class ThermalModelUQ(ThermalModel):
         self.plot_all_sensors_together(sensor_stats)
         # Optionally return results
         # return return_dict
+        
+    def _sensor_map(self, probeye_sensor: str) -> str:
+        sensor_map_dict = {
+            "Sensor_u": "bridge_temperature_u",
+            "Sensor_o": "bridge_temperature_o",
+            "Sensor_n": "bridge_temperature_n",
+            "Sensor_s": "bridge_temperature_s",
+        }
+        return sensor_map_dict[probeye_sensor]
+
+    def _inverse_sensor_map(self, sensor: str) -> str:
+        sensor_map_dict = {
+            "bridge_temperature_u": "Sensor_u",
+            "bridge_temperature_o": "Sensor_o",
+            "bridge_temperature_n": "Sensor_n",
+            "bridge_temperature_s": "Sensor_s",
+        }
+        return sensor_map_dict[sensor]
+
 
     def plot_all_sensors_together(self, sensor_stats):
         """
@@ -196,18 +233,21 @@ class ThermalModelUQ(ThermalModel):
     
 if __name__ == "__main__": 
     
-    #model_path = '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh'
-    model_path = 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d.msh'
+    model_path = '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh'
+    #model_path = 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d.msh'
     
     model_parameters = {'model_name': 'thermal_transient',
-     'df_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv',
-     'meta_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json',
-     'MKP_meta_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json',
-     'MKP_translated_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json',
-     'virtual_sensor_added_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json',
-     'cache_path': '',
+     'df_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv',
+     'meta_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json',
+     'MKP_meta_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json',
+     'MKP_translated_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json',
+     'virtual_sensor_added_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json',
+     "API_request_start_time": "2023-08-11T08:00:00Z",
+     "API_request_end_time": "2023-09-11T08:01:00Z",
+     "API_request_time_step": "10min",
      'paraview_output': True,
      'paraview_output_path': 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview',
+     'paraview_output_name': 'ThermalModel',
      #'material_parameters': {'E': 40000000000000.0, 'nu': 0.2, 'rho': 2350},
      'material_parameters': {},
      "secret_path" : "/home/darcones/Projects/API_keys/mkp",
@@ -235,8 +275,37 @@ if __name__ == "__main__":
         "experiments": ["TestSeries_1"],
         "input_sensors_path": "./input/sensors/sensors_temperature_probeye_input.json",
         "output_sensors_path": "./input/sensors/sensors_temperature_probeye_output.json",
-        "problem_parameters": ["sigma_u", "sigma_n", "sigma_s", "sigma_o"], 
-        "parameter_key_paths": [[],[],[],[]],
+        "problem_parameters": ["sensor_location_u",
+      "sensor_location_n",
+      "sensor_location_s",
+      "sensor_location_o",
+      "wind_forced_convection_parameter_constant",
+      "wind_forced_convection_parameter_constant_bias",
+      "additional_heat_constant",
+      "additional_heat_constant_bias",
+      "shortwave_radiation_constant",
+      "diffusivity",
+      "sigma_u",
+      "sigma_n",
+      "sigma_s",
+      "sigma_o"
+    ],
+
+    "parameter_key_paths": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
         "model_type": "embedded_for_noise",
         "model_parameters": {
             "model_name": "temperature",
@@ -276,10 +345,9 @@ if __name__ == "__main__":
             "sensor_metadata": "./input/sensors/sensors_temperature.json"
         }}
     }
-    dt_path = 'use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
+    dt_path = '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json'
     
     
     dm = ThermalModelUQ(model_path, model_parameters, dt_path)
-    with open(model_parameters["secret_path"]+".txt", "r") as f:
-        api_key = f.read().strip()
+    api_key = "REDACTED"
     dm.solve(api_key=api_key)

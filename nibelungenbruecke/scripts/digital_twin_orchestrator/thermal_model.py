@@ -64,7 +64,7 @@ class ThermalModel(BaseModel):
         #    [self.GenerateData, self.PostAPIData, self.ParaviewProcess], self.experiment, self.experiment.parameters, pv_path=self.model_parameters["paraview_output_path"])
         
         self.problem = ThermoMechanicalNibelungenBrueckeProblem(experiment=self.experiment, parameters=self.experiment.parameters, 
-                                                                pv_name=self.model_parameters["paraview_output_name"],pv_path=self.model_parameters["paraview_output_path"])
+                                                                pv_name=self.model_parameters["paraview_thermal_output_name"],pv_path=self.model_parameters["paraview_output_path"])
         
         
     def GenerateData(self, api_key):
@@ -140,12 +140,7 @@ class ThermalModel(BaseModel):
                     if temperature_value is not None:
                         temperature_value_list = temperature_value.data[-1].tolist()
                         database["virtual_sensor_data"][sensor_id].append(temperature_value_list)
-                
-            #%%
-         
-            #if i == 10:
-            #    break
-            #%%
+
         self.plot_all_sensors_together(database)
             
     def plot_all_sensors_together(self, database):
@@ -211,7 +206,8 @@ class ThermalModel(BaseModel):
                 xdmf.write_function(self.problem.fields.displacement, 
                                     self.problem.time)
 
-
+    
+    ##TODO: !!
     def update_parameters(self, updates, target_name=None):
         """
         Updates the specified parameters in the digital twin parameter file 
@@ -349,7 +345,8 @@ if __name__ == "__main__":
      "API_request_time_step": "10min",
      "cache_path": "",
      'paraview_output': True,
-     'paraview_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview',
+     "paraview_output_name": "Nibelungenbrücke_thermal",
+     "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
      #'material_parameters': {'E': 40000000000000.0, 'nu': 0.2, 'rho': 2350},
      'material_parameters': {},
      "secret_path" : "/home/msoenmez/Desktop/API_request_password",
@@ -378,11 +375,11 @@ if __name__ == "__main__":
                 "density": 2400.0,
                 "conductivity": 2.5,
                 "diffusivity": 1.0E-6,
-                #"sensor_location_u": -4.3,
-                #"sensor_location_s": -2.2,
-                #"sensor_location_n": -3.56,
-                #"sensor_location_o": -0.17,
-                "convection": False,
+                "sensor_location_u": -4.3,
+                "sensor_location_s": -2.2,
+                "sensor_location_n": -3.56,
+                "sensor_location_o": -0.17,
+                "convection": True,
                 "natural_convection_coefficient": 10.0,
                 "wind_forced_convection": False,
                 "wind_forced_convection_parameter_constant": 1.0,
@@ -403,5 +400,5 @@ if __name__ == "__main__":
     
     
     dm = ThermalModel(model_path, model_parameters, dt_path)
-    api_key = input("Enter api key:" )
+    api_key = "REDACTED"
     dm.solve(api_key)

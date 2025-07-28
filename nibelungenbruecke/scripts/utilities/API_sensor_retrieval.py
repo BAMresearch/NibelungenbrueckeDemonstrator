@@ -211,7 +211,6 @@ class MetadataSaver:
     def saving_metadata(self):
 
         # Origin: "49.630742, 8.378049"
-        
         for i in range(len(self.df.columns)):
             if self.df.columns[i] == 'E_plus_413TU_HS--o-_Avg1':
                 column_name = self.df.columns[i]
@@ -453,7 +452,19 @@ class Translator:
                         sensor_data["sensor_file"] = "displacement_sensor"
                 
                     default_parameters_data["sensors"].append(sensor_data)
-                
+                    
+        for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
+            sensor_data = {
+            "id": i,
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [0, 0, 0],
+            }
+            
+            default_parameters_data["sensors"].append(sensor_data)
+
         with open(self.MKP_meta_output_path, "w") as f:
             json.dump(default_parameters_data, f, indent=4)
 

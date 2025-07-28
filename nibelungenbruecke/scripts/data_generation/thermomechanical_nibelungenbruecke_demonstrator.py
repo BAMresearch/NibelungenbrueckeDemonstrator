@@ -740,10 +740,9 @@ class ThermoMechanicalNibelungenBrueckeProblem(MaterialProblem):
     # paraview output
     # TODO move this to sensor definition!?!?!
     def pv_plot(self) -> None:
-        # Displacement Plot
 
-        with df.io.XDMFFile(self.mesh.comm, self.pv_output_file, "a") as f:
-            f.write_function(self.fields.temperature, self.time)
+            with df.io.XDMFFile(self.mesh.comm, self.pv_output_file, "a") as f:
+                f.write_function(self.fields.temperature, self.time)
 
     def assign_full_field_values(self, field_name: str, values: list[list[float]], burn:int) -> None:
         """

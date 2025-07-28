@@ -112,7 +112,7 @@
                             "top_tag": 9,
                             "bottom_tag": 8,
                             "end_tag": 7,
-                            "plot_pv": true
+                            "plot_pv": false
                         },
                         "sensor_metadata": "./input/sensors/sensors_temperature.json"
                     }

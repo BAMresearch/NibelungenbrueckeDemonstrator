@@ -5,13 +5,11 @@ import pickle
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 from datetime import datetime
 
 import dolfinx as df
 from fenicsxconcrete.util import ureg
-##TODO:
-#from fenicsxconcrete.finite_element_problem.linear_elasticity_nibelungenbruecke_demonstrator import LinearElasticityNibelungenbrueckeDemonstrator
-#from fenicsxconcrete.finite_element_problem.linear_elasticity import LinearElasticity
 from nibelungenbruecke.scripts.data_generation.linear_elasticity_nibelungenbruecke_demonstrator import LinearElasticityNibelungenbrueckeDemonstrator
 
 from nibelungenbruecke.scripts.utilities.loaders import load_sensors
@@ -64,16 +62,18 @@ class DisplacementModel(BaseModel):
         self.experiment = NibelungenExperiment(self.model_path, self.model_parameters)
         #self.default_p.update(self.experiment.parameters)
         self.problem = LinearElasticityNibelungenbrueckeDemonstrator(
-            [self.GenerateData, self.PostAPIData, self.ParaviewProcess], self.experiment, self.experiment.parameters)
+            [self.GenerateData, self.PostAPIData, self.ParaviewProcess], self.experiment, self.experiment.parameters,
+            pv_name=self.model_parameters["paraview_displacement_output_name"],pv_path=self.model_parameters["paraview_output_path"])
         
-    def GenerateData(self):
+    def GenerateData(self, api_key):
         """
         Requests data from an API, transforms it into metadata, 
         and saves it for use with virtual sensors.
 
         """
         
-        self.api_request = API_Request(self.model_parameters["secret_path"])    ##TODO:
+        self.api_request = API_Request(api_key, start_time = self.model_parameters["API_request_start_time"], 
+                                       end_time=self.model_parameters["API_request_end_time"], time_step=self.model_parameters["API_request_time_step"])
         self.api_dataFrame = self.api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
@@ -110,8 +110,8 @@ class DisplacementModel(BaseModel):
         and preparing the mesh for further data writing in later iterations.
         """
         if self.model_parameters["paraview_output"]:
-            with df.io.XDMFFile(self.problem.mesh.comm, self.model_parameters["paraview_output_path"]
-                                +"/"+"displacements"+".xdmf", "w") as xdmf:
+            with df.io.XDMFFile(self.problem.mesh.comm, self.model_parameters["paraview_output_path"]+ "/" +
+                                self.model_parameters["paraview_displacement_output_name"] +".xdmf", "w") as xdmf:
                 xdmf.write_mesh(self.problem.mesh)
                 #xdmf.write_function(self.problem.fields.displacement, self.problem.time)     
                 
@@ -123,8 +123,8 @@ class DisplacementModel(BaseModel):
         
         if self.model_parameters["paraview_output"]:
             with df.io.XDMFFile(self.problem.mesh.comm, 
-                                self.model_parameters["paraview_output_path"]+
-                                "/"+"displacements"+".xdmf", "a") as xdmf:
+                                self.model_parameters["paraview_output_path"]+ "/" +
+                                self.model_parameters["paraview_displacement_output_name"]+".xdmf", "a") as xdmf:
                 # xdmf.write_mesh(self.problem.mesh)
                 xdmf.write_function(self.problem.fields.displacement, 
                                     self.problem.time)
@@ -186,7 +186,7 @@ class DisplacementModel(BaseModel):
             print(f"An error occurred: {e}")
             return False
 
-    def solve(self):
+    def solve(self, api_key):
         """
         Reloading, model generating and solving model.
         
@@ -201,7 +201,7 @@ class DisplacementModel(BaseModel):
         """
         self.LoadGeometry()
         self.GenerateModel()
-        self.GenerateData()
+        self.GenerateData(api_key)
         self.ParaviewFirstRun()
         self.SolveMethod()
         self.sensor_out = self.api_dataFrame['E_plus_080DU_HSN-u-_Avg1'].iloc[-1] # *1000 #Convertion from meter to milimeter
@@ -218,6 +218,17 @@ class DisplacementModel(BaseModel):
         self.plot_displacement()
         
 
+    def generate_random_parameters(self):
+        """
+        Generates 'rho' and 'E' values.
+        """
+        params: dict={}
+        random_value_rho = random.randint(90 // 5, 160 // 5) * 100
+        random_value_E = random.randint(100 // 5, 225 // 5) * 10**10
+        params['rho'] = random_value_rho
+        params['E'] = random_value_E
+
+        return params 
     
     def plot_displacement(self):
         with open(self.vs_path, 'r') as file:
