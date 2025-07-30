@@ -109,13 +109,9 @@ class DigitalTwin:
         elif "Displacement" in self.model_to_run:
             input_value = self.initial_model.generate_random_parameters()
             updated, updated_params = self.initial_model.update_parameters(input_value, self.model_to_run)
-        
-        #if orchestrator_simulation_parameters["uncertainty_quantification"]:
-        #    if "_UQ" not in self.initial_model.model_parameters["paraview_thermal_output_name"]:
-        #        self.initial_model.model_parameters["paraview_thermal_output_name"] += "_UQ"
             
         if updated:
-            self._update_cached_model(self._loaded_params, updated_params)  # updates model parameters w.r.t. new input data!
+            self._update_cached_model(self._loaded_params, updated_params)
             self._run_model(api_key, orchestrator_simulation_parameters)
         else:
             print("Same model with the same parameters!!\n")

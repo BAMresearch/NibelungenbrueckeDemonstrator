@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<Xdmf Version="3.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Domain>
+    <Grid Name="mesh" GridType="Uniform">
+      <Topology TopologyType="Tetrahedron" NumberOfElements="11292" NodesPerElement="4">
+        <DataItem Dimensions="11292 4" NumberType="Int" Format="HDF">Nibelungenbruecke_displacement.h5:/Mesh/mesh/topology</DataItem>
+      </Topology>
+      <Geometry GeometryType="XYZ">
+        <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Mesh/mesh/geometry</DataItem>
+      </Geometry>
+    </Grid>
+    <Grid Name="displacement" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="60" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/60</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="120" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/120</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="180" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/180</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="240" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/240</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="300" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/300</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="360" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/360</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="displacement" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="420" />
+        <Attribute Name="displacement" AttributeType="Vector" Center="Node">
+          <DataItem Dimensions="3561 3" Format="HDF">Nibelungenbruecke_displacement.h5:/Function/displacement/420</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+  </Domain>
+</Xdmf>

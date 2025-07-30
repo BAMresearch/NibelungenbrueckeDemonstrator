@@ -58,13 +58,14 @@ class API_Request:
             "startTime": start_time,
             "endTime": end_time,
             "meta_channel": True,
-            "columns": [
-             "F_plus_000TA_KaS-o-_Avg1", 
-             "F_plus_000S_KaS-o-_Avg1", 
-             "E_plus_040TU_HS--u-_Avg1", 
-             "E_plus_040TI_HSS-u-_Avg",
-             "E_plus_080DU_HSN-u-_Avg1"
-             ]
+            "columns": ["F_plus_000TA_KaS-o-_Avg1",
+                        "F_plus_000S_KaS-o-_Avg1",
+                        "E_plus_040TI_HSS-u-_Avg",
+                        "E_plus_040TU_HS--o-_Avg1",
+                        "E_plus_040TU_HSN-m-_Avg1",
+                        "E_plus_040TU_HSS-m-_Avg1",
+                        "E_plus_040TU_HS--u-_Avg1",
+                        ]
             }
         
         # Body for requesting data of all the sensors
@@ -73,7 +74,15 @@ class API_Request:
             "startTime": "2023-08-11T08:00:00Z",
             "endTime": "2023-09-11T08:01:00Z",
             "meta_channel": True,
-            "columns": ['E_plus_413TU_HS--o-_Avg1',
+            "columns": [   
+            "F_plus_000TA_KaS-o-_Avg1", 
+            "F_plus_000S_KaS-o-_Avg1", 
+            "E_plus_040TU_HS--u-_Avg1", 
+            "E_plus_040TI_HSS-u-_Avg",
+            "E_plus_080DU_HSN-u-_Avg1"
+            'E_plus_413TU_HS--o-_Avg1',
+         
+                
              'E_plus_413TU_HSN-m-_Avg1',
              'E_plus_413TU_HSS-m-_Avg1',
              'E_plus_413TU_HS--u-_Avg1',

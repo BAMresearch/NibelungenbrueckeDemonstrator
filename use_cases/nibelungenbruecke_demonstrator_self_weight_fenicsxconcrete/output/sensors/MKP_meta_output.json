@@ -25,6 +25,54 @@
             ]
         },
         {
+            "id": "E_plus_040TI_HSS-u-_Avg",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                3.716666666666667,
+                -4.1670833333375255,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                4.0,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSN-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                3.85,
+                -2.7898168518587636,
+                0.5288055555555556
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSS-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                3.85,
+                -2.7898168518587636,
+                0.5288055555555556
+            ]
+        },
+        {
             "id": "E_plus_040TU_HS--u-_Avg1",
             "type": "TemperatureSensor",
             "sensor_file": "temperature_sensor",
@@ -32,32 +80,8 @@
             "dimensionality": "[temperature]",
             "where": [
                 3.85,
-                -5.117747962966624,
-                0.9849844369962407
-            ]
-        },
-        {
-            "id": "E_plus_040TI_HSS-u-_Avg",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                3.85,
-                -4.150625000006288,
-                0.456178881442126
-            ]
-        },
-        {
-            "id": "E_plus_080DU_HSN-u-_Avg1",
-            "type": "DisplacementSensor",
-            "sensor_file": "displacement_sensor",
-            "units": "meter",
-            "dimensionality": "[length]",
-            "where": [
-                7.316444444444454,
-                -0.13333333333333333,
-                0.5288055555541237
+                -4.348100277783185,
+                0.5288055555555556
             ]
         },
         {

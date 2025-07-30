@@ -4,6 +4,8 @@ import h5py
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import pyvista as pv
+import pandas as pd
+import os
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
 from nibelungenbruecke.scripts.utilities.mesh_point_detector import query_point
@@ -175,100 +177,62 @@ class Orchestrator:
             pass
         
         else:
-            self.plot_virtual_sensors, self.plot_model_typ = self.extract_virtual_sensor_data()
+            self.sensor_data_json = self.export_sensor_data_to_json()
+            
+            
+            
+    def export_sensor_data_to_json(self):
+        output_file = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         
+        sensors = self.digital_twin_model.initial_model.problem.sensors
+        self.sensor_data_json = {}
 
-    def extract_virtual_sensor_data(self):
-        print("\n--- Extracting virtual sensor data ---")
-        virtual_sensors = {}
+        for sensor_name, sensor in sensors.items():
+            times = sensor.time
+            data = sensor.data
+
+            if len(times) != len(data):
+                print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
+                continue
+
+            paired_data = [
+                {"time": t, "value": float(d[0]) if isinstance(d, np.ndarray) else float(d)}
+                for t, d in zip(times, data)
+            ]
+            self.sensor_data_json[sensor_name] = paired_data
+
+        with open(output_file, "w") as f:
+            json.dump(self.sensor_data_json, f, indent=2)
+            
+        return self.sensor_data_json
     
-        # Determine model and HDF5 path
-        model = self.simulation_parameters.get('model')
-        if model == 'TransientThermal_1':
-            model_typ = "thermal"
-            path = self.default_parameters['thermal_h5py_path']
-        elif model == 'Displacement_1':
-            model_typ = "Displacement"
-            path = self.default_parameters['displacement_h5py_path']
-        else:
-            raise ValueError(f"Unsupported model type: {model}")
-    
-        with h5py.File(path, 'r') as f:
-            geometry = f['/Mesh/mesh/geometry'][:]
-            data_group = f['/Function/temperature'] if model_typ == "thermal" else f['/Function/displacement']
-    
-            for sensor in self.simulation_parameters['virtual_sensor_positions']:
-                name = sensor['name']
-                coords = np.array([sensor['x'], sensor['y'], sensor['z']])
-    
-                projected = query_point(coords, self.prediction.problem.mesh)[0]
-                distances = np.linalg.norm(geometry - projected, axis=1)
-                nearest_node_idx = np.argmin(distances)
-                nearest_node_coord = geometry[nearest_node_idx]
-    
-                print(f"\nSensor '{name}' -> nearest node index: {nearest_node_idx}")
-                print(f"Nearest node coordinates: {nearest_node_coord}")
-    
-                data_over_time = {}
-                for time_str in data_group.keys():
-                    time = int(time_str)
-                    value = data_group[time_str][nearest_node_idx]
-                    if model_typ == "displacement":
-                        value = np.linalg.norm(value)  # vector magnitude
-                    else:
-                        value = value[0]  # scalar temperature
-                    data_over_time[time] = value
-    
-                virtual_sensors[name] = {
-                    'coordinates': nearest_node_coord.tolist(),
-                    'data': dict(sorted(data_over_time.items()))
-                }
-    
-        return virtual_sensors, model_typ
-        
     def plot_virtual_sensor_data(self):
+        json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         
-        for sensor_name, info in self.plot_virtual_sensors.items():
-            data = info['data']
-            
-            #%%
-            start_time_str = self.simulation_parameters['start_time']
-            time_step_str = self.simulation_parameters['time_step']
-            
-            start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00"))
-    
-            unit = time_step_str[-3:]
-            value = int(time_step_str[:-3])
-            if "min" in unit:
-                delta = timedelta(minutes=value)
-            elif "hou" in unit:
-                delta = timedelta(hours=value)
-            elif "day" in unit:
-                delta = timedelta(days=value)
+        if not self.sensor_data_json:
+            if os.path.exists(json_path):
+                with open(json_path, "r") as f:
+                    self.sensor_data_json = json.load(f)
             else:
-                raise ValueError("Unsupported time step format.")
-            
-            times = [start_time + i * delta for i in range(len(data))]
-            
-            #%%
-            
-            values = list(data.values())
+                print("No sensor data found. Please run export_sensor_data_to_json() first.")
+                return
+
+        for sensor_name, readings in self.sensor_data_json.items():
+            if "040TU" in sensor_name:      ##TODO:
+                times = [entry["time"] for entry in readings]
+                values = [entry["value"] for entry in readings]
     
-            plt.figure(figsize=(8, 4))
-            plt.plot(times, values, marker='o')
+                plt.figure(figsize=(10, 4))
+                plt.plot(times, values, linestyle="-", color="tab:blue")
+                plt.title(f"Sensor: {sensor_name}")
+                plt.xlabel("Time (s)")
+                plt.ylabel("Sensor Value")
+                plt.grid(True)
+                plt.tight_layout()
+                plt.show()
     
-             
-            plt.title(sensor_name)
-            plt.xlabel("Time")
-            plt.grid(True)
-            plt.tight_layout()
-            plt.show()
-            
-            #%%
-            #self.plot_full_field_response(self.simulation_parameters['full_field_results'])
-            
-            #%%
-            
+        
+#%%          
     ##TODO: 
         
     def plot_full_field_response(self, full_field=True):
@@ -343,7 +307,66 @@ class Orchestrator:
                 print(f"Displacement-> h5py_path: {h5py_path}")
                 print(f"Displacement -> xmdf_path: {xmdf_path}")
                 
+            #%%
             
+    def plot_real_sensor_vs_virtual_sensor(self):
+        json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
+        
+        if not self.sensor_data_json:
+            if os.path.exists(json_path):
+                with open(json_path, "r") as f:
+                    self.sensor_data_json = json.load(f)
+            else:
+                print("No sensor data found. Please run export_sensor_data_to_json() first.")
+                return
+
+        df = self.digital_twin_model.initial_model.api_dataFrame + 273.15
+
+        # Get datetime range of measured data
+        measured_start = df.index[0]
+        measured_end = df.index[-1]
+
+        for sensor_name in self.sensor_data_json:
+            if sensor_name not in df.columns:
+                #print(f"Sensor '{sensor_name}' not found in api_dataFrame.")
+                continue
+
+            # --- Measured data
+            measured_times = df.index
+            measured_values = df[sensor_name].values
+
+            # --- Model data
+            model_data = self.sensor_data_json[sensor_name]
+            model_times_sec = np.array([entry["time"] for entry in model_data])
+            model_values = np.array([entry["value"] for entry in model_data])
+
+            if len(model_times_sec) < 2:
+                print(f"Not enough model data for sensor '{sensor_name}' to interpolate.")
+                continue
+
+            # Normalize model times to [0, 1]
+            model_times_norm = (model_times_sec - model_times_sec[0]) / (model_times_sec[-1] - model_times_sec[0])
+
+            # Rescale to measured datetime range
+            measured_range_seconds = (measured_end - measured_start).total_seconds()
+            model_times_dt = [measured_start + pd.to_timedelta(t * measured_range_seconds, unit='s') for t in model_times_norm]
+
+            # Interpolate model values at measured timestamps
+            model_seconds = [(t - measured_start).total_seconds() for t in model_times_dt]
+            measured_seconds = [(t - measured_start).total_seconds() for t in measured_times]
+            interp_model_values = np.interp(measured_seconds, model_seconds, model_values)
+
+            # --- Plotting
+            plt.figure(figsize=(10, 4))
+            plt.plot(measured_times, measured_values, label="Measurement", alpha=0.8)
+            plt.plot(measured_times, interp_model_values, label="Model (Rescaled)", linestyle='--', markersize=3)
+            plt.title(f"Sensor Comparison: {sensor_name}")
+            plt.xlabel("Time")
+            plt.ylabel("Sensor Value")
+            plt.grid(True)
+            plt.legend()
+            plt.tight_layout()
+            plt.show()
                     
                 
        #%%
@@ -367,17 +390,19 @@ if __name__ == "__main__":
     }
 
     ##
-    
-    orchestrator =  Orchestrator(simulation_parameters)
-    #key = input("\nEnter the code to connect API: ").strip()
-    key = "REDACTED"
-    orchestrator.set_api_key(key)
-    orchestrator.run()
-    
-    orchestrator.plot_virtual_sensor_data()
-    
-    orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
-
+# =============================================================================
+#     
+#     orchestrator =  Orchestrator(simulation_parameters)
+#     #key = input("\nEnter the code to connect API: ").strip()
+#     key = ""
+#     orchestrator.set_api_key(key)
+#     orchestrator.run()
+#     
+#     orchestrator.plot_virtual_sensor_data()
+#     
+#     orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
+# 
+# =============================================================================
     
     
     simulation_parameters = {       ##Throw an error checking UQ!!
@@ -387,24 +412,26 @@ if __name__ == "__main__":
         'end_time': '2023-08-11T08:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
-            {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
-            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'}
-            # Note: the real sensor positions are added automatically by the interface, so you don't need to specify them here.
-        ],
+        {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
+        {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+        {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
+    ],
         'plot_pv': True,
         'full_field_results': False, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
         'uncertainty_quantification': False, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
 
-    #orchestrator =  Orchestrator(simulation_parameters)
+    orchestrator =  Orchestrator(simulation_parameters)
     #key = input("\nEnter the code to connect API: ").strip()
     #
-    
+    key = "REDACTED"
     orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
     
     orchestrator.plot_virtual_sensor_data()
+    orchestrator.plot_real_sensor_vs_virtual_sensor
 
     ## 
     

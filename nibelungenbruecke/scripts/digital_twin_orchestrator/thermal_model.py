@@ -125,11 +125,17 @@ class ThermalModel(BaseModel):
             i+=1
             
             #%%
+# =============================================================================
+#             if i == 20:
+#                 break
+# =============================================================================
+                
+            
+            #%%
             ##TODO:
             
             for sensor_id in data.columns:
-                if sensor_id in ["F_plus_000TA_KaS-o-_Avg1", "E_plus_040TI_HSS-u-_Avg", 'F_plus_000TA_KaS-o-_Avg1', 'F_plus_000S_KaS-o-_Avg1',
-                       'E_plus_040TU_HS--u-_Avg1', 'E_plus_040TI_HSS-u-_Avg']:      ##TODO: Should be extended to consist all the temperature sensors
+                if "40TU" in sensor_id: 
                     database["real_sensor_data"].setdefault(sensor_id, [])
                     database["virtual_sensor_data"].setdefault(sensor_id, [])
                     
