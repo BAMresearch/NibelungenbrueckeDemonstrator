@@ -342,6 +342,63 @@ class Orchestrator:
                 print(f"Path to full-field results:")
                 print(f"Displacement-> h5py_path: {h5py_path}")
                 print(f"Displacement -> xmdf_path: {xmdf_path}")
+
+    def plot_real_sensor_vs_virtual_sensor(self):
+        json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
+    
+        # Check if self.sensor_data_json is empty
+        if not self.sensor_data_json:
+            # Try loading from JSON file if it exists
+            if os.path.exists(json_path):
+                with open(json_path, "r") as f:
+                    self.sensor_data_json = json.load(f)
+            df = self.digital_twin_model.initial_model.api_dataFrame
+
+            # Get datetime range of measured data
+            measured_start = df.index[0]
+            measured_end = df.index[-1]
+
+        for sensor_name in self.sensor_data_json:
+            if sensor_name not in df.columns:
+                print(f"Sensor '{sensor_name}' not found in api_dataFrame.")
+                continue
+
+            # --- Measured data
+            measured_times = df.index
+            measured_values = df[sensor_name].values
+
+            # --- Model data
+            model_data = self.sensor_data_json[sensor_name]
+            model_times_sec = np.array([entry["time"] for entry in model_data])
+            model_values = np.array([entry["value"] for entry in model_data])
+
+            if len(model_times_sec) < 2:
+                print(f"Not enough model data for sensor '{sensor_name}' to interpolate.")
+                continue
+
+            # Normalize model times to [0, 1]
+            model_times_norm = (model_times_sec - model_times_sec[0]) / (model_times_sec[-1] - model_times_sec[0])
+
+            # Rescale to measured datetime range
+            measured_range_seconds = (measured_end - measured_start).total_seconds()
+            model_times_dt = [measured_start + pd.to_timedelta(t * measured_range_seconds, unit='s') for t in model_times_norm]
+
+            # Interpolate model values at measured timestamps
+            model_seconds = [(t - measured_start).total_seconds() for t in model_times_dt]
+            measured_seconds = [(t - measured_start).total_seconds() for t in measured_times]
+            interp_model_values = np.interp(measured_seconds, model_seconds, model_values)
+
+            # --- Plotting
+            plt.figure(figsize=(10, 4))
+            plt.plot(measured_times, measured_values, label="Measurement", alpha=0.8)
+            plt.plot(measured_times, interp_model_values, label="Model (Rescaled)", linestyle='--', marker='o', markersize=3)
+            plt.title(f"Sensor Comparison: {sensor_name}")
+            plt.xlabel("Time")
+            plt.ylabel("Sensor Value")
+            plt.grid(True)
+            plt.legend()
+            plt.tight_layout()
+            plt.show()
                 
             
                     
