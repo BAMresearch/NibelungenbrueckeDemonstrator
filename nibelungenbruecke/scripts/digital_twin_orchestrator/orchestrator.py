@@ -210,7 +210,7 @@ class Orchestrator:
         sensors = self.digital_twin_model.initial_model.problem.sensors
 
         for sensor_name, sensor in sensors.items():
-            if "TU" not in sensor_name:
+            if "Sensor_" in sensor_name:
                 times = sensor.time
                 data = sensor.data
     
@@ -223,7 +223,7 @@ class Orchestrator:
     
                 # Plot
                 plt.figure(figsize=(10, 4))
-                plt.plot(times, values, marker='o', linestyle='-', color='tab:blue')
+                plt.plot(times, values, linestyle='-', color='tab:blue')
                 plt.title(f"Sensor: {sensor_name}")
                 plt.xlabel("Time (s)")
                 plt.ylabel("Sensor Value")
@@ -327,10 +327,10 @@ class Orchestrator:
     
         # Mapping from df sensor names → sensor_data_json keys
         sensor_mapping = {
-            "E_plus_040TU_HS--o-_Avg1": "sensor_o",
-            "E_plus_040TU_HSN-m-_Avg1": "sensor_N",
-            "E_plus_040TU_HSS-m-_Avg1": "sensor_S",
-            "E_plus_040TU_HS--u-_Avg1": "sensor_o",  # Intentional reuse
+            "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
+            "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
+            "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
+            "E_plus_040TU_HS--u-_Avg1": "Sensor_u",  # Intentional reuse
         }
     
         for df_sensor_name, json_sensor_key in sensor_mapping.items():
@@ -369,7 +369,7 @@ class Orchestrator:
             # --- Plotting
             plt.figure(figsize=(10, 4))
             plt.plot(measured_times, measured_values, label=f"Measurement ({df_sensor_name})", alpha=0.8)
-            plt.plot(measured_times, interp_model_values, label=f"Model ({json_sensor_key})", linestyle='--', marker='o', markersize=3)
+            plt.plot(measured_times, interp_model_values, label=f"Model ({json_sensor_key})", linestyle='--', markersize=3)
             plt.title(f"Sensor Comparison: {df_sensor_name} vs {json_sensor_key}")
             plt.xlabel("Time")
             plt.ylabel("Sensor Value (K)")
