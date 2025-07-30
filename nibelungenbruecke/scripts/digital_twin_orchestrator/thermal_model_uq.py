@@ -196,7 +196,7 @@ class ThermalModelUQ(ThermalModel):
             std_val = chaospy.Std(fitted_sparse[key], b_dist)
             sensor_stats[key] = {"mean": mean_val, "std": std_val}
 
-        #self.plot_all_sensors_together(sensor_stats)
+        self.plot_all_sensors_together(sensor_stats)
         # Optionally return results
         # return return_dict
         
