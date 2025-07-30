@@ -45,13 +45,17 @@ class Orchestrator:
         self.digital_twin_model = self._digital_twin_initializer()
         self.plot_virtual_sensors = {}
         self.plot_model_typ = ""
+        self.UQ_flag = False
         
-        
+    
     def assign_model_name(self):
         self.model_to_run = self.simulation_parameters["model"]
-        #if self.simulation_parameters["uncertainty_quantification"]:
-        #   self.model_to_run = self.model_to_run + "_UQ"
-            
+        
+        if self.simulation_parameters["uncertainty_quantification"]:
+           self.UQ_flag = True
+        else:
+            self.UQ_flag = False
+    
         return self.model_to_run
             
         
@@ -75,7 +79,7 @@ class Orchestrator:
             model_to_run (str): Specifies which predefined model to execute.
         
         """
-        return digital_twin.predict(model_to_run, api_key, self.simulation_parameters)
+        return digital_twin.predict(model_to_run, api_key, self.simulation_parameters, self.UQ_flag)
     
     def predict_last_week(self, digital_twin, inputs):
         """
@@ -378,6 +382,9 @@ class Orchestrator:
             plt.tight_layout()
             plt.show()
             
+            
+        
+            
                     
                 
        #%%
@@ -396,7 +403,7 @@ if __name__ == "__main__":
         {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
         {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
     ],
-        'plot_pv': True,
+        'plot_pv': False,
         'full_field_results': False, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
         'uncertainty_quantification': False, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }

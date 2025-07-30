@@ -77,7 +77,7 @@ class DigitalTwin:
             except:
                 raise RuntimeError('Failed to open the path!') from exc
         
-    def predict(self, model_to_run, api_key, orchestrator_simulation_parameters):
+    def predict(self, model_to_run, api_key, orchestrator_simulation_parameters, UQ_flag):
         """
         Predicts the outcome based on the input value by setting up and running a model.
         
@@ -99,7 +99,13 @@ class DigitalTwin:
             self._loaded_params = self._get_or_load_parameters()
             self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
         else:
-            self.initial_model = self.digital_twin_models[self.model_to_run]
+            if UQ_flag:
+                self._loaded_params = self._get_or_load_parameters()
+                self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
+
+                
+            else:               
+                self.initial_model = self.digital_twin_models[self.model_to_run]
             
         # Updates model parameters if necessary
         if "TransientThermal" in self.model_to_run:
@@ -184,39 +190,56 @@ class DigitalTwin:
             ValueError: If the selected model is not found.
         """
         
-        digital_twin_model = None
-        for i in self._models:
-            if i["name"] == orchestrator_simulation_parameters["model"]:      ##TODO: work on the default_parameter JSON file!!
-                if "TransientThermal" in self.model_to_run:
-                    model_path = self.cache_object.cache_model["model_path"][0]["transientthermal_model_path"]
-                elif "Displacement" in self.model_to_run:
-                    model_path = self.cache_object.cache_model["model_path"][0]["displacement_model_path"]
-                else:
-                    raise f"Default parameter file does not have that {self.model_to_run}. Check the JSON file!"
-                    
-                model_parameters = self.cache_object.cache_model["generation_models_list"][0]["model_parameters"]
-                dt_params_path = self.cache_object.cache_model["generation_models_list"][0]["digital_twin_parameters_path"]
-#%%
-                if orchestrator_simulation_parameters["uncertainty_quantification"]:
-                    i["type"] = i["type"] + "_uq"
-                    i["class"] = i["class"] +"UQ"
-                    
-                if orchestrator_simulation_parameters["plot_pv"]:
-                    model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"]["plot_pv"] = True
-                else:
-                    model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"]["plot_pv"] = False
-               
-                    
-#%%
-                module = importlib.import_module(i["type"])
-                digital_twin_model = getattr(module, i["class"])(model_path, model_parameters, dt_params_path)
-                digital_twin_model.GenerateModel()
+        model_name = orchestrator_simulation_parameters["model"]
+        model_found = False
+    
+        for model in self._models:
+            if model["name"] != model_name:
+                continue
+            
+            model_found = True
+    
+            # Select the appropriate model path based on model type
+            model_paths = self.cache_object.cache_model["model_path"][0]
+            if "TransientThermal" in self.model_to_run:
+                model_path = model_paths["transientthermal_model_path"]
+            elif "Displacement" in self.model_to_run:
+                model_path = model_paths["displacement_model_path"]
+            else:
+                raise ValueError(f"Unknown model type '{self.model_to_run}'. Check the default parameter JSON file.")
+    
+            # Load model parameters
+            generation_model = self.cache_object.cache_model["generation_models_list"][0]
+            model_parameters = generation_model["model_parameters"]
+            dt_params_path = generation_model["digital_twin_parameters_path"]
+    
+            # Apply uncertainty quantification flag
+            if orchestrator_simulation_parameters.get("uncertainty_quantification"):
+                model["type"] += "_uq"
+                model["class"] += "UQ"
+    
+            # Set plot flag
+            plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
+            model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"]["plot_pv"] = plot_pv
+    
+            # Import and instantiate the model
+            module = importlib.import_module(model["type"])
+            model_class = getattr(module, model["class"])
+            digital_twin_model = model_class(model_path, model_parameters, dt_params_path)
+
+            # Generate the model
+            digital_twin_model.GenerateModel()
                 
-                self.digital_twin_models[self.model_to_run] = digital_twin_model
-                return digital_twin_model
-                
-        if not digital_twin_model:
-            raise ValueError(f"Invalid model {digital_twin_model}. digital twin model should not be empty!")
+        
+            # Set plot flag in the instantiated problem
+            digital_twin_model.problem.p["plot_pv"] = plot_pv
+    
+            # Store and return
+            self.digital_twin_models[self.model_to_run] = digital_twin_model
+            return digital_twin_model
+    
+        if not model_found:
+            raise ValueError(f"Model '{model_name}' not found in available models.")
         
 
     

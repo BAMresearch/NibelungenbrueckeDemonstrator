@@ -110,6 +110,8 @@ class ThermalModel(BaseModel):
         air_temperature_array = np.zeros(len(data))
         inner_temperature_array = np.zeros(len(data))
         i=0
+        
+        
         for _, data_point in tqdm(data.iterrows(), total=len(data)):
             air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"] + 273.15
             inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"] + 273.15 
