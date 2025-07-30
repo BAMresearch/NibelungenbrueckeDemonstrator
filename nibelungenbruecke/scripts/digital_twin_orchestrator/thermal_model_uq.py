@@ -142,9 +142,11 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.reset_sensors()
                 self.problem.reset_fields()
                 
-                
-                if entry == 20:
-                    break
+# =============================================================================
+#                 
+#                 if entry == 20:
+#                     break
+# =============================================================================
                 
             self.problem.u_old.vector[:] = self.ic_temperature_field
             self.problem.fields.temperature.vector[:] = self.ic_temperature_field
@@ -173,8 +175,10 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.update_parameters(new_parameters)
                 self.problem.solve()
                 
-                if entry == 120:
-                    break
+# =============================================================================
+#                 if entry == 120:
+#                     break
+# =============================================================================
 
             for ikey, key in enumerate(self.output_sensor_names):
                 sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:]-273.15)
