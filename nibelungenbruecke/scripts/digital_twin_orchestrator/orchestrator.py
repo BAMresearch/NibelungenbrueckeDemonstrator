@@ -383,6 +383,34 @@ class Orchestrator:
             plt.show()
             
             
+    def plot_user_defined_virtual_sensors(self):
+        sensors = self.digital_twin_model.initial_model.problem.sensors
+        virtual_sensor_positions_names =[x["name"] for x in simulation_parameters["virtual_sensor_positions"]]
+
+        for sensor_name, sensor in sensors.items():
+            
+            if sensor_name in virtual_sensor_positions_names:
+                times = sensor.time
+                data = sensor.data
+    
+                if len(times) != len(data):
+                    print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
+                    continue
+    
+                # Flatten data points
+                values = [float(d[0]) if isinstance(d, np.ndarray) else float(d) for d in data]
+    
+                # Plot
+                plt.figure(figsize=(10, 4))
+                plt.plot(times, values, linestyle='-', color='tab:blue')
+                plt.title(f"Sensor: {sensor_name}")
+                plt.xlabel("Time (s)")
+                plt.ylabel("Sensor Value")
+                plt.grid(True)
+                plt.tight_layout()
+                plt.show()
+        
+            
         
             
                     
@@ -420,6 +448,8 @@ if __name__ == "__main__":
     
         
     orchestrator.plot_real_sensor_vs_virtual_sensor()
+    
+    orchestrator.plot_user_defined_virtual_sensors()
 
     ## 
     

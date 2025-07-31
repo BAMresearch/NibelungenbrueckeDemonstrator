@@ -67,7 +67,7 @@ class ThermalModel(BaseModel):
                                                                 pv_name=self.model_parameters["paraview_thermal_output_name"],pv_path=self.model_parameters["paraview_output_path"])
         
         
-    def GenerateData(self, api_key):
+    def GenerateData(self, api_key, virtual_sensor_positions):
         """
         Requests data from an API, transforms it into metadata, 
         and saves it for use with virtual sensors.
@@ -82,7 +82,7 @@ class ThermalModel(BaseModel):
         metadata_saver.saving_metadata()    ##TODO:
 
         self.translator = Translator(self.model_parameters)
-        self.translator.translator_to_sensor(self.experiment.mesh)
+        self.translator.translator_to_sensor(self.experiment.mesh, virtual_sensor_positions)
         
         self.problem.import_sensors_from_metadata(
             self.model_parameters["MKP_meta_output_path"])
@@ -260,7 +260,7 @@ class ThermalModel(BaseModel):
 
     
 #%%
-    def solve(self, api_key):
+    def solve(self, api_key, virtual_sensor_positions):
         """
         Reloading, model generating and solving model.
         
@@ -275,7 +275,7 @@ class ThermalModel(BaseModel):
         """
         self.LoadGeometry()
         self.GenerateModel()
-        self.GenerateData(api_key)
+        self.GenerateData(api_key, virtual_sensor_positions)
         self.SolveMethod()
   
 

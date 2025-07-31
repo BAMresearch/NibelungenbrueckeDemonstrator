@@ -430,7 +430,7 @@ class Translator:
             "sensors": []
         }
 
-    def translator_to_sensor(self, mesh):
+    def translator_to_sensor(self, mesh, virtual_sensor_positions):
         self.MKP_meta_output_path = self.path["MKP_meta_output_path"]
 
         default_parameters_data = self._default_parameters()
@@ -473,6 +473,19 @@ class Translator:
             }
             
             default_parameters_data["sensors"].append(sensor_data)
+            
+        for i in virtual_sensor_positions:
+            sensor_data = {
+            "id": i["name"],
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [i["x"], i["y"], i["z"]],
+            }
+            
+            default_parameters_data["sensors"].append(sensor_data)
+            
 
         with open(self.MKP_meta_output_path, "w") as f:
             json.dump(default_parameters_data, f, indent=4)
