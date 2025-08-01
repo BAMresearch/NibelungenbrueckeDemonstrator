@@ -442,20 +442,20 @@ if __name__ == "__main__":
 
 
     orchestrator =  Orchestrator(simulation_parameters)
-    #key = input("\nEnter the code to connect API: ").strip()
+    key = input("\nEnter the code to connect API: ").strip()
     
-    key = ""
+    #key = ""
     orchestrator.set_api_key(key)
-    orchestrator.run(simulation_parameters)
+    #orchestrator.run(simulation_parameters)
     
-    orchestrator.plot_virtual_sensor_data()
+    #orchestrator.plot_virtual_sensor_data()
     
         
-    orchestrator.plot_real_sensor_vs_virtual_sensor()
+    #orchestrator.plot_real_sensor_vs_virtual_sensor()
     
     #orchestrator.plot_user_defined_virtual_sensors()
     
-    orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
+    #orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
 
     ## 
     

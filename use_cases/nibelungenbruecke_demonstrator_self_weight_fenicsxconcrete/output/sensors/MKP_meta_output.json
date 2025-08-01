@@ -155,30 +155,6 @@
                 0.0,
                 0.0
             ]
-        },
-        {
-            "id": "Sensor3",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                1.78,
-                0.0,
-                26.91
-            ]
-        },
-        {
-            "id": "Sensor4",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                -1.83,
-                0.0,
-                0.0
-            ]
         }
     ]
 }

@@ -215,8 +215,9 @@ class DigitalTwin:
     
             # Apply uncertainty quantification flag
             if orchestrator_simulation_parameters.get("uncertainty_quantification"):
-                model["type"] += "_uq"
-                model["class"] += "UQ"
+                if "uq" not in model["type"]:
+                    model["type"] += "_uq"
+                    model["class"] += "UQ"
     
             # Set plot flag
             plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
