@@ -141,13 +141,7 @@ class ThermalModelUQ(ThermalModel):
                 self.ic_temperature_field = deepcopy(self.problem.fields.temperature.vector)
                 self.problem.reset_sensors()
                 self.problem.reset_fields()
-                
-# =============================================================================
-#                 
-#                 if entry == 20:
-#                     break
-# =============================================================================
-                
+
             self.problem.u_old.vector[:] = self.ic_temperature_field
             self.problem.fields.temperature.vector[:] = self.ic_temperature_field
             #%%
@@ -174,11 +168,6 @@ class ThermalModelUQ(ThermalModel):
 
                 self.problem.update_parameters(new_parameters)
                 self.problem.solve()
-                
-# =============================================================================
-#                 if entry == 120:
-#                     break
-# =============================================================================
 
             for ikey, key in enumerate(self.output_sensor_names):
                 sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:]-273.15)
@@ -200,7 +189,7 @@ class ThermalModelUQ(ThermalModel):
             std_val = chaospy.Std(fitted_sparse[key], b_dist)
             sensor_stats[key] = {"mean": mean_val, "std": std_val}
 
-        self.plot_all_sensors_together(sensor_stats)
+        # self.plot_all_sensors_together(sensor_stats)  ##TODO: !!
         # Optionally return results
         # return return_dict
         

@@ -20,7 +20,7 @@
                 "virtual_sensor_added_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
                 "secret_path": "",
                 "API_request_start_time": "2023-08-11T08:00:00Z",
-                "API_request_end_time": "2023-09-11T08:01:00Z",
+                "API_request_end_time": "2023-08-13T08:10:00Z",
                 "API_request_time_step": "10min",
                 "cache_path": "",
                 "paraview_output": true,

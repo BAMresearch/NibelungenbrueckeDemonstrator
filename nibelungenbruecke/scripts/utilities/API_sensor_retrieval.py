@@ -463,13 +463,22 @@ class Translator:
                     default_parameters_data["sensors"].append(sensor_data)
                     
         for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
+            if i == "Sensor_u":
+                where = [-4.3, 0, 0]
+            elif i == "Sensor_o":
+                where = [-0.17, 0, 0]
+            elif i == "Sensor_n":
+                where = [-3.56, 0, 0]
+            elif i == "Sensor_s":
+                where = [-2.2, 0, 0]
+        
             sensor_data = {
-            "id": i,
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [0, 0, 0],
+                "id": i,
+                "type": "TemperatureSensor",
+                "sensor_file": "temperature_sensor",
+                "units": "kelvin",
+                "dimensionality": "[temperature]",
+                "where": where,
             }
             
             default_parameters_data["sensors"].append(sensor_data)

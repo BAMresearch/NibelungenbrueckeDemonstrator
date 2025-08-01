@@ -124,14 +124,15 @@ class ThermalModel(BaseModel):
             self.problem.update_parameters(new_parameters)      ##TODO
             # print(problem.air_temperature.value)
             self.problem.solve()
-            i+=1
             
-            #%%
 # =============================================================================
-#             if i == 20:
-#                 break
+#             if i < self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] or i < len(data)/2:
+#                 self.problem.reset_sensors()
+#                 self.problem.reset_fields()
 # =============================================================================
-                
+            
+            i+=1
+
             
             #%%
             ##TODO:

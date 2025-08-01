@@ -91,7 +91,7 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
+                -4.3,
                 0,
                 0
             ]
@@ -103,7 +103,7 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
+                -0.17,
                 0,
                 0
             ]
@@ -115,7 +115,7 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
+                -3.56,
                 0,
                 0
             ]
@@ -127,7 +127,7 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
+                -2.2,
                 0,
                 0
             ]

@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 import pyvista as pv
 import os
 import pandas as pd
+import xml.etree.ElementTree as ET
+import meshio
+
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
 from nibelungenbruecke.scripts.utilities.mesh_point_detector import query_point
@@ -105,9 +108,11 @@ class Orchestrator:
         return {
             'model_parameter_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json',
             'thermal_h5py_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.h5',
-            'thermal_xmdf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.xmdf',
+            'thermal_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.xdmf',
+            'mesh_only_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal_mesh_only.xdmf',
+            'vtk_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.vtk',
             'displacement_h5py_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_displacement.h5',
-            'displacement_xmdf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_displacement.xmdf',
+            'displacement_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_displacement.xdmf',
                 }
     
 
@@ -191,8 +196,8 @@ class Orchestrator:
         self.sensor_data_json = {}
 
         for sensor_name, sensor in sensors.items():
-            times = sensor.time
             data = sensor.data
+            times = sensor.time[-len(data):]
 
             if len(times) != len(data):
                 print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
@@ -209,105 +214,102 @@ class Orchestrator:
 
         return self.sensor_data_json
 
-    def plot_virtual_sensor_data(self):
-        
-        sensors = self.digital_twin_model.initial_model.problem.sensors
-
-        for sensor_name, sensor in sensors.items():
-            if "Sensor_" in sensor_name:
-                times = sensor.time
-                data = sensor.data
-    
-                if len(times) != len(data):
-                    print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
-                    continue
-    
-                # Flatten data points
-                values = [float(d[0]) if isinstance(d, np.ndarray) else float(d) for d in data]
-    
-                # Plot
-                plt.figure(figsize=(10, 4))
-                plt.plot(times, values, linestyle='-', color='tab:blue')
-                plt.title(f"Sensor: {sensor_name}")
-                plt.xlabel("Time (s)")
-                plt.ylabel("Sensor Value")
-                plt.grid(True)
-                plt.tight_layout()
-                plt.show()
+# =============================================================================
+#     def plot_virtual_sensor_data(self):
+#         
+#         sensors = self.digital_twin_model.initial_model.problem.sensors
+# 
+#         for sensor_name, sensor in sensors.items():
+#             if "Sensor_" in sensor_name:
+#                 data = sensor.data
+#                 times = sensor.time[-len(data):]
+#     
+#                 if len(times) != len(data):
+#                     print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
+#                     continue
+#     
+#                 # Flatten data points
+#                 values = [float(d[0]) if isinstance(d, np.ndarray) else float(d) for d in data]
+#     
+#                 # Plot
+#                 plt.figure(figsize=(10, 4))
+#                 plt.plot(times, values, linestyle='-', color='tab:blue')
+#                 plt.title(f"Sensor: {sensor_name}")
+#                 plt.xlabel("Time (s)")
+#                 plt.ylabel("Sensor Value")
+#                 plt.grid(True)
+#                 plt.tight_layout()
+#                 plt.show()
+# =============================================================================
             
     ##TODO: 
         
     def plot_full_field_response(self, full_field=True):
-        # '''
-        # currently returns the simulation result paths
-        # '''
-        # if full_field:
-            
-        #     model_type = self.simulation_parameters["model"]
-
-        #     # Set file paths based on model type
-        #     if "Displacement" in model_type:
-        #         path_h5 = self.default_parameters["displacement_h5py_path"]
-        #         field_name = "displacement"
-        #         timestep = "600"  # Can be dynamic or user-defined
-        #     elif "Thermal" in model_type:
-        #         path_h5 = self.default_parameters["thermal_h5py_path"]
-        #         field_name = "temperature"
-        #         timestep = "748200"  # Can be dynamic or user-defined
-        #     else:
-        #         raise ValueError("Unsupported model type.")
         
-        #     # Open HDF5 file and extract mesh
-        #     with h5py.File(path_h5, "r") as h5:
-        #         points = h5["/Mesh/mesh/geometry"][:]       # (N, 3)
-        #         cells = h5["/Mesh/mesh/topology"][:]        # (M, 4)
-        #         n_cells = cells.shape[0]
-        #         cell_data = np.hstack([np.full((n_cells, 1), 4), cells]).flatten()
-        #         grid = pv.UnstructuredGrid(cell_data, np.full(n_cells, pv.CellType.TETRA), points)
-        
-        #         # Load field
-        #         field_path = f"/Function/{field_name}/{timestep}"
-        #         if field_path not in h5:
-        #             raise KeyError(f"{field_name.capitalize()} data at timestep {timestep} not found.")
-        
-        #         field_data = h5[field_path][:]
-        
-        #         # Determine scalar or vector field
-        #         if field_data.shape[1] == 1:
-        #             # Scalar field (e.g., temperature)
-        #             grid.point_data[field_name] = field_data.ravel()
-        #             plotter = pv.Plotter()
-        #             plotter.add_mesh(grid, scalars=field_name, cmap="plasma", show_edges=False)
-        #             plotter.add_scalar_bar(title=field_name.capitalize())
-        #         elif field_data.shape[1] == 3:
-        #             # Vector field (e.g., displacement)
-        #             grid.point_data[field_name] = field_data
-        #             warped = grid.warp_by_vector(field_name, factor=1.0)
-        #             plotter = pv.Plotter()
-        #             plotter.add_mesh(warped, show_edges=True)
-        #         else:
-        #             raise ValueError(f"Unsupported data shape for {field_name}: {field_data.shape}")
-        
-        #         plotter.show()
+        if full_field:
+            try:  
+                xdmf_path = self.default_parameters['thermal_xdmf_path']
+                h5_path = self.default_parameters['thermal_h5py_path']
+                mesh_only_xdmf_path = self.default_parameters['mesh_only_xdmf_path']
+                vtk_output_path = self.default_parameters['vtk_output_path']
+                solution_name="temperature"
+                
+                tree = ET.parse(xdmf_path)
+                root = tree.getroot()
+                time_elements = root.findall(".//Time")
+                if not time_elements:
+                    raise RuntimeError("No <Time> elements found in the XDMF file.")
+                timestep_values = [int(float(el.attrib["Value"])) for el in time_elements]
+                timestep = str(max(timestep_values))
                 
 
-            model = self.simulation_parameters.get('model')
+                if not os.path.isfile(mesh_only_xdmf_path):
+                    tree = ET.parse(xdmf_path)
+                    root = tree.getroot()
+                    grids = root.findall('.//Grid')
+                    if not grids:
+                        raise RuntimeError("No Grid elements found in the XDMF file.")
+                    new_root = ET.Element(root.tag, root.attrib)
+                    domain = ET.SubElement(new_root, "Domain")
+                    domain.append(grids[0])
+                    ET.ElementTree(new_root).write(mesh_only_xdmf_path)
+                else:
+                    print(f"")
+
+                mesh = meshio.read(mesh_only_xdmf_path)
+                
+                dataset_path = f"Function/temperature/{timestep}"
+                
+                with h5py.File(h5_path, "r") as f:
+                    if dataset_path not in f:
+                        raise KeyError(f"Dataset '{dataset_path}' not found in HDF5 file.")
+                    u_data = f[dataset_path][()]
+                u_data = u_data.flatten()
+                
+                if u_data.shape[0] != mesh.points.shape[0]:
+                    raise ValueError(f"Solution data length ({u_data.shape[0]}) does not match number of mesh points ({mesh.points.shape[0]}).")
+                
+                mesh.point_data[solution_name] = u_data
+                
+
+                meshio.write(vtk_output_path, mesh)
+
+                pv_mesh = pv.read(vtk_output_path)
+                pv_mesh.plot(scalars=solution_name, cmap="viridis", show_edges=True)
+                
+            except:
+                if not os.path.isfile(xdmf_path):
+                    print(f" Please run the simulation first to generate full-field data.")
+                    missing = True
+                    
+                else:
+                    print("Full-field response can be reached from the following paths:")
+                    print(f"xdmf file path: {xdmf_path} ")
+                    print(f"h5_path file path: {h5_path} ")
+                    print(f"vtk output path : {vtk_output_path} ")
             
-            if 'TransientThermal' in model:
-                h5py_path = self.default_parameters['thermal_h5py_path']
-                xmdf_path = self.default_parameters['thermal_xmdf_path']
-                
-                print(f"Path to full-field results:")
-                print(f"TransientThermal-> h5py_path: {h5py_path}")
-                print(f"TransientThermal -> xmdf_path: {xmdf_path}")
-                
-            elif 'displacement' in model:
-                h5py_path = self.default_parameters['displacement_h5py_path']
-                xmdf_path = self.default_parameters['displacement_xmdf_path']
-                
-                print(f"Path to full-field results:")
-                print(f"Displacement-> h5py_path: {h5py_path}")
-                print(f"Displacement -> xmdf_path: {xmdf_path}")
+            
+        
 
 
     def plot_real_sensor_vs_virtual_sensor(self):
@@ -326,6 +328,7 @@ class Orchestrator:
         df = self.digital_twin_model.initial_model.api_dataFrame + 273.15
     
         # Get datetime range of measured data
+        #measured_start = df.index[0]
         measured_start = df.index[0]
         measured_end = df.index[-1]
     
@@ -383,15 +386,16 @@ class Orchestrator:
             plt.show()
             
             
-    def plot_user_defined_virtual_sensors(self):
+    def plot_virtual_sensor_data(self):
         sensors = self.digital_twin_model.initial_model.problem.sensors
-        virtual_sensor_positions_names =[x["name"] for x in simulation_parameters["virtual_sensor_positions"]]
+        virtual_sensor_positions_names =[x["name"] for x in self.simulation_parameters["virtual_sensor_positions"]]
 
         for sensor_name, sensor in sensors.items():
             
             if sensor_name in virtual_sensor_positions_names:
-                times = sensor.time
                 data = sensor.data
+                times = sensor.time[-len(data):]
+                
     
                 if len(times) != len(data):
                     print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
@@ -403,7 +407,7 @@ class Orchestrator:
                 # Plot
                 plt.figure(figsize=(10, 4))
                 plt.plot(times, values, linestyle='-', color='tab:blue')
-                plt.title(f"Sensor: {sensor_name}")
+                plt.title(f"Virtual Sensor: {sensor_name}")
                 plt.xlabel("Time (s)")
                 plt.ylabel("Sensor Value")
                 plt.grid(True)
@@ -423,7 +427,7 @@ if __name__ == "__main__":
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-11T08:10:00Z',
+        'end_time': '2023-08-11T16:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
@@ -431,15 +435,15 @@ if __name__ == "__main__":
         {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
         {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
     ],
-        'plot_pv': False,
-        'full_field_results': False, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
+        'plot_pv': True,
+        'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger
         'uncertainty_quantification': False, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
 
     orchestrator =  Orchestrator(simulation_parameters)
     #key = input("\nEnter the code to connect API: ").strip()
-    #
+    
     key = ""
     orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
@@ -449,7 +453,9 @@ if __name__ == "__main__":
         
     orchestrator.plot_real_sensor_vs_virtual_sensor()
     
-    orchestrator.plot_user_defined_virtual_sensors()
+    #orchestrator.plot_user_defined_virtual_sensors()
+    
+    orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
 
     ## 
     
@@ -459,7 +465,7 @@ if __name__ == "__main__":
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-11T08:10:00Z',
+        'end_time': '2023-08-13T08:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
             {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
@@ -467,34 +473,49 @@ if __name__ == "__main__":
             # Note: the real sensor positions are added automatically by the interface, so you don't need to specify them here.
         ],
         'plot_pv': False,
-        'full_field_results': False, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
+        'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
         'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
 
-    #orchestrator =  Orchestrator(simulation_parameters)
-    #key = input("\nEnter the code to connect API: ").strip()
-    #orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
     
     orchestrator.plot_virtual_sensor_data()
-
-    ## 
-
-    virtual_sensor_positions = [
-        {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor1'},
-        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'}
-        # Note: the real sensor positions are added automatcally by the interface, so you don't need to specify them here.
-    ]
-
-    orchestrator.simulation_parameters["virtual_sensor_positions"] = virtual_sensor_positions
-
-
-    orchestrator.plot_virtual_sensor_data()
-    
         
     orchestrator.plot_real_sensor_vs_virtual_sensor()
-
     
+    #orchestrator.plot_user_defined_virtual_sensors()
+    
+    orchestrator.plot_full_field_response()
+
+    simulation_parameters = {       ##Throw an error checking UQ!!
+        'simulation_name': 'TestSimulation',
+        'model': 'TransientThermal_1',
+        'start_time': '2023-08-11T08:00:00Z',
+        'end_time': '2023-08-13T08:10:00Z',
+        'time_step': '10min',
+        'virtual_sensor_positions': [
+        {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
+        {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+        {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
+    ],
+        'plot_pv': False,
+        'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger
+        'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+    }
+
+
+    orchestrator =  Orchestrator(simulation_parameters)
+    
+    orchestrator.run(simulation_parameters)
+    
+    orchestrator.plot_virtual_sensor_data()
+        
+    orchestrator.plot_real_sensor_vs_virtual_sensor()
+    
+    #orchestrator.plot_user_defined_virtual_sensors()
+    
+    orchestrator.plot_full_field_response()
 
     #orchestrator.run(simulation_parameters)

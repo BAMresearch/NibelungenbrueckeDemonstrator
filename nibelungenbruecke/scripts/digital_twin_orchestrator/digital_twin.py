@@ -233,6 +233,8 @@ class DigitalTwin:
         
             # Set plot flag in the instantiated problem
             digital_twin_model.problem.p["plot_pv"] = plot_pv
+            digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
+            digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
     
             # Store and return
             self.digital_twin_models[self.model_to_run] = digital_twin_model
