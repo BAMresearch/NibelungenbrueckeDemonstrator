@@ -477,7 +477,7 @@ if __name__ == "__main__":
         'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
-
+    orchestrator.set_api_key(key)
     orchestrator.run(simulation_parameters)
     
     orchestrator.plot_virtual_sensor_data()
@@ -505,7 +505,7 @@ if __name__ == "__main__":
         'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
-
+    orchestrator.set_api_key(key)
     orchestrator =  Orchestrator(simulation_parameters)
     
     orchestrator.run(simulation_parameters)

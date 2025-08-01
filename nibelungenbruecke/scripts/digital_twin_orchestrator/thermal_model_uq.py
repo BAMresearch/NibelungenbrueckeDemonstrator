@@ -68,8 +68,8 @@ class ThermalModelUQ(ThermalModel):
         shortwave_irradiation_array = np.zeros(len(data))
 
         for i, (_, data_point) in enumerate(tqdm(data.iterrows(), total=len(data))):
-            air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"] + 273.15
-            inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"] + 273.15
+            air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+            inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
             shortwave_irradiation_array[i] = data_point["F_plus_000S_KaS-o-_Avg1"]
 
         inp["air_temperature"] = air_temperature_array
