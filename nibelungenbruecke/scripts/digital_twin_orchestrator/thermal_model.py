@@ -4,6 +4,8 @@ import pickle
 import importlib
 import numpy as np
 from tqdm import tqdm
+from tqdm import trange
+from copy import deepcopy
 import dolfinx as df
 import matplotlib.pyplot as plt
 
@@ -105,38 +107,78 @@ class ThermalModel(BaseModel):
             "virtual_sensor_data": {}
         }
 
-        data = self.api_dataFrame
+        data = self.api_dataFrame + 273.15
 
         air_temperature_array = np.zeros(len(data))
         inner_temperature_array = np.zeros(len(data))
-        i=0
+        pv_plot_flag = self.problem.p["plot_pv"]
         
+        if not hasattr(self, "ic_temperature_field"):
+            self.problem.p['plot_pv'] = 0
+            total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
+            for i, (_, data_point) in enumerate(tqdm(data.iloc[:total_steps].iterrows(), total=total_steps)):
+
+                air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+                inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                self.problem.update_parameters({
+                    "air_temperature": air_temperature_array[i],
+                    "inner_temperature": inner_temperature_array[i],
+                    "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+                    "calculate_shortwave_irradiation": False,
+                })
+                
+                self.problem.solve()
         
-        for _, data_point in tqdm(data.iterrows(), total=len(data)):
-            air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"] + 273.15
-            inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"] + 273.15 
-            new_parameters = {
-                "air_temperature": air_temperature_array[i] ,
-                "inner_temperature": inner_temperature_array[i],
+            self.problem.fields.temperature.vector.assemble()
+            self.ic_temperature_field = deepcopy(self.problem.fields.temperature.vector)
+            self.problem.reset_sensors()
+            self.problem.reset_fields()
+        
+        self.problem.u_old.vector[:] = self.ic_temperature_field
+        self.problem.fields.temperature.vector[:] = self.ic_temperature_field
+        
+        start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))
+        if pv_plot_flag:
+            self.problem.p['plot_pv'] = 1
+            
+        for i, (_, data_point) in enumerate(tqdm(data.iloc[start_idx:].iterrows(), total=len(data) - start_idx)):
+            air_temperature_array[start_idx+i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+            inner_temperature_array[start_idx+i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+            self.problem.update_parameters({
+                "air_temperature": air_temperature_array[start_idx+i],
+                "inner_temperature": inner_temperature_array[start_idx+i],
                 "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                 "calculate_shortwave_irradiation": False,
-            }
-            self.problem.update_parameters(new_parameters)      ##TODO
-            # print(problem.air_temperature.value)
+            })
             self.problem.solve()
-            
-# =============================================================================
-#             if i < self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] or i < len(data)/2:
-#                 self.problem.reset_sensors()
-#                 self.problem.reset_fields()
-# =============================================================================
-            
-            i+=1
 
             
+                
+ #%%           
+# =============================================================================
+#         
+#         
+#         
+#         for _, data_point in tqdm(data.iterrows(), total=len(data)):
+#             
+#             air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"] + 273.15
+#             inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"] + 273.15 
+#             new_parameters = {
+#                 "air_temperature": air_temperature_array[i] ,
+#                 "inner_temperature": inner_temperature_array[i],
+#                 "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+#                 "calculate_shortwave_irradiation": False,
+#             }
+#             self.problem.update_parameters(new_parameters)      ##TODO
+#             # print(problem.air_temperature.value)
+#             self.problem.solve()
+#           
+# 
+#             
+# =============================================================================
             #%%
             ##TODO:
-            
+
             for sensor_id in data.columns:
                 if "40TU" in sensor_id: 
                     database["real_sensor_data"].setdefault(sensor_id, [])

@@ -79,7 +79,7 @@
                     "model_type": "embedded_for_noise",
                     "model_parameters": {
                         "model_name": "temperature",
-                        "initial_condition_steps": 100,
+                        "initial_condition_steps": 200,
                         "burn_in_steps": 300,
                         "experiment_parameters":{ 
                             "dim": 2  

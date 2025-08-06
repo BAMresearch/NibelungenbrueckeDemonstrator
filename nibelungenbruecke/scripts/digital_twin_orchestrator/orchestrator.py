@@ -46,19 +46,25 @@ class Orchestrator:
         self.model_parameters_path = self.default_parameters['model_parameter_path']
         
         self.digital_twin_model = self._digital_twin_initializer()
-        self.plot_virtual_sensors = {}
-        self.plot_model_typ = ""
-        self.UQ_flag = False
         
     
     def assign_model_name(self):
         self.model_to_run = self.simulation_parameters["model"]
+        self.UQ_flag_changed = False
         
-        if self.simulation_parameters["uncertainty_quantification"]:
-           self.UQ_flag = True
+        current_UQ_flag = bool(self.simulation_parameters.get("uncertainty_quantification", False))
+        
+        if not hasattr(self, "UQ_flag"):
+            self.UQ_flag = current_UQ_flag
+            self.previous_UQ_flag = None
+            
         else:
-            self.UQ_flag = False
-    
+            self.previous_UQ_flag = self.UQ_flag
+            self.UQ_flag = current_UQ_flag
+            
+        if self.previous_UQ_flag != self.UQ_flag:
+            self.UQ_flag_changed = True
+            
         return self.model_to_run
             
         
@@ -72,7 +78,7 @@ class Orchestrator:
         """
         return DigitalTwin(self.model_parameters_path, self.model_to_run)
         
-    def predict_dt(self, digital_twin, model_to_run, api_key):   ##TODO: Input parameters to be deleted!!
+    def predict_dt(self, digital_twin, model_to_run, api_key):
         """
         Runs "prediction" method of specified digital twin object.
         
@@ -82,7 +88,7 @@ class Orchestrator:
             model_to_run (str): Specifies which predefined model to execute.
         
         """
-        return digital_twin.predict(model_to_run, api_key, self.simulation_parameters, self.UQ_flag)
+        return digital_twin.predict(model_to_run, api_key, self.simulation_parameters, self.UQ_flag_changed)
     
     def predict_last_week(self, digital_twin, inputs):
         """
@@ -122,7 +128,7 @@ class Orchestrator:
     def set_api_key(self, key):
         self.api_key = key
 
-    def load(self, simulation_parameters):
+    def load(self, simulation_parameters):      ##TODO: This method does not function yet!! Work on it!!
         """
         Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
 
@@ -134,7 +140,7 @@ class Orchestrator:
         """
         
         model = simulation_parameters.get('model')
-        if model == 'TransientThermal_1':       # TODO: Should be same model probably!
+        if model == 'TransientThermal_1':
             path = self.default_parameters['thermal_h5py_path']
         elif model == 'displacement_1':
             path = self.default_parameters['displacement_h5py_path']
@@ -151,7 +157,7 @@ class Orchestrator:
             min_dist = np.min(distances)
 
 
-            threshold = 1.29  ##TODO: Maximum element size is 1.283 m. Outer virtual sensors that are below that treshold considered in the domain!!
+            threshold = 1.29  #XXX NOTE: Maximum element size is 1.283 m. Outer virtual sensors that are below that treshold considered in the domain!!
 
             if min_dist > threshold:
                 raise ValueError(
@@ -214,37 +220,8 @@ class Orchestrator:
 
         return self.sensor_data_json
 
-# =============================================================================
-#     def plot_virtual_sensor_data(self):
-#         
-#         sensors = self.digital_twin_model.initial_model.problem.sensors
-# 
-#         for sensor_name, sensor in sensors.items():
-#             if "Sensor_" in sensor_name:
-#                 data = sensor.data
-#                 times = sensor.time[-len(data):]
-#     
-#                 if len(times) != len(data):
-#                     print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
-#                     continue
-#     
-#                 # Flatten data points
-#                 values = [float(d[0]) if isinstance(d, np.ndarray) else float(d) for d in data]
-#     
-#                 # Plot
-#                 plt.figure(figsize=(10, 4))
-#                 plt.plot(times, values, linestyle='-', color='tab:blue')
-#                 plt.title(f"Sensor: {sensor_name}")
-#                 plt.xlabel("Time (s)")
-#                 plt.ylabel("Sensor Value")
-#                 plt.grid(True)
-#                 plt.tight_layout()
-#                 plt.show()
-# =============================================================================
-            
-    ##TODO: 
         
-    def plot_full_field_response(self, full_field=True):
+    def plot_full_field_response(self, full_field=False):
         
         if full_field:
             try:  
@@ -309,9 +286,6 @@ class Orchestrator:
                     print(f"vtk output path : {vtk_output_path} ")
             
             
-        
-
-
     def plot_real_sensor_vs_virtual_sensor(self):
         json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
 
@@ -328,7 +302,6 @@ class Orchestrator:
         df = self.digital_twin_model.initial_model.api_dataFrame + 273.15
     
         # Get datetime range of measured data
-        #measured_start = df.index[0]
         measured_start = df.index[0]
         measured_end = df.index[-1]
     
@@ -416,18 +389,18 @@ class Orchestrator:
         
             
         
-            
-                    
-                
        #%%
 
 if __name__ == "__main__":
     
-    simulation_parameters = {       ##Throw an error checking UQ!!
+    
+    #%%
+    # orchestration initialization and Transient Thermal model without UQ
+    simulation_parameters = {
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-11T16:10:00Z',
+        'end_time': '2023-08-11T09:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
@@ -446,7 +419,7 @@ if __name__ == "__main__":
     
     #key = ""
     orchestrator.set_api_key(key)
-    #orchestrator.run(simulation_parameters)
+    orchestrator.run()
     
     #orchestrator.plot_virtual_sensor_data()
     
@@ -457,46 +430,46 @@ if __name__ == "__main__":
     
     #orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
 
-    ## 
-    
-    ##
-    
+    #%%
+    # same orchestrator object orchestrating Transient Thermal with UQ
+
     simulation_parameters = {       ##Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-13T08:10:00Z',
+        'end_time': '2023-08-13T02:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
             {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
-            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'}
-            # Note: the real sensor positions are added automatically by the interface, so you don't need to specify them here.
+            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+            {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+            {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
         ],
         'plot_pv': False,
         'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger.
         'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
-    orchestrator.set_api_key(key)
-    orchestrator.run(simulation_parameters)
+    #orchestrator.run(simulation_parameters)
     
-    orchestrator.plot_virtual_sensor_data()
+    #orchestrator.plot_virtual_sensor_data()
         
-    orchestrator.plot_real_sensor_vs_virtual_sensor()
+    #orchestrator.plot_real_sensor_vs_virtual_sensor()
     
-    #orchestrator.plot_user_defined_virtual_sensors()
+    #orchestrator.plot_full_field_response()
     
-    orchestrator.plot_full_field_response()
+    #%%
+    # Transient thermal UQ with different time interval and sensor positions
 
     simulation_parameters = {       ##Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
-        'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-13T08:10:00Z',
+        'start_time': '2024-08-11T08:00:00Z',
+        'end_time': '2024-08-13T02:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
-        {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
-        {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+        {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
+        {'x': -1.5, 'y': 0.25, 'z': 32.00, 'name': 'Sensor2'},
         {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
         {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
     ],
@@ -505,17 +478,42 @@ if __name__ == "__main__":
         'uncertainty_quantification': True, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
     }
 
-    orchestrator.set_api_key(key)
-    orchestrator =  Orchestrator(simulation_parameters)
     
     orchestrator.run(simulation_parameters)
     
+    #orchestrator.plot_virtual_sensor_data()
+        
+    #orchestrator.plot_real_sensor_vs_virtual_sensor()
+        
+    #orchestrator.plot_full_field_response()
+
+#%%
+
+#%%
+# Transient thermal without UQ different time interval and sensor positions
+
+    simulation_parameters = {       ##Throw an error checking UQ!!
+        'simulation_name': 'TestSimulation',
+        'model': 'TransientThermal_1',
+        'start_time': '2024-08-11T08:00:00Z',
+        'end_time': '2024-08-13T02:10:00Z',
+        'time_step': '10min',
+        'virtual_sensor_positions': [
+        {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
+        {'x': -1.5, 'y': 0.25, 'z': 32.00, 'name': 'Sensor2'},
+        {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
+    ],
+        'plot_pv': False,
+        'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger
+        'uncertainty_quantification': False, # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+    }
+
+
+    orchestrator.run(simulation_parameters)
+
     orchestrator.plot_virtual_sensor_data()
         
     orchestrator.plot_real_sensor_vs_virtual_sensor()
-    
-    #orchestrator.plot_user_defined_virtual_sensors()
-    
+        
     orchestrator.plot_full_field_response()
-
-    #orchestrator.run(simulation_parameters)

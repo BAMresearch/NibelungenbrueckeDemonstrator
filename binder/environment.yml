@@ -4,19 +4,35 @@ channels:
 dependencies:
   - python=3.10
   - fenics-dolfinx=0.6.0
-  - numpy
+  - numpy=1.26.4
+  - scipy=1.10.1
+  - matplotlib=3.7.1
+  - pandas=2.3.0
+  - scikit-learn=1.2.2
+  - h5py=3.13.0
+  - mpi4py=3.1.6
+  - fenics-dolfinx=0.6
+  - pyvista=0.45.2
+  - arviz=0.15.1
+  - pip=25.1.1
+  - seaborn=0.13.2
+  - pytest=8.4.0
+  - python-gmsh=4.12.2
+  - pvlib-python=0.13.0
+  - jsonschema=4.24.0
   - mpich
-  - pyvista[all]
-  - pytest
-  - gmsh
+  - meshio
   - pint
-  - jsonschema
-  - pandas
   - pyproj
   - tqdm
   - pvlib
-  - scipy
   - git
-  - pip
-pip:
-  - git+https://github.com/BAMresearch/FenicsXConcrete
+
+  - pip:
+      - git+https://github.com/BAMresearch/FenicsXConcrete@my-grf
+      - git+https://github.com/BAMresearch/probeye
+      - chaospy==3.3.9
+      - doit==0.36.0
+      - pint==0.24.4
+      - jinja2==3.1.6
+      - pdf2image==1.17.0

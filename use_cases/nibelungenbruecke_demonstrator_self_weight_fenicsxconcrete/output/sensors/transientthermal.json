@@ -20,7 +20,7 @@
                 "virtual_sensor_added_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
                 "secret_path": "",
                 "API_request_start_time": "2023-08-11T08:00:00Z",
-                "API_request_end_time": "2023-08-11T16:10:00Z",
+                "API_request_end_time": "2023-09-11T16:10:00Z",
                 "API_request_time_step": "10min",
                 "cache_path": "",
                 "paraview_output": true,
@@ -81,7 +81,7 @@
                     "model_type": "embedded_for_noise",
                     "model_parameters": {
                         "model_name": "temperature",
-                        "initial_condition_steps": 100,
+                        "initial_condition_steps": 200,
                         "burn_in_steps": 300,
                         "experiment_parameters": {
                             "dim": 2

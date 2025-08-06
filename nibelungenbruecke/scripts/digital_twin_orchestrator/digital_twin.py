@@ -1,14 +1,7 @@
 import os
-import sys
-import ufl
 import json
-import copy
 import pickle
 import importlib
-import numpy as np
-import dolfinx as df
-from mpi4py import MPI
-from pathlib import Path
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
 
@@ -90,27 +83,22 @@ class DigitalTwin:
         self.model_to_run = model_to_run
         
         if not self._set_model(orchestrator_simulation_parameters):
-            #self.digital_twin_model = self._initialize_default_model()  ##TODO:
+            #self.digital_twin_model = self._initialize_default_model()  ## TODO:
             #return 
-            raise f"There isn't any predefined model with name {self.model_to_run}. Please check the name or add the model to model parameters\n"
+            raise ValueError(f"There isn't any predefined model with name {self.model_to_run}. Please check the name or add the model to model parameters\n")
+
             
-        # Load cached parameters or default parameters if cache is missing
-        if self.model_to_run not in self.digital_twin_models.keys():
+        if self.model_to_run not in self.digital_twin_models.keys() or UQ_flag:
             self._loaded_params = self._get_or_load_parameters()
             self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
         else:
-            if UQ_flag:
-                self._loaded_params = self._get_or_load_parameters()
-                self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
-
-                
-            else:               
-                self.initial_model = self.digital_twin_models[self.model_to_run]
+            self.initial_model = self.digital_twin_models[self.model_to_run]
             
-        # Updates model parameters if necessary
+        updated = False
+        updated_params = {}
+            
         if "TransientThermal" in self.model_to_run:
             updated = True
-            updated_params = {}
             updated_params["parameters"] = {}
         elif "Displacement" in self.model_to_run:
             input_value = self.initial_model.generate_random_parameters()
@@ -125,33 +113,76 @@ class DigitalTwin:
             
         return self.initial_model
     
+
     def _set_model(self, orchestrator_simulation_parameters):
         """
         Sets up the model based on predefined configurations.
-        
+    
         Returns:
             bool: True if the model is successfully set, otherwise raises an error.
-        
+    
         Raises:
             ValueError: If the specified model is not found in the JSON file.
         """
-
         for model_info in self._models:
             if model_info["name"] == orchestrator_simulation_parameters["model"]:
-                self.cache_model_name = model_info["type"]
-                self.cache_object_name = model_info["class"]
-                rel_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/" ##TODO:
-                self.cache_model_path = rel_path + model_info["path"]
-                
-                if orchestrator_simulation_parameters["uncertainty_quantification"]:
-                    self.cache_model_name = self.cache_model_name + "_uq"
-                    self.cache_object_name = model_info["class"] + "UQ"
-                    parts = model_info["path"].split(".", 1)
-                    new_path = f"{parts[0]}_UQ.{parts[1]}"
-                    self.cache_model_path = rel_path + new_path
-                    
+                # Always start from base type/class/path
+                base_type = model_info["type"]
+                base_class = model_info["class"]
+                base_path = model_info["path"]
+    
+                rel_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/"
+    
+                if orchestrator_simulation_parameters.get("uncertainty_quantification", False):
+                    # Append UQ-related suffixes only once
+                    self.cache_model_name = base_type if base_type.endswith("_uq") else base_type + "_uq"
+                    self.cache_object_name = base_class if base_class.endswith("UQ") else base_class + "UQ"
+                    if not base_path.endswith("_UQ.json"):  # customize this if needed
+                        parts = base_path.split(".", 1)
+                        new_path = f"{parts[0]}_UQ.{parts[1]}"
+                        self.cache_model_path = rel_path + new_path
+                    else:
+                        self.cache_model_path = rel_path + base_path
+                else:
+                    # In classic mode, keep names clean
+                    self.cache_model_name = base_type.replace("_uq", "")
+                    self.cache_object_name = base_class.replace("UQ", "")
+                    self.cache_model_path = rel_path + base_path
+    
                 return True
-        raise ValueError(f"'{self.model_to_run}' not found in the defined models.")     ##TODO: Create a new model !!
+    
+        raise ValueError(f"'{self.model_to_run}' not found in the defined models.")
+
+    
+# =============================================================================
+#     def _set_model(self, orchestrator_simulation_parameters):       ##TODO: 
+#         """
+#         Sets up the model based on predefined configurations.
+#         
+#         Returns:
+#             bool: True if the model is successfully set, otherwise raises an error.
+#         
+#         Raises:
+#             ValueError: If the specified model is not found in the JSON file.
+#         """
+# 
+#         for model_info in self._models:
+#             if model_info["name"] == orchestrator_simulation_parameters["model"]:
+#                 self.cache_model_name = model_info["type"]
+#                 self.cache_object_name = model_info["class"]
+#                 rel_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/" ##TODO:
+#                 self.cache_model_path = rel_path + model_info["path"]
+#                 
+#                 if orchestrator_simulation_parameters["uncertainty_quantification"]:
+#                     self.cache_model_name = self.cache_model_name + "_uq"
+#                     self.cache_object_name = model_info["class"] + "UQ"
+#                     parts = model_info["path"].split(".", 1)
+#                     new_path = f"{parts[0]}_UQ.{parts[1]}"
+#                     self.cache_model_path = rel_path + new_path
+#                     
+#                 return True
+#         raise ValueError(f"'{self.model_to_run}' not found in the defined models.")     ##TODO: Create a new model !!
+# =============================================================================
     
     def _get_or_load_parameters(self):
         """
@@ -167,7 +198,7 @@ class DigitalTwin:
                     parameters = json.load(file)
                 self.cache_object.cache_model = parameters
         else:
-            if self.cache_object.model_name != self.cache_object_name:
+            if self.cache_object.model_name != self.cache_object_name:      ##TODO
                 parameters = self.cache_object.load_cache(self.cache_model_path, self.cache_model_name)
                 if not parameters:
                     with open(self._default_parameters_path(), 'r') as file:
@@ -199,7 +230,6 @@ class DigitalTwin:
             
             model_found = True
     
-            # Select the appropriate model path based on model type
             model_paths = self.cache_object.cache_model["model_path"][0]
             if "TransientThermal" in self.model_to_run:
                 model_path = model_paths["transientthermal_model_path"]
@@ -209,15 +239,21 @@ class DigitalTwin:
                 raise ValueError(f"Unknown model type '{self.model_to_run}'. Check the default parameter JSON file.")
     
             # Load model parameters
-            generation_model = self.cache_object.cache_model["generation_models_list"][0]
-            model_parameters = generation_model["model_parameters"]
-            dt_params_path = generation_model["digital_twin_parameters_path"]
+            generation_model_parameters = self.cache_object.cache_model["generation_models_list"][0]
+            model_parameters = generation_model_parameters["model_parameters"]
+            dt_params_path = generation_model_parameters["digital_twin_parameters_path"]
     
             # Apply uncertainty quantification flag
             if orchestrator_simulation_parameters.get("uncertainty_quantification"):
-                if "uq" not in model["type"]:
+                if "_uq" not in model["type"]:
                     model["type"] += "_uq"
+                if "UQ" not in model["class"]:
                     model["class"] += "UQ"
+                    
+            else:
+                model["type"] = model["type"].replace("_uq", "")
+                model["class"] = model["class"].replace("UQ", "")
+                
     
             # Set plot flag
             plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
@@ -236,7 +272,7 @@ class DigitalTwin:
             digital_twin_model.problem.p["plot_pv"] = plot_pv
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
-    
+            
             # Store and return
             self.digital_twin_models[self.model_to_run] = digital_twin_model
             return digital_twin_model
@@ -269,6 +305,8 @@ class DigitalTwin:
         self.initial_model.fields_data_storer(self.model_to_run)
 
         return self.initial_model
+    
+
         
     def uploader(self):
         """
