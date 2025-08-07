@@ -221,7 +221,12 @@ class Orchestrator:
         return self.sensor_data_json
 
         
-    def plot_full_field_response(self, full_field=False):
+    def plot_full_field_response(self, manual_full_field=False):
+        
+        full_field = self.simulation_parameters["full_field_results"]
+        if manual_full_field:
+            full_field = True
+        #full_field = False  ##TODO: Kept False for Jupyterhub interface!!
         
         if full_field:
             try:  
