@@ -1,0 +1,288 @@
+{
+    "model_path": "./input/models/mesh_2d_pilot.msh",
+    "output_parameters": {
+      "output_path": "./output/results/calibration_2d/inference_pilot_noise",
+      "output_format": ".nc"
+    },
+    "print_info": true,
+    "inverse_problem_parameters": {
+      "name": "Nibelungenbr\u00fccke thermal",
+      "print_header": true
+    },
+    "forward_model_parameters": {
+      "name": "Nibelungenbr\u00fccke thermal",
+      "experiments": [
+        "TestSeries_1"
+      ],
+      "input_sensors_path": "./input/sensors/sensors_temperature_probeye_input.json",
+      "output_sensors_path": "./input/sensors/sensors_temperature_probeye_output_hetero.json",
+      "problem_parameters": [
+        "sensor_location_u",
+        "sensor_location_n",
+        "sensor_location_s",
+        "sensor_location_o",
+        "wind_forced_convection_parameter_constant",
+        "wind_forced_convection_parameter_constant_bias",
+        "additional_heat_constant",
+        "additional_heat_constant_bias",
+        "shortwave_radiation_constant"
+      ],
+      "parameter_key_paths": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "model_type": "embedded_noise",
+      "model_parameters": {
+        "model_name": "temperature",
+        "initial_condition_steps": 100,
+        "burn_in_steps": 500,
+        "experiment_parameters": {
+          "dim": 2
+        },
+        "problem_parameters": {
+          "air_temperature": 293.0,
+          "inner_temperature": 293.0,
+          "initial_temperature": 293.0,
+          "heat_capacity": 870.0,
+          "dt": 1800.0,
+          "theta": 1.0,
+          "density": 2400.0,
+          "conductivity": 2.5,
+          "diffusivity": 1e-06,
+          "sensor_location_u": -4.3,
+          "sensor_location_s": -2.2,
+          "sensor_location_n": -3.56,
+          "sensor_location_o": -0.17,
+          "convection": false,
+          "natural_convection_coefficient": 10.0,
+          "wind_forced_convection": true,
+          "wind_forced_convection_parameter_constant": 1.0,
+          "wind_speed": 5.0,
+          "shortwave_radiation": true,
+          "shortwave_radiation_constant": 1.0,
+          "shortwave_irradiation": 0.0,
+          "calculate_shortwave_irradiation": false,
+          "additional_hr_heat": true,
+          "additional_heat_constant": 0.0,
+          "top_tag": 9,
+          "bottom_tag": 8,
+          "end_tag": 7,
+          "plot_pv": false
+        },
+        "sensor_metadata": "./input/sensors/sensors_temperature.json"
+      }
+    },
+    "bias_model_parameters": {
+      "parameters": [
+        {
+          "variable_name": "additional_heat_constant",
+          "bias_name": "additional_heat_constant_bias"
+        },
+        {
+          "variable_name": "wind_forced_convection_parameter_constant",
+          "bias_name": "wind_forced_convection_parameter_constant_bias"
+        }
+      ],
+      "pol_order": 2
+    },
+    "parameter_list_parameters": [
+      {
+        "name": "wind_forced_convection_parameter_constant",
+        "tex": "wind_forced_convection_parameter_constant",
+        "info": "Convection constant",
+        "value": 1.4098188908276303
+      },
+      {
+        "name": "wind_forced_convection_parameter_constant_bias",
+        "tex": "wind_forced_convection_parameter_constant_bias",
+        "info": "Convection constant",
+        "value": 0.767788487947861
+      },
+      {
+        "name": "shortwave_radiation_constant",
+        "tex": "shortwave_radiation_constant",
+        "info": "Radiation constant",
+        "value": 0.5379897967520848
+      },
+      {
+        "name": "additional_heat_constant",
+        "tex": "additional_heat_constant",
+        "info": "Additional heat constant",
+        "value": 0.00021198662103498475
+      },
+      {
+        "name": "additional_heat_constant_bias",
+        "tex": "additional_heat_constant_bias",
+        "info": "Humidity bias",
+        "value": 0.00014525236485805616
+      },
+      {
+        "name": "sensor_location_u",
+        "tex": "sensor_location_u",
+        "info": "Depth Sensor_u",
+        "value": -4.235178137356737
+      },
+      {
+        "name": "sensor_location_s",
+        "tex": "sensor_location_s",
+        "info": "Depth Sensor_s",
+        "value": -2.1999999303015443
+      },
+      {
+        "name": "sensor_location_n",
+        "tex": "sensor_location_n",
+        "info": "Depth Sensor_n",
+        "value": -3.496944062616227
+      },
+      {
+        "name": "sensor_location_o",
+        "tex": "sensor_location_o",
+        "info": "Depth Sensor_o",
+        "value": -0.196973785784221
+      },
+      {
+        "name": "sigma_u",
+        "tex": "sigma_u",
+        "info": "Standard deviation, of zero-mean Gaussian noise model",
+        "domain": "(0.01, 10.0)",
+        "prior": {
+          "name": "LogNormal",
+          "mean": -2,
+          "std": 0.1
+        }
+      },
+      {
+        "name": "sigma_o",
+        "tex": "sigma_o",
+        "info": "Standard deviation, of zero-mean Gaussian noise model",
+        "domain": "(0.01, 10.0)",
+        "prior": {
+          "name": "LogNormal",
+          "mean": -2,
+          "std": 0.1
+        }
+      },
+      {
+        "name": "sigma_n",
+        "tex": "sigma_n",
+        "info": "Standard deviation, of zero-mean Gaussian noise model",
+        "domain": "(0.01, 10.0)",
+        "prior": {
+          "name": "LogNormal",
+          "mean": -2,
+          "std": 0.1
+        }
+      },
+      {
+        "name": "sigma_s",
+        "tex": "sigma_s",
+        "info": "Standard deviation, of zero-mean Gaussian noise model",
+        "domain": "(0.01, 10.0)",
+        "prior": {
+          "name": "LogNormal",
+          "mean": -2,
+          "std": 0.1
+        }
+      }
+    ],
+    "experiment_list_parameters": [
+      {
+        "name": "TestSeries_1",
+        "input_data_path": "./input/data/weather_data20250401_20250430_30min.h5",
+        "data_format": "pandash5",
+        "sensor_names": [
+          "air_temperature",
+          "inner_temperature",
+          "shortwave_irradiation",
+          "humidity",
+          "bridge_temperature_u",
+          "bridge_temperature_n",
+          "bridge_temperature_s",
+          "bridge_temperature_o",
+          "wind_speed",
+          "wind_direction"
+        ],
+        "data_values": [
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata",
+          "data_with_metadata"
+        ],
+        "parameter_names": [
+          "air_temperature",
+          "inner_temperature",
+          "shortwave_irradiation",
+          "humidity",
+          "bridge_temperature_u",
+          "bridge_temperature_n",
+          "bridge_temperature_s",
+          "bridge_temperature_o",
+          "wind_speed",
+          "wind_direction"
+        ],
+        "index_or_values": [
+          "values",
+          "values",
+          "values",
+          "values",
+          "values",
+          "values",
+          "values",
+          "values",
+          "values",
+          "values"
+        ]
+      }
+    ],
+    "likelihood_model_parameters": [
+      {
+        "name": "IndependentNormalModelError",
+        "module": "bias.likelihood_models",
+        "parameters": {
+          "experiment_name": "TestSeries_1"
+        }
+      }
+    ],
+    "solver_parameters": {
+      "module": "bias",
+      "name": "EmbeddedPCESolver",
+      "show_progress": true
+    },
+    "run_parameters": {
+      "n_steps": 1000,
+      "n_initial_steps": 100,
+      "n_walkers": 12,
+      "parallel": false
+    },
+    "postprocessing": {
+      "posterior_predictive_results": "./output/results/calibration_2d/posterior_predictive_pilot_noise.json",
+      "pair_plot": true,
+      "output_pair_plot": "./output/figures/calibration_2d/pair_plot_pilot_noise",
+      "pair_plot_format": ".pdf",
+      "posterior_plot": true,
+      "output_posterior_plot": "./output/figures/calibration_2d/posterior_plot_pilot_noise",
+      "posterior_plot_format": ".pdf",
+      "trace_plot": true,
+      "output_trace_plot": "./output/figures/calibration_2d/trace_plot_pilot_noise",
+      "trace_plot_format": ".pdf",
+      "posterior_map": "./output/figures/calibration_2d/posterior_comparison_pilot_noise",
+      "posterior_map_format": ".png",
+      "mahalanobis_distance": "./output/results/calibration_2d/mahalanobis_pilot_noise",
+      "mahalanobis_distance_format": ".json",
+      "output_path": "./output/figures/calibration_2d/postprocessing_pilot_noise",
+      "output_format": ".pdf"
+    }
+  }

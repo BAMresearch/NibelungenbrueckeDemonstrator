@@ -164,7 +164,7 @@ use_cases/nibelungenbruecke_demonstrator_self_weight/output/*
 #use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/*.csv
 
 ### fenicsxconcrete_demonstrator test
-tests/test_orchestrator/test_orchestrator.py
+tests
 interface_NB_DT.ipynb
 use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup
 use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup2

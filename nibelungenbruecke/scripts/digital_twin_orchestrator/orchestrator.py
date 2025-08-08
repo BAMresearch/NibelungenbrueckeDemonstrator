@@ -415,6 +415,28 @@ class Orchestrator:
                 plt.grid(True)
                 plt.tight_layout()
                 plt.show()
+                
+                
+    def adapted_parameters_check(self):
+        
+        inference_pilot_noise_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/results/inference_pilot_noise_daniel.json"
+        
+        with open(inference_pilot_noise_path, "r") as f:
+            data = json.load(f)
+        
+        parameter_list_parameters = data["parameter_list_parameters"]
+        problem_params = self.digital_twin_model.initial_model.problem.p
+        
+        print(f"{'Parameter Name':40} | {'Calibration Value':20} | {'Adapted Parameters Value':20}")
+        print("-" * 85)
+        
+        for param in parameter_list_parameters:
+            name = param.get("name", "N/A")
+            value = param.get("value", "No value")
+            problem_value = problem_params.get(name, "No entry")
+        
+            print(f"{name:40} | {str(value):20} | {str(problem_value):20}")
+                        
         
             
         
@@ -429,7 +451,7 @@ if __name__ == "__main__":
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
-        'end_time': '2023-08-11T09:10:00Z',
+        'end_time': '2023-09-11T16:10:00Z',
         'time_step': '10min',
         'virtual_sensor_positions': [
         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
@@ -452,6 +474,7 @@ if __name__ == "__main__":
     #key = ""
     orchestrator.set_api_key(key)
     orchestrator.run()
+    orchestrator.adapted_parameters_check()
     
     orchestrator.plot_virtual_sensor_data()
     
