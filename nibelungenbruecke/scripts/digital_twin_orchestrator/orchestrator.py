@@ -8,6 +8,9 @@ import os
 import pandas as pd
 import xml.etree.ElementTree as ET
 import meshio
+import dolfinx as df
+from mpi4py import MPI
+from petsc4py.PETSc import ScalarType
 
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
@@ -40,9 +43,10 @@ class Orchestrator:
         """
         
         self.simulation_parameters = simulation_parameters
-        self.model_to_run = self.assign_model_name()
-
         self.default_parameters = self.default_parameters()
+        #self.load()
+        self.model_to_run = self.assign_model_name()
+        
         self.model_parameters_path = self.default_parameters['model_parameter_path']
         
         self.digital_twin_model = self._digital_twin_initializer()
@@ -113,6 +117,8 @@ class Orchestrator:
 
         return {
             'model_parameter_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json',
+            'displacement_mesh_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh',
+            'thermal_mesh_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh',
             'thermal_h5py_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.h5',
             'thermal_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.xdmf',
             'mesh_only_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal_mesh_only.xdmf',
@@ -127,8 +133,9 @@ class Orchestrator:
         
     def set_api_key(self, key):
         self.api_key = key
+        
 
-    def load(self, simulation_parameters):      ##TODO: This method does not function yet!! Work on it!!
+    def load(self):
         """
         Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
 
@@ -139,34 +146,39 @@ class Orchestrator:
             ValueError: If any virtual sensor lies outside the mesh domain.
         """
         
-        model = simulation_parameters.get('model')
+        model = self.simulation_parameters.get('model')
         if model == 'TransientThermal_1':
-            path = self.default_parameters['thermal_h5py_path']
+            path = self.default_parameters['thermal_mesh_path']
         elif model == 'displacement_1':
-            path = self.default_parameters['displacement_h5py_path']
+            path = self.default_parameters['displacement_mesh_path']
         else:
             raise ValueError(f"Unsupported model type: {model}")
+            
+        mesh, _cell_tags, _facet_tags = df.io.gmshio.read_from_msh(
+            path, MPI.COMM_WORLD, 0, 3      ##TODO: dim=2!
+        )
+        
+        geometry = mesh.geometry.x
 
-        with h5py.File(path, 'r') as f:
-            geometry = f['/Mesh/mesh/geometry'][:]
-
-        for sensor in simulation_parameters.get('virtual_sensor_positions', []):
+        virtual_sensors = self.simulation_parameters.get('virtual_sensor_positions', [])
+        filtered_sensors = []
+    
+        threshold = 1.29  # TODO: Max element size is ~1.283 m
+        print("")
+        for sensor in virtual_sensors:
             coords = np.array([sensor['x'], sensor['y'], sensor['z']])
-
             distances = np.linalg.norm(geometry - coords, axis=1)
             min_dist = np.min(distances)
-
-
-            threshold = 1.29  #XXX NOTE: Maximum element size is 1.283 m. Outer virtual sensors that are below that treshold considered in the domain!!
-
+    
             if min_dist > threshold:
-                raise ValueError(
-                    f"Virtual sensor '{sensor['name']}' at {coords.tolist()} "
-                    f"is outside the mesh domain (nearest node distance: {min_dist:.6f} m)."
-                )
+                print(f"Virtual {sensor['name']} is outside the domain and will be excluded from further processing.")
+            else:
+                print(f"Virtual {sensor['name']} is inside the domain.")
+                filtered_sensors.append(sensor)
+    
+        self.simulation_parameters['virtual_sensor_positions'] = filtered_sensors
 
-        print("All virtual sensors are within the mesh domain.\n")
-       
+      
 
     def run(self, simulation_parameters=None):
         """
@@ -184,6 +196,7 @@ class Orchestrator:
 
         if simulation_parameters is not None:
             self.simulation_parameters = simulation_parameters
+            self.load()
             self.model_to_run = self.assign_model_name()
           
         self.prediction = self.predict_dt(self.digital_twin_model, self.model_to_run, self.api_key)
@@ -221,18 +234,16 @@ class Orchestrator:
         return self.sensor_data_json
 
         
-    def plot_full_field_response(self, manual_full_field=False):
+    def plot_full_field_response(self, plot_pyvista=False):
         
         full_field = self.simulation_parameters["full_field_results"]
         
-        #%%      ##TODO: Kept False for Jupyterhub interface!!
-        if manual_full_field:
+        if plot_pyvista == True:
             full_field = True
-            
         else:
-            full_field = False
-        #%%
-        
+            full_field = False  ##TODO: to escape the Jupyterhub interface
+            
+
         if full_field:
             try:  
                 xdmf_path = self.default_parameters['thermal_xdmf_path']
@@ -294,6 +305,14 @@ class Orchestrator:
                     print(f"xdmf file path: {xdmf_path} ")
                     print(f"h5_path file path: {h5_path} ")
                     print(f"vtk output path : {vtk_output_path} ")
+                    
+        else:
+            print("Full-field response can be reached from the following paths:")
+            print(f"xdmf file path: {self.default_parameters['thermal_xdmf_path']} ")
+            print(f"h5_path file path: {self.default_parameters['thermal_h5py_path']} ")
+            print(f"vtk output path : {self.default_parameters['vtk_output_path']} ")
+            
+            
             
             
     def plot_real_sensor_vs_virtual_sensor(self):
@@ -416,7 +435,10 @@ if __name__ == "__main__":
         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
         {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
         {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
-        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
+        {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'},
+        {'x': -73, 'y': 10.0, 'z': 230.0, 'name': 'Sensor5'},
+        {'x': -4.5, 'y': 10.0, 'z': 0.0, 'name': 'Sensor6'},
+        
     ],
         'plot_pv': True,
         'full_field_results': True, # Set to True if you want full field results, the simulation will take longer and the results will be larger
@@ -431,14 +453,16 @@ if __name__ == "__main__":
     orchestrator.set_api_key(key)
     orchestrator.run()
     
-    #orchestrator.plot_virtual_sensor_data()
+    orchestrator.plot_virtual_sensor_data()
     
         
-    #orchestrator.plot_real_sensor_vs_virtual_sensor()
+    orchestrator.plot_real_sensor_vs_virtual_sensor()
     
     #orchestrator.plot_user_defined_virtual_sensors()
     
-    #orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
+    orchestrator.plot_full_field_response()
+    orchestrator.plot_full_field_response(simulation_parameters["full_field_results"])
+    orchestrator.plot_full_field_response()
 
     #%%
     # same orchestrator object orchestrating Transient Thermal with UQ

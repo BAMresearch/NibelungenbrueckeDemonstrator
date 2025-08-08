@@ -77,7 +77,7 @@ class ThermalExperiment(Experiment):
         """
         setup_parameters = {}
         setup_parameters["geometry"] = "gmsh" * ureg("")
-        setup_parameters["mesh_path"] = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d 1.msh" * ureg("")
+        setup_parameters["mesh_path"] = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh" * ureg("")
         #setup_parameters["geometry"] = "box" * ureg("")
         setup_parameters["length"] = 1 * ureg("m")
         setup_parameters["height"] = 0.3 * ureg("m")
