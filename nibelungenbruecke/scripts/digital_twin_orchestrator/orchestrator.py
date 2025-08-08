@@ -224,9 +224,14 @@ class Orchestrator:
     def plot_full_field_response(self, manual_full_field=False):
         
         full_field = self.simulation_parameters["full_field_results"]
+        
+        #%%      ##TODO: Kept False for Jupyterhub interface!!
         if manual_full_field:
             full_field = True
-        #full_field = False  ##TODO: Kept False for Jupyterhub interface!!
+            
+        else:
+            full_field = False
+        #%%
         
         if full_field:
             try:  
