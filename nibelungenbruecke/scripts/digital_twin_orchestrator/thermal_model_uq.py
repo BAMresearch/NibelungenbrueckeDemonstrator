@@ -120,7 +120,7 @@ class ThermalModelUQ(ThermalModel):
                 for entry in trange(total_steps, desc="Solving IC steps"):
                     new_parameters = {}
                     for channel in self.input_sensor_names:
-                        new_parameters[channel] = inp[channel][entry]  ## XXX
+                        new_parameters[channel] = inp[channel][entry]  ## XXX   ##TODO: 
                         #new_parameters[channel] = inp[channel]
 
 
@@ -170,7 +170,7 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.solve()
 
             for ikey, key in enumerate(self.output_sensor_names):
-                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:]-273.15)
+                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
         
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}
@@ -185,11 +185,18 @@ class ThermalModelUQ(ThermalModel):
         for key in self.output_sensor_names:
             # Evaluate mean and std using the fitted PCE surrogate
             # Evaluate at the mean of the distribution
+            #all_nodes = np.array(sparse_evals[key])
+            #mean_val = np.mean(all_nodes, axis=0)
+            #std_val = np.std(all_nodes, axis=0)
+            #sensor_stats[key] = {"mean": mean_val, "std": std_val}
+
+            
+            #%%
             mean_val = chaospy.E(fitted_sparse[key], b_dist)
             std_val = chaospy.Std(fitted_sparse[key], b_dist)
             sensor_stats[key] = {"mean": mean_val, "std": std_val}
-
-        # self.plot_all_sensors_together(sensor_stats)  ##TODO: !!
+            #%%
+        self.plot_all_sensors_together(sensor_stats)  ##TODO: !!
         # Optionally return results
         # return return_dict
         
@@ -218,8 +225,8 @@ class ThermalModelUQ(ThermalModel):
         """
         plt.figure(figsize=(12, 6))
         for sensor_id, stats in sensor_stats.items():
-            mean = stats["mean"]
-            std = stats["std"]
+            mean = stats["mean"].squeeze()
+            std = stats["std"].squeeze()
             timesteps = np.arange(len(mean))
             plt.plot(timesteps, mean, label=f"{sensor_id} - Mean", linestyle='-')
             plt.fill_between(timesteps, mean - std, mean + std, alpha=0.2, label=f"{sensor_id} ±1σ")

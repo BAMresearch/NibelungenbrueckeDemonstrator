@@ -463,17 +463,14 @@ class Translator:
                     default_parameters_data["sensors"].append(sensor_data)
                     
         for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
-            where = [0, 0, 0]
             if i == "Sensor_u":
-                where = [1.98333333, 0, 0]      ##TODO: Changed the position of Sensor_u on x-direction from the defined coordinates in deafulat_parameters!!
-# =============================================================================
-#             elif i == "Sensor_o":
-#                 where = [-0.17, 0, 0]
-#             elif i == "Sensor_n":
-#                 where = [-3.56, 0, 0]
-#             elif i == "Sensor_s":
-#                 where = [-2.2, 0, 0]
-# =============================================================================
+                where = [4, -4.74, 0.0]       ##TODO:
+            elif i == "Sensor_o":
+                 where = [4, 0.0, 0.0]
+            elif i == "Sensor_n":
+                 where = [4, -2.37, 0.005]
+            elif i == "Sensor_s":
+                 where = [4, -2.37, 0.005]
 
             sensor_data = {
                 "id": i,

@@ -91,9 +91,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                1.98333333,
-                0,
-                0
+                4,
+                -4.74,
+                0.0
             ]
         },
         {
@@ -103,9 +103,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
-                0,
-                0
+                4,
+                0.0,
+                0.0
             ]
         },
         {
@@ -115,9 +115,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
-                0,
-                0
+                4,
+                -2.37,
+                0.005
             ]
         },
         {
@@ -127,9 +127,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                0,
-                0,
-                0
+                4,
+                -2.37,
+                0.005
             ]
         },
         {
@@ -177,30 +177,6 @@
             "where": [
                 -1.83,
                 0.0,
-                0.0
-            ]
-        },
-        {
-            "id": "Sensor5",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                -73,
-                10.0,
-                230.0
-            ]
-        },
-        {
-            "id": "Sensor6",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                -4.5,
-                10.0,
                 0.0
             ]
         }

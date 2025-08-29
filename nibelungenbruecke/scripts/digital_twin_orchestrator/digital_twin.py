@@ -19,7 +19,7 @@ class DigitalTwin:
         
     """
     
-    def __init__(self, model_parameters_path: dict, model_to_run = "Displacement_1"): 
+    def __init__(self, model_parameters_path: dict, model_to_run = "Displacement_1", simulation_parameters): 
         """
        Initializes the DigitalTwin instance.
        
@@ -272,6 +272,7 @@ class DigitalTwin:
             digital_twin_model.problem.p["plot_pv"] = plot_pv
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
+            digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))
             
             # Store and return
             self.digital_twin_models[self.model_to_run] = digital_twin_model
@@ -306,7 +307,9 @@ class DigitalTwin:
 
         return self.initial_model
     
-
+    def parameter_store(self):
+        pass
+        
         
     def uploader(self):
         """
