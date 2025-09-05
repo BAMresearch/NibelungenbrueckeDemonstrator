@@ -19,7 +19,7 @@ class DigitalTwin:
         
     """
     
-    def __init__(self, model_parameters_path: dict, model_to_run = "Displacement_1", simulation_parameters): 
+    def __init__(self, model_parameters_path: dict, model_to_run = "Displacement_1"): 
         """
        Initializes the DigitalTwin instance.
        
@@ -93,6 +93,7 @@ class DigitalTwin:
             self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
         else:
             self.initial_model = self.digital_twin_models[self.model_to_run]
+            self.update_dt_model(orchestrator_simulation_parameters)
             
         updated = False
         updated_params = {}
@@ -113,7 +114,15 @@ class DigitalTwin:
             
         return self.initial_model
     
-
+    
+    def update_dt_model(self, orchestrator_simulation_parameters):
+        plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
+        self.initial_model.problem.p["plot_pv"] = plot_pv
+        self.initial_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
+        self.initial_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
+        self.initial_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))
+    
+    
     def _set_model(self, orchestrator_simulation_parameters):
         """
         Sets up the model based on predefined configurations.
@@ -153,37 +162,6 @@ class DigitalTwin:
     
         raise ValueError(f"'{self.model_to_run}' not found in the defined models.")
 
-    
-# =============================================================================
-#     def _set_model(self, orchestrator_simulation_parameters):       ##TODO: 
-#         """
-#         Sets up the model based on predefined configurations.
-#         
-#         Returns:
-#             bool: True if the model is successfully set, otherwise raises an error.
-#         
-#         Raises:
-#             ValueError: If the specified model is not found in the JSON file.
-#         """
-# 
-#         for model_info in self._models:
-#             if model_info["name"] == orchestrator_simulation_parameters["model"]:
-#                 self.cache_model_name = model_info["type"]
-#                 self.cache_object_name = model_info["class"]
-#                 rel_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/" ##TODO:
-#                 self.cache_model_path = rel_path + model_info["path"]
-#                 
-#                 if orchestrator_simulation_parameters["uncertainty_quantification"]:
-#                     self.cache_model_name = self.cache_model_name + "_uq"
-#                     self.cache_object_name = model_info["class"] + "UQ"
-#                     parts = model_info["path"].split(".", 1)
-#                     new_path = f"{parts[0]}_UQ.{parts[1]}"
-#                     self.cache_model_path = rel_path + new_path
-#                     
-#                 return True
-#         raise ValueError(f"'{self.model_to_run}' not found in the defined models.")     ##TODO: Create a new model !!
-# =============================================================================
-    
     def _get_or_load_parameters(self):
         """
         Retrieves cached model parameters or loads default parameters if the cache is missing.
@@ -238,12 +216,10 @@ class DigitalTwin:
             else:
                 raise ValueError(f"Unknown model type '{self.model_to_run}'. Check the default parameter JSON file.")
     
-            # Load model parameters
             generation_model_parameters = self.cache_object.cache_model["generation_models_list"][0]
             model_parameters = generation_model_parameters["model_parameters"]
             dt_params_path = generation_model_parameters["digital_twin_parameters_path"]
     
-            # Apply uncertainty quantification flag
             if orchestrator_simulation_parameters.get("uncertainty_quantification"):
                 if "_uq" not in model["type"]:
                     model["type"] += "_uq"
@@ -255,26 +231,22 @@ class DigitalTwin:
                 model["class"] = model["class"].replace("UQ", "")
                 
     
-            # Set plot flag
             plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
             model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"]["plot_pv"] = plot_pv
     
-            # Import and instantiate the model
             module = importlib.import_module(model["type"])
             model_class = getattr(module, model["class"])
             digital_twin_model = model_class(model_path, model_parameters, dt_params_path)
 
-            # Generate the model
+
             digital_twin_model.GenerateModel()
                 
-        
-            # Set plot flag in the instantiated problem
+
             digital_twin_model.problem.p["plot_pv"] = plot_pv
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
-            digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))
+            digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))     ##TODO: Check the influence on run and plotting!!!
             
-            # Store and return
             self.digital_twin_models[self.model_to_run] = digital_twin_model
             return digital_twin_model
     

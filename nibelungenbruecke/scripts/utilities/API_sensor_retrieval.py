@@ -267,7 +267,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, 0.0, 0.0],
+                "coordinate": [-2.85, -0.2, 4.0],
                 "height": 107.438                         
             })
 
@@ -277,7 +277,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -2.37, 0.005],
+                "coordinate": [-2.25, -2.37, 4.0],
                 "height": 105.068                        
             })
 
@@ -287,7 +287,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -2.37, 0.005],
+                "coordinate": [-3.45, -2.37, 4.0],
                 "height": 105.068                       
             })
 
@@ -297,7 +297,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -4.74, 0.355],
+                "coordinate": [-2.85, -5.17, 4.0],
                 "height": 102.698                      
             })
             
@@ -464,13 +464,13 @@ class Translator:
                     
         for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
             if i == "Sensor_u":
-                where = [4, -4.74, 0.0]       ##TODO:
+                where = [-2.85, -5.17, 4.0]       ##TODO:
             elif i == "Sensor_o":
-                 where = [4, 0.0, 0.0]
+                 where = [-2.85, -0.2, 4.0]
             elif i == "Sensor_n":
-                 where = [4, -2.37, 0.005]
+                 where = [-2.25, -2.37, 4.0]
             elif i == "Sensor_s":
-                 where = [4, -2.37, 0.005]
+                 where = [-3.45, -2.37, 4.0]
 
             sensor_data = {
                 "id": i,

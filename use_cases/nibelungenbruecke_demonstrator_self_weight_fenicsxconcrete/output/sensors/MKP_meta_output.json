@@ -43,9 +43,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                4.0,
-                0.0,
-                0.0
+                -2.85,
+                -0.2,
+                4.0
             ]
         },
         {
@@ -55,9 +55,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                3.85,
-                -2.7898168518587636,
-                0.5288055555555556
+                -2.25,
+                -2.37,
+                4.0
             ]
         },
         {
@@ -67,9 +67,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                3.85,
-                -2.7898168518587636,
-                0.5288055555555556
+                -3.45,
+                -2.37,
+                4.0
             ]
         },
         {
@@ -79,9 +79,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                3.85,
-                -4.348100277783185,
-                0.5288055555555556
+                -2.85,
+                -5.17,
+                4.0
             ]
         },
         {
@@ -91,9 +91,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                4,
-                -4.74,
-                0.0
+                -2.85,
+                -5.17,
+                4.0
             ]
         },
         {
@@ -103,9 +103,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                4,
-                0.0,
-                0.0
+                -2.85,
+                -0.2,
+                4.0
             ]
         },
         {
@@ -115,9 +115,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                4,
+                -2.25,
                 -2.37,
-                0.005
+                4.0
             ]
         },
         {
@@ -127,9 +127,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                4,
+                -3.45,
                 -2.37,
-                0.005
+                4.0
             ]
         },
         {

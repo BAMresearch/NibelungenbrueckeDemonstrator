@@ -11,6 +11,10 @@ import pandas as pd
 
 
 class BasePlotter(ABC):
+    """ Base class for all plotters """
+    model_types = []
+    alias = "Base"
+
     def __init__(self, problem=None, simulation_parameters=None, default_parameters=None, api_data_frame=None):
         self.problem = problem
         self.simulation_parameters = simulation_parameters or {}
@@ -20,8 +24,14 @@ class BasePlotter(ABC):
         
         self.output_file = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         
-        self.extract_virtual_sensor_data(self.output_file)
-
+    def set_attributes(self, problem, simulation_parameters, default_parameters, api_data_frame, all_sensors_combined):
+        self.problem = problem
+        self.simulation_parameters = simulation_parameters
+        self.default_parameters = default_parameters
+        self.api_dataFrame = api_data_frame
+        self.all_sensor_plot_data = all_sensors_combined
+        
+        
     def extract_virtual_sensor_data(self, output_file):
         sensors = self.problem.sensors
         self.sensor_data_json = {}
@@ -49,9 +59,52 @@ class BasePlotter(ABC):
         pass
 
 
+class AllSensorsTogetherPlotter(BasePlotter):
+    
+    def plot(self):
+        real_data = self.all_sensor_plot_data["real_sensor_data"]
+        virtual_data = self.all_sensor_plot_data["virtual_sensor_data"]
+    
+        plt.figure(figsize=(12, 6))
+        for sensor_id in real_data:
+            # Real sensor data
+            real_values = real_data[sensor_id]
+    
+            # Virtual sensor data (flatten lists)
+            virtual_values = [v[0] if isinstance(v, list) else v for v in virtual_data[sensor_id]]
+    
+            # Plot real and virtual on same graph with different styles
+            plt.plot(real_values, label=f"{sensor_id} - Real", linestyle='-')
+            plt.plot(virtual_values, label=f"{sensor_id} - Virtual", linestyle='--')
+    
+        plt.title("Sensor Data: Real vs Virtual (All Sensors)")
+        plt.xlabel("Timestep")
+        plt.ylabel("Sensor Value")
+        plt.legend(loc='best')
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+        
+class AllSensorsTogetherPlotterUQ(BasePlotter):
+    
+    def plot(self):
+        plt.figure(figsize=(12, 6))
+        for sensor_id, stats in self.all_sensor_plot_data.items():
+            mean = stats["mean"].squeeze()
+            std = stats["std"].squeeze()
+            timesteps = np.arange(len(mean))
+            plt.plot(timesteps, mean, label=f"{sensor_id} - Mean", linestyle='-')
+            plt.fill_between(timesteps, mean - std, mean + std, alpha=0.2, label=f"{sensor_id} ±1σ")
+        plt.title("Sensor Data: PCE Mean ± Std (All Sensors)")
+        plt.xlabel("Timestep")
+        plt.ylabel("Sensor Value")
+        plt.legend(loc='best')
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+    
+
 class FullFieldPlotter(BasePlotter):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         
     def plot(self, plot_pyvista=True):      ##TODO: Keep it as "False" fro J4NFDI interface!!
         if not self.simulation_parameters.get("full_field_results", False):
@@ -105,11 +158,14 @@ class FullFieldPlotter(BasePlotter):
         pv_mesh.plot(scalars=field_name, cmap="viridis", show_edges=True)
 
 
-class RealVsVirtualPlotter(BasePlotter):    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
+class RealVsVirtualPlotter(BasePlotter):
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def plot(self, sensor_mapping=None):
+        self.extract_virtual_sensor_data(self.output_file)
+        
         json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         if not self.sensor_data_json and os.path.exists(json_path):
             with open(json_path, "r") as f:
@@ -150,8 +206,59 @@ class RealVsVirtualPlotter(BasePlotter):
             plt.tight_layout()
             plt.show()
 
+class RealVsVirtualPlotterUQ(BasePlotter):
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        
+    def plot(self, sensor_mapping=None):
+        
+        if sensor_mapping is None:
+            sensor_mapping = {
+                "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
+                "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
+                "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
+                "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
+            }
+            
+        vs_sensor_map_dict = {
+            "Sensor_u": "bridge_temperature_u",
+            "Sensor_o": "bridge_temperature_o",
+            "Sensor_n": "bridge_temperature_n",
+            "Sensor_s": "bridge_temperature_s",
+        }
+
+        df = self.api_dataFrame + 273.15
+        measured_times = df.index
+
+        for df_sensor_name, json_sensor_key in sensor_mapping.items():
+            if vs_sensor_map_dict[json_sensor_key] not in self.all_sensor_plot_data or df_sensor_name not in df.columns:
+                continue
+
+            model_data = self.all_sensor_plot_data[vs_sensor_map_dict[json_sensor_key]]
+            vs_mean = np.array([entry[0] for entry in model_data["mean"]])
+            vs_std  = np.array([entry[0] for entry in model_data["std"]])
+            
+            timesteps = pd.date_range(start=measured_times[0], end=measured_times[-1], periods=len(vs_mean))
+
+            plt.figure(figsize=(12, 5))
+            plt.plot(measured_times, df[df_sensor_name], label=f"{df_sensor_name} - Mean")
+            plt.plot(timesteps, vs_mean, label=f"{json_sensor_key} - Mean", linestyle='-')
+            plt.fill_between(timesteps, vs_mean - vs_std, vs_mean + vs_std, alpha=0.2, label=f"±1σ")
+            
+            plt.title("Comparison of Sensors: PCE Mean ± Std")
+            plt.xlabel("Time")
+            plt.ylabel("Temperature (K)")
+            plt.legend()
+            plt.tight_layout()
+            plt.show()
 
 class VirtualSensorPlotter(BasePlotter):
+    
+    model_types = ["Displacement", "TransientThermal"]
+    alias = "VirtualSensors"
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -182,26 +289,3 @@ class VirtualSensorPlotter(BasePlotter):
             plt.grid()
             plt.tight_layout()
             plt.show()
-
-
-
-class AdaptedParametersChecker(BasePlotter):
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-    def execute(self):
-        path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/results/inference_pilot_noise_daniel.json"
-        with open(path, "r") as f:
-            data = json.load(f)
-
-        params = data["parameter_list_parameters"]
-        problem_params = self.problem.p
-
-        print(f"{'Parameter':40} | {'Calibrated':>15} | {'Adapted':>15}")
-        print("-" * 75)
-        for param in params:
-            name = param.get("name", "N/A")
-            value = param.get("value", "—")
-            adapted = problem_params.get(name, "—")
-            print(f"{name:40} | {str(value):>15} | {str(adapted):>15}")

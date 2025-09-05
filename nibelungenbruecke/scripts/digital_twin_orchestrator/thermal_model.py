@@ -102,7 +102,7 @@ class ThermalModel(BaseModel):
         #    time += 1
         #    tqdm.write(f"Progress: {time}/190")
         
-        database = {
+        plot_data = {
             "real_sensor_data": {},
             "virtual_sensor_data": {}
         }
@@ -181,19 +181,22 @@ class ThermalModel(BaseModel):
 
             for sensor_id in data.columns:
                 if "40TU" in sensor_id: 
-                    database["real_sensor_data"].setdefault(sensor_id, [])
-                    database["virtual_sensor_data"].setdefault(sensor_id, [])
+                    plot_data["real_sensor_data"].setdefault(sensor_id, [])
+                    plot_data["virtual_sensor_data"].setdefault(sensor_id, [])
                     
-                    database["real_sensor_data"][sensor_id].append(data_point[sensor_id])
+                    plot_data["real_sensor_data"][sensor_id].append(data_point[sensor_id])
     
                     # Append virtual sensor data
                     temperature_value = self.problem.sensors.get(sensor_id, None)
                     if temperature_value is not None:
                         temperature_value_list = temperature_value.data[-1].tolist()
-                        database["virtual_sensor_data"][sensor_id].append(temperature_value_list)
+                        plot_data["virtual_sensor_data"][sensor_id].append(temperature_value_list)
 
-        self.plot_all_sensors_together(database)
-            
+        #self.plot_all_sensors_together(database)
+        self.all_sensor_plot_data = plot_data
+        return self.all_sensor_plot_data     ##TODO: Name! 
+        
+        
     def plot_all_sensors_together(self, database):
         real_data = database["real_sensor_data"]
         virtual_data = database["virtual_sensor_data"]

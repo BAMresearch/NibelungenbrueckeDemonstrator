@@ -11,11 +11,11 @@ import meshio
 import dolfinx as df
 from mpi4py import MPI
 from petsc4py.PETSc import ScalarType
+import warnings
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
 from nibelungenbruecke.scripts.utilities.mesh_point_detector import query_point
-from nibelungenbruecke.scripts.digital_twin_orchestrator.base_plotter import *
-
+from nibelungenbruecke.scripts.plotters.factory import *
 
 class Orchestrator:
     """
@@ -47,10 +47,9 @@ class Orchestrator:
         self.default_parameters = self.default_parameters()
         self.model_to_run = self.assign_model_name()
         self.model_parameters_path = self.default_parameters['model_parameter_path']
-        self.digital_twin_model = self._digital_twin_initializer(simulation_parameters)
-        self._plotters = {}
-        # self._register_all_plotters()
-        # super().__init__()
+        self.digital_twin_model = self._digital_twin_initializer()
+        #self._plotters = {}
+        self._plotters = PlotterFactory.create_all_plotters(problem=None,simulation_parameters=self.simulation_parameters)
 
     def assign_model_name(self):
         self.model_to_run = self.simulation_parameters["model"]
@@ -72,7 +71,7 @@ class Orchestrator:
 
         return self.model_to_run
 
-    def _digital_twin_initializer(self, simulation_parameters):
+    def _digital_twin_initializer(self):
         """
        Initializes the digital twin model.
 
@@ -80,7 +79,7 @@ class Orchestrator:
            DigitalTwin: An instance of the DigitalTwin class initialized with the given parameters.
 
         """
-        return DigitalTwin(self.model_parameters_path, self.model_to_run, simulation_parameters)
+        return DigitalTwin(self.model_parameters_path, self.model_to_run)
 
     def predict_dt(self, digital_twin, model_to_run, api_key):
         """
@@ -132,7 +131,7 @@ class Orchestrator:
     def set_api_key(self, key):
         self.api_key = key
 
-    def load(self):
+    def load(self):     ##TODO: See if that can be moved to or merged somewhere else!!
         """
         Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
 
@@ -177,34 +176,6 @@ class Orchestrator:
 
         self.simulation_parameters['virtual_sensor_positions'] = filtered_sensors
 
-    def set_plotters(self, *plotter_classes):
-        for plotter_cls in plotter_classes:
-            name = plotter_cls.__name__
-            plotter_instance = plotter_cls(
-                self.digital_twin_model.initial_model.problem,
-                self.simulation_parameters,
-                self.default_parameters,
-                self.digital_twin_model.initial_model.api_dataFrame,
-            )
-            self._plotters[name] = plotter_instance
-            # setattr(self, name, plotter_instance)
-
-        # self.plotters = [
-        #     p(self.digital_twin_model.initial_model, self.simulation_parameters, self.default_parameters) for p in plotter_classes
-        # ]
-
-    def get_all_plotter_classes(base_cls):
-        """Return all subclasses of BasePlotter (recursively)."""
-        subclasses = set()
-        work = [base_cls]
-        while work:
-            parent = work.pop()
-            for child in parent.__subclasses__():
-                if child not in subclasses:
-                    subclasses.add(child)
-                    work.append(child)
-        return subclasses
-
     def run(self, simulation_parameters=None):
         """
         Runs the digital twin model prediction.
@@ -227,9 +198,35 @@ class Orchestrator:
         self.prediction = self.predict_dt(
             self.digital_twin_model, self.model_to_run, self.api_key)
         
+        for plotter in self._plotters.values():
+            plotter.set_attributes(
+                problem = self.digital_twin_model.initial_model.problem,
+                simulation_parameters=self.simulation_parameters, 
+                default_parameters={}, api_data_frame=self.digital_twin_model.initial_model.api_dataFrame,
+                all_sensors_combined=self.digital_twin_model.initial_model.all_sensor_plot_data
+                )
+        
+    def plot(self, plot_type: str, **kwargs):
+        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ"]
+        if plot_type not in self._plotters:
+            #raise ValueError(f"Unknown plot type: {plot_type}")
+            warnings.warn(f"Unknown plot type '{plot_type}'. Skipping plotting.")
+            
+        if self.simulation_parameters["uncertainty_quantification"]:
+            if plot_type not in plots_with_UQ:
+                #raise ValueError(f"Plot type '{plot_type}' is not supported when uncertainty quantification is enabled.")
+                warnings.warn(f"Plot type '{plot_type}' is not supported when uncertainty quantification is enabled.")
+                return
+            
+        if not self.simulation_parameters["uncertainty_quantification"]:
+            if plot_type in plots_with_UQ:
+                #raise ValueError(f"Plot type '{plot_type}' is not supported when uncertainty quantification is not enabled.")
+                warnings.warn(f"Plot type '{plot_type}' is not supported when uncertainty quantification is not enabled.")
+                return
+            
+        self._plotters[plot_type].plot(**kwargs)
+        
 
-
-        # %%
 if __name__ == "__main__":
 
     # %%
@@ -263,16 +260,50 @@ if __name__ == "__main__":
     orchestrator.set_api_key(key)
     orchestrator.run()
 
-    orchestrator.set_plotters(
-        VirtualSensorPlotter,
-        FullFieldPlotter,
-        RealVsVirtualPlotter
-    )
+    orchestrator.plot("plot_all_sensors_together")
+    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors")
+    orchestrator.plot("plot_full_field_response")
 
-    orchestrator._plotters["VirtualSensorPlotter"].plot()
-    orchestrator._plotters["FullFieldPlotter"].plot(
-        plot_pyvista=orchestrator.simulation_parameters["plot_pv"])
-    orchestrator._plotters["RealVsVirtualPlotter"].plot()
+
+
+    # %%
+    # orchestration initialization and Transient Thermal model without UQ
+    # simulation_parameters = {
+    #     'simulation_name': 'TestSimulation',
+    #     'model': 'TransientThermal_1',
+    #     'start_time': '2023-08-11T08:00:00Z',
+    #     'end_time': '2023-08-11T16:10:00Z',
+    #     'time_step': '1min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
+    #     'virtual_sensor_positions': [
+    #         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
+    #         {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+    #         {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+    #         {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'},
+    #         {'x': -73, 'y': 10.0, 'z': 230.0, 'name': 'Sensor5'},
+    #         {'x': -4.5, 'y': 10.0, 'z': 0.0, 'name': 'Sensor6'},
+
+    #     ],
+    #     'plot_pv': True,
+    #     # Set to True if you want full field results, the simulation will take longer and the results will be larger
+    #     'full_field_results': True,
+    #     # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+    #     'uncertainty_quantification': False,
+    # }
+
+    # orchestrator = Orchestrator(simulation_parameters)
+    # key = input("\nEnter the code to connect API: ").strip()
+
+    # # key = ""
+    # orchestrator.set_api_key(key)
+    # orchestrator.run()
+
+    # orchestrator.plot("plot_all_sensors_together")
+    # orchestrator.plot("plot_virtual_sensors")
+    # orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    # orchestrator.plot("plot_real_vs_virtual_sensors")
+    # orchestrator.plot("plot_full_field_response")
 
     # %%
     # Transient thermal UQ with different time interval and sensor positions
@@ -298,16 +329,13 @@ if __name__ == "__main__":
 
     orchestrator.run(simulation_parameters)
 
-    orchestrator.set_plotters(
-        VirtualSensorPlotter,
-        FullFieldPlotter,
-        RealVsVirtualPlotter
-    )
+    orchestrator.plot("plot_all_sensors_together_with_UQ")      ##TODO: All sensors!!
+    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors")
+    orchestrator.plot("plot_full_field_response")
 
-    orchestrator._plotters["VirtualSensorPlotter"].plot()
-    orchestrator._plotters["FullFieldPlotter"].plot(
-        plot_pyvista=orchestrator.simulation_parameters["plot_pv"])
-    orchestrator._plotters["RealVsVirtualPlotter"].plot()
+
 
     # %%
 
@@ -334,13 +362,41 @@ if __name__ == "__main__":
 
     orchestrator.run(simulation_parameters)
 
-    orchestrator.set_plotters(
-        VirtualSensorPlotter,
-        FullFieldPlotter,
-        RealVsVirtualPlotter
-    )
+    orchestrator.plot("plot_all_sensors_together_with_UQ")
+    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors")
+    orchestrator.plot("plot_full_field_response")
 
-    orchestrator._plotters["VirtualSensorPlotter"].plot()
-    orchestrator._plotters["FullFieldPlotter"].plot(
-        plot_pyvista=orchestrator.simulation_parameters["plot_pv"])
-    orchestrator._plotters["RealVsVirtualPlotter"].plot()
+
+    # %%
+
+# Transient thermal without UQ different time interval and sensor positions
+
+    simulation_parameters = {  # Throw an error checking UQ!!
+        'simulation_name': 'TestSimulation',
+        'model': 'TransientThermal_1',
+        'start_time': '2024-08-11T08:00:00Z',
+        'end_time': '2024-09-13T02:10:00Z',
+        'time_step': '100min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
+        'virtual_sensor_positions': [
+            {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
+            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+            {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+            {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'}
+        ],
+        'plot_pv': False,
+        # Set to True if you want full field results, the simulation will take longer and the results will be larger
+        'full_field_results': False,
+        # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+        'uncertainty_quantification': True,
+    }
+
+    orchestrator.run(simulation_parameters)
+
+    orchestrator.plot("plot_all_sensors_together_with_UQ")
+    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors")
+    orchestrator.plot("plot_full_field_response")
+

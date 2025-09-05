@@ -99,6 +99,7 @@
                             "sensor_location_n": -3.56,
                             "sensor_location_o": -0.17,
                             "convection": false,
+                            
                             "natural_convection_coefficient": 10.0,
                             "wind_forced_convection": true,
                             "wind_forced_convection_parameter_constant": 1.4098188908276303,
@@ -106,7 +107,8 @@
                             "shortwave_radiation": true,
                             "shortwave_radiation_constant": 1.0,
                             "shortwave_irradiation": 0.5379897967520848,
-                            "calculate_shortwave_irradiation": false,
+                            "calculate_shortwave_irradiation": false, 
+
                             "top_tag": 9,
                             "bottom_tag": 8,
                             "end_tag": 7,
