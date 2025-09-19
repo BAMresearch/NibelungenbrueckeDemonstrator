@@ -8,6 +8,7 @@ from tqdm import trange
 from copy import deepcopy
 import dolfinx as df
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from fenicsxconcrete.util import ureg
 #from fenicsxconcrete.finite_element_problem.thermomechanical_nibelungenbruecke_demonstrator import ThermoMechanicalNibelungenBrueckeProblem
@@ -93,21 +94,12 @@ class ThermalModel(BaseModel):
         """
        Solves the model
        """
-        #self.problem.dynamic_solve()        ##TODO: change the name!
+        #data = self.api_dataFrame.copy()
+        #cols_to_update = [col for col in self.api_dataFrame.columns if "040TU" in col]
+        #data[cols_to_update] = data[cols_to_update] + 275
         
-        #time = 0
-        #while time < 190:
-            # problem update_and_solve()
-        #    self.problem.solve()
-        #    time += 1
-        #    tqdm.write(f"Progress: {time}/190")
-        
-        plot_data = {
-            "real_sensor_data": {},
-            "virtual_sensor_data": {}
-        }
-
-        data = self.api_dataFrame + 273.15
+        data = self.api_dataFrame + 275
+        plot_df = data.drop(columns=[col for col in data.columns if "40TU" not in col])
 
         air_temperature_array = np.zeros(len(data))
         inner_temperature_array = np.zeros(len(data))
@@ -152,48 +144,21 @@ class ThermalModel(BaseModel):
             })
             self.problem.solve()
 
+        
+        first_sensor_id = plot_df.columns[0]
+        temperature_value = self.problem.sensors.get(first_sensor_id, None)
+        plot_df = plot_df.tail(len(temperature_value.data))
+          
+        for sensor_id in plot_df.columns:
+            temperature_value = self.problem.sensors.get(sensor_id, None)
             
+            if temperature_value is not None:
+                temperature_value_list = [float(x) for x in temperature_value.data]
+                vs_col = sensor_id+"_virtual_sensor"
+                plot_df[vs_col] = temperature_value_list
                 
- #%%           
-# =============================================================================
-#         
-#         
-#         
-#         for _, data_point in tqdm(data.iterrows(), total=len(data)):
-#             
-#             air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"] + 273.15
-#             inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"] + 273.15 
-#             new_parameters = {
-#                 "air_temperature": air_temperature_array[i] ,
-#                 "inner_temperature": inner_temperature_array[i],
-#                 "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
-#                 "calculate_shortwave_irradiation": False,
-#             }
-#             self.problem.update_parameters(new_parameters)      ##TODO
-#             # print(problem.air_temperature.value)
-#             self.problem.solve()
-#           
-# 
-#             
-# =============================================================================
-            #%%
-            ##TODO:
-
-            for sensor_id in data.columns:
-                if "40TU" in sensor_id: 
-                    plot_data["real_sensor_data"].setdefault(sensor_id, [])
-                    plot_data["virtual_sensor_data"].setdefault(sensor_id, [])
-                    
-                    plot_data["real_sensor_data"][sensor_id].append(data_point[sensor_id])
-    
-                    # Append virtual sensor data
-                    temperature_value = self.problem.sensors.get(sensor_id, None)
-                    if temperature_value is not None:
-                        temperature_value_list = temperature_value.data[-1].tolist()
-                        plot_data["virtual_sensor_data"][sensor_id].append(temperature_value_list)
-
         #self.plot_all_sensors_together(database)
-        self.all_sensor_plot_data = plot_data
+        self.all_sensor_plot_data = plot_df
         return self.all_sensor_plot_data     ##TODO: Name! 
         
         

@@ -12,8 +12,6 @@ import pandas as pd
 
 class BasePlotter(ABC):
     """ Base class for all plotters """
-    model_types = []
-    alias = "Base"
 
     def __init__(self, problem=None, simulation_parameters=None, default_parameters=None, api_data_frame=None):
         self.problem = problem
@@ -22,7 +20,7 @@ class BasePlotter(ABC):
         self.api_dataFrame = api_data_frame
         self.sensor_data_json = {}
         
-        self.output_file = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
+        #self.output_file = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         
     def set_attributes(self, problem, simulation_parameters, default_parameters, api_data_frame, all_sensors_combined):
         self.problem = problem
@@ -31,27 +29,49 @@ class BasePlotter(ABC):
         self.api_dataFrame = api_data_frame
         self.all_sensor_plot_data = all_sensors_combined
         
+    def extract_virtual_sensor_data(self):
         
-    def extract_virtual_sensor_data(self, output_file):
+        df = self.all_sensor_plot_data
+        
         sensors = self.problem.sensors
-        self.sensor_data_json = {}
-
-        for sensor_name, sensor in sensors.items():
-            data = sensor.data
-            times = sensor.time[-len(data):]
-            if len(times) != len(data):
-                print(f"Skipping sensor '{sensor_name}' due to mismatched time and data lengths.")
+        for sensor_id in sensors.keys():
+            if sensor_id in df.columns:
                 continue
-            paired_data = [
-                {"time": t, "value": float(d[0]) if isinstance(d, np.ndarray) else float(d)}
-                for t, d in zip(times, data)
-            ]
-            self.sensor_data_json[sensor_name] = paired_data
+            else:
+                temperature_value = self.problem.sensors.get(sensor_id, None)
+                
+                if temperature_value is not None:
+                    temperature_value_list = [float(x) for x in temperature_value.data]
+                    df[sensor_id] = temperature_value_list
 
-        with open(output_file, "w") as f:
-            json.dump(self.sensor_data_json, f, indent=2)
+        return df
+    
+    def _sensor_map(self, probeye_sensor: str) -> str:
+        sensor_map_dict = {
+            "Sensor_u": "bridge_temperature_u",
+            "Sensor_o": "bridge_temperature_o",
+            "Sensor_n": "bridge_temperature_n",
+            "Sensor_s": "bridge_temperature_s",
+        }
+        return sensor_map_dict[probeye_sensor]
 
-        return self.sensor_data_json
+    def _inverse_sensor_map(self, sensor: str) -> str:
+        sensor_map_dict = {
+            "bridge_temperature_u": "Sensor_u",
+            "bridge_temperature_o": "Sensor_o",
+            "bridge_temperature_n": "Sensor_n",
+            "bridge_temperature_s": "Sensor_s",
+        }
+        return sensor_map_dict[sensor]
+    
+    def _sensor_map_to_real(self) -> str:
+        sensor_map_dict = {
+            "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
+            "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
+            "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
+            "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
+            }
+        return sensor_map_dict
 
     @abstractmethod
     def plot(self, *args, **kwargs):
@@ -59,30 +79,52 @@ class BasePlotter(ABC):
         pass
 
 
-class AllSensorsTogetherPlotter(BasePlotter):
+class RealvsVirtualAllTogether(BasePlotter):
     
     def plot(self):
-        real_data = self.all_sensor_plot_data["real_sensor_data"]
-        virtual_data = self.all_sensor_plot_data["virtual_sensor_data"]
-    
+        
+        df = self.all_sensor_plot_data
+        
         plt.figure(figsize=(12, 6))
-        for sensor_id in real_data:
-            # Real sensor data
-            real_values = real_data[sensor_id]
-    
-            # Virtual sensor data (flatten lists)
-            virtual_values = [v[0] if isinstance(v, list) else v for v in virtual_data[sensor_id]]
-    
-            # Plot real and virtual on same graph with different styles
-            plt.plot(real_values, label=f"{sensor_id} - Real", linestyle='-')
-            plt.plot(virtual_values, label=f"{sensor_id} - Virtual", linestyle='--')
-    
-        plt.title("Sensor Data: Real vs Virtual (All Sensors)")
-        plt.xlabel("Timestep")
+        for col in df.columns:
+            if not col.endswith("_virtual_sensor"):
+                vs_col = col + "_virtual_sensor"
+                if vs_col in df.columns:
+                    plt.plot(df.index, df[col], label=f"{col} (real)", linestyle='-')
+                    plt.plot(df.index, df[vs_col], label=f"{col} (virtual)", linestyle='--')
+        
+        plt.title("Real vs Virtual Sensor Data")
+        plt.xlabel("Time")
         plt.ylabel("Sensor Value")
-        plt.legend(loc='best')
+        plt.legend(loc="best")
         plt.grid(True)
         plt.tight_layout()
+        plt.show()
+        
+class AllSensorsTogetherPlotter(BasePlotter):
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def plot(self):
+        df = self.extract_virtual_sensor_data()
+        sensor_map_dict = self._sensor_map_to_real()
+        
+        real_cols_to_plot = [col for col in sensor_map_dict.keys() if col in df.columns]
+
+        vs_cols_to_plot = [sensor_map_dict[i] for i in real_cols_to_plot]
+        
+        #plot_df_real = df[real_cols_to_plot]
+        plot_df_vs = df[vs_cols_to_plot].rename(columns=lambda x: self._sensor_map(x))
+        
+        #plot_df = pd.concat([plot_df_real, plot_df_vs], axis=1)
+        
+        plot_df_vs.plot(figsize=(12, 6))
+        plt.title("Virtual Sensors")
+        plt.xlabel("Index")
+        plt.ylabel("Value")
+        plt.legend(title="Sensors")
+        plt.grid(True)
         plt.show()
         
 class AllSensorsTogetherPlotterUQ(BasePlotter):
@@ -164,13 +206,8 @@ class RealVsVirtualPlotter(BasePlotter):
         super().__init__(**kwargs)
 
     def plot(self, sensor_mapping=None):
-        self.extract_virtual_sensor_data(self.output_file)
+        df = self.extract_virtual_sensor_data()
         
-        json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
-        if not self.sensor_data_json and os.path.exists(json_path):
-            with open(json_path, "r") as f:
-                self.sensor_data_json = json.load(f)
-
         if sensor_mapping is None:
             sensor_mapping = {
                 "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
@@ -179,30 +216,23 @@ class RealVsVirtualPlotter(BasePlotter):
                 "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
             }
 
-        df = self.api_dataFrame + 273.15
-        measured_times = df.index
+        #df = self.api_dataFrame + 273.15
+        #measured_times = df.index
 
-        for df_sensor_name, json_sensor_key in sensor_mapping.items():
-            if json_sensor_key not in self.sensor_data_json or df_sensor_name not in df.columns:
+        for real_col, mapped_col in sensor_mapping.items():
+            if real_col not in df.columns or mapped_col not in df.columns:
+                print(f"Skipping mapping: {real_col} -> {mapped_col} (column missing)")
                 continue
-
-            model_data = self.sensor_data_json[json_sensor_key]
-            model_times = np.array([entry["time"] for entry in model_data])
-            model_values = np.array([entry["value"] for entry in model_data])
-
-            interp_model_values = np.interp(
-                (measured_times - measured_times[0]).total_seconds(),
-                model_times - model_times[0],
-                model_values
-            )
-
+        
             plt.figure(figsize=(10, 4))
-            plt.plot(measured_times, df[df_sensor_name], label="Measurement")
-            plt.plot(measured_times, interp_model_values, "--", label="Model")
-            plt.title(f"Sensor Comparison: {df_sensor_name} vs {json_sensor_key}")
-            plt.xlabel("Time")
-            plt.ylabel("Temperature (K)")
+            plt.plot(df.index, df[real_col], label=f"{real_col}", linestyle='-')
+            plt.plot(df.index, df[mapped_col], label=f"{self._sensor_map(mapped_col)}", linestyle='--')
+        
+            plt.title(f"Sensor Comparison: {real_col} vs {self._sensor_map(mapped_col)}")
+            plt.xlabel("Time index")
+            plt.ylabel("Sensor Value")
             plt.legend()
+            plt.grid(True)
             plt.tight_layout()
             plt.show()
 
@@ -222,14 +252,14 @@ class RealVsVirtualPlotterUQ(BasePlotter):
                 "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
             }
             
-        vs_sensor_map_dict = {
+        vs_sensor_map_dict = {      ##TODO:
             "Sensor_u": "bridge_temperature_u",
             "Sensor_o": "bridge_temperature_o",
             "Sensor_n": "bridge_temperature_n",
             "Sensor_s": "bridge_temperature_s",
         }
 
-        df = self.api_dataFrame + 273.15
+        df = self.api_dataFrame + 273.15        ##TODO:
         measured_times = df.index
 
         for df_sensor_name, json_sensor_key in sensor_mapping.items():
@@ -255,37 +285,75 @@ class RealVsVirtualPlotterUQ(BasePlotter):
             plt.show()
 
 class VirtualSensorPlotter(BasePlotter):
-    
-    model_types = ["Displacement", "TransientThermal"]
-    alias = "VirtualSensors"
+
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
     def plot(self):
-        #if not hasattr(self.problem, "sensors"):
-        #    raise AttributeError("Missing 'problem.sensors'.")
 
         selected_sensors = {x["name"] for x in self.simulation_parameters.get("virtual_sensor_positions", [])}
 
         for name, sensor in self.problem.sensors.items():
             if name not in selected_sensors:
                 continue
+        
 
-            times, values = sensor.time[-len(sensor.data):], [
+            times = self.all_sensor_plot_data.index 
+            values = [
                 float(d[0]) if isinstance(d, np.ndarray) else float(d)
                 for d in sensor.data
             ]
-
+        
+            # Skip if lengths mismatch
             if len(times) != len(values):
                 print(f"Skipping '{name}': mismatched time/data lengths.")
                 continue
-
+        
+            # Plotting
             plt.figure(figsize=(10, 4))
-            plt.plot(times, values, "-b")
+            plt.plot(times, values, "-b", label="Virtual Sensor Value")
             plt.title(f"Virtual Sensor: {name}")
-            plt.xlabel("Time (s)")
+            plt.xlabel("Time")
             plt.ylabel("Value")
-            plt.grid()
+            plt.grid(True)
+            plt.legend()
+            plt.tight_layout()
+            plt.show()
+            
+class VirtualSensorPlotterUQ(BasePlotter):
+
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    def plot(self):
+
+        selected_sensors = {x["name"] for x in self.simulation_parameters.get("virtual_sensor_positions", [])}
+
+        for name, sensor in self.problem.sensors.items():
+            if name not in selected_sensors:
+                continue
+        
+
+            times = self.api_dataFrame.index[-self.all_sensor_plot_data["bridge_temperature_u"]["mean"].shape[0]:]
+            values = [
+                float(d[0]) if isinstance(d, np.ndarray) else float(d)
+                for d in sensor.data
+            ]
+        
+            # Skip if lengths mismatch
+            if len(times) != len(values):
+                print(f"Skipping '{name}': mismatched time/data lengths.")
+                continue
+        
+            # Plotting
+            plt.figure(figsize=(10, 4))
+            plt.plot(times, values, "-b", label="Virtual Sensor Value")
+            plt.title(f"Virtual Sensor: {name}")
+            plt.xlabel("Time")
+            plt.ylabel("Value")
+            plt.grid(True)
+            plt.legend()
             plt.tight_layout()
             plt.show()

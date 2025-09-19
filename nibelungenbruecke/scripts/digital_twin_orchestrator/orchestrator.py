@@ -207,7 +207,7 @@ class Orchestrator:
                 )
         
     def plot(self, plot_type: str, **kwargs):
-        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ"]
+        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ", "plot_virtual_sensors_with_UQ"]
         if plot_type not in self._plotters:
             #raise ValueError(f"Unknown plot type: {plot_type}")
             warnings.warn(f"Unknown plot type '{plot_type}'. Skipping plotting.")
@@ -236,7 +236,7 @@ if __name__ == "__main__":
         'model': 'TransientThermal_1',
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-08-11T16:10:00Z',
-        'time_step': '10min',
+        'time_step': '35min',
         'virtual_sensor_positions': [
             {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -260,11 +260,12 @@ if __name__ == "__main__":
     orchestrator.set_api_key(key)
     orchestrator.run()
 
+    orchestrator.plot("plot_real_vs_virtual_sensors_together")
     orchestrator.plot("plot_all_sensors_together")
     orchestrator.plot("plot_virtual_sensors")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
-    orchestrator.plot("plot_full_field_response")
+    orchestrator.plot("plot_full_field_response")       ##TODO: Make it proper!!!
 
 
 
@@ -313,7 +314,7 @@ if __name__ == "__main__":
         'model': 'TransientThermal_1',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-08-13T02:10:00Z',
-        'time_step': '10min',
+        'time_step': '30min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -330,12 +331,10 @@ if __name__ == "__main__":
     orchestrator.run(simulation_parameters)
 
     orchestrator.plot("plot_all_sensors_together_with_UQ")      ##TODO: All sensors!!
-    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
     orchestrator.plot("plot_full_field_response")
-
-
 
     # %%
 
@@ -346,7 +345,7 @@ if __name__ == "__main__":
         'model': 'TransientThermal_1',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
-        'time_step': '10min',
+        'time_step': '45min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -363,7 +362,7 @@ if __name__ == "__main__":
     orchestrator.run(simulation_parameters)
 
     orchestrator.plot("plot_all_sensors_together_with_UQ")
-    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
     orchestrator.plot("plot_full_field_response")
@@ -378,7 +377,7 @@ if __name__ == "__main__":
         'model': 'TransientThermal_1',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
-        'time_step': '100min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
+        'time_step': '450min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -395,8 +394,9 @@ if __name__ == "__main__":
     orchestrator.run(simulation_parameters)
 
     orchestrator.plot("plot_all_sensors_together_with_UQ")
-    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
     orchestrator.plot("plot_full_field_response")
 
+    

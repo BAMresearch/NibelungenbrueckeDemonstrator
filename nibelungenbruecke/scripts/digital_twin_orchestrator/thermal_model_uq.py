@@ -46,7 +46,7 @@ class ThermalModelUQ(ThermalModel):
     def SolveMethod(self):
         # self.input_sensor_names = list(self.problem.sensors.keys())
         #self.input_sensor_names = ['additional_heat_constant', 'additional_heat_constant_bias', 'wind_forced_convection_parameter_constant', 'wind_forced_convection_parameter_constant_bias', 'air_temperature', 'inner_temperature', 'shortwave_irradiation', 'calculate_shortwave_irradiation']
-        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
+        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']     ##TODO: can be extended to have other sensors PCE
 
         """
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
@@ -115,7 +115,8 @@ class ThermalModelUQ(ThermalModel):
 
 #%%
             if not "ic_temperature_field" in self.__dict__:
-                total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+                #total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+                total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
 
                 for entry in trange(total_steps, desc="Solving IC steps"):
                     new_parameters = {}
@@ -148,7 +149,8 @@ class ThermalModelUQ(ThermalModel):
             # Run timeseries problem
             #for entry in range(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"],len(inp[self.input_channel_names[0]])): 
             
-            start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+            #start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+            start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))      
             end_idx = len(inp[self.input_sensor_names[0]])      
             
             for entry in trange(start_idx, end_idx, desc="Solving time steps"):
@@ -170,7 +172,9 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.solve()
 
             for ikey, key in enumerate(self.output_sensor_names):
-                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
+                #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
+                #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:])
+                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
         
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}

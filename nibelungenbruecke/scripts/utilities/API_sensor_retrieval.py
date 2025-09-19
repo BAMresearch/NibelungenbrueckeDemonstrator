@@ -68,6 +68,8 @@ class API_Request:
                         ]
             }
         
+        self.time_step = time_step
+        
         # Body for requesting data of all the sensors
         """
         self.body = {
@@ -195,7 +197,12 @@ class API_Request:
         self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"], format='ISO8601', utc=True)
         self.df = self.df.set_index("Timestamp")
         # print(self.df)
-        return pd.DataFrame(self.df[self.df.columns], index=pd.to_datetime(self.df.index))
+        if self.time_step == '10T' or self.time_step == '10min':
+            self.df_resampled = self.df
+        else:
+            self.df_resampled = self.df.resample(self.time_step).mean()
+        #return pd.DataFrame(self.df_resampled[self.df], index=pd.to_datetime(self.df_resampled.index))
+        return self.df_resampled
 
 # %%
 class MetadataSaver:

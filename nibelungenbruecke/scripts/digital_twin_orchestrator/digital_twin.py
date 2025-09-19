@@ -120,7 +120,9 @@ class DigitalTwin:
         self.initial_model.problem.p["plot_pv"] = plot_pv
         self.initial_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
         self.initial_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
-        self.initial_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))
+        #self.initial_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))
+        self.initial_model.model_parameters["API_request_time_step"] = orchestrator_simulation_parameters["time_step"]
+        self.initial_model.model_parameters
     
     
     def _set_model(self, orchestrator_simulation_parameters):
@@ -245,7 +247,8 @@ class DigitalTwin:
             digital_twin_model.problem.p["plot_pv"] = plot_pv
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
-            digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))     ##TODO: Check the influence on run and plotting!!!
+            #digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))     ##TODO: Check the influence on run and plotting!!!
+            digital_twin_model.model_parameters["API_request_time_step"] = orchestrator_simulation_parameters["time_step"]
             
             self.digital_twin_models[self.model_to_run] = digital_twin_model
             return digital_twin_model
