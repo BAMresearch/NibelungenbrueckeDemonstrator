@@ -23,30 +23,6 @@ class ObjectCache:
                          print(f"\nWarning: The file '{self.cache_path}' was not found and will be created during the process.")
                          return None
             
-            
-# =============================================================================
-#         try:       
-#             with open(self.cache_path, 'rb') as f:
-#                 self.cache_model = json.load(f)
-#                 #print(f"Model '{self.model_name}' loaded successfully -> {self.cache_model}.")
-#                 return self.cache_model
-#         except:     ##TODO: To be deleted!!
-#             try:
-#                 self.cache_path = self.cache_path.strip("../")
-#                 with open(self.cache_path, 'rb') as f:
-#                     self.cache_model = json.load(f)
-#                     #print(f"Model '{self.model_name}' loaded successfully -> {self.cache_model}.")
-#                     return self.cache_model   
-#             except FileNotFoundError:
-#                 print(f"\nWarning: The file '{self.cache_path}' was not found and will be created during the process.")
-#                 return None
-#             except pickle.UnpicklingError:
-#                 print("Error: The file could not be unpickled.")
-#                 return None
-#             except Exception as e:
-#                 print(f"An unexpected error occurred: {e}")
-#                 return None
-# =============================================================================
         
     def update_store(self, model):
         if self.cache_path is None or self.model_name is None:

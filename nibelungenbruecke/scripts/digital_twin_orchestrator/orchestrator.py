@@ -44,11 +44,12 @@ class Orchestrator:
         """
 
         self.simulation_parameters = simulation_parameters
-        self.default_parameters = self.default_parameters()
         self.model_to_run = self.assign_model_name()
-        self.model_parameters_path = self.default_parameters['model_parameter_path']
+        
+        default_model_parameters_path = self.default_model_parameters_path()     ##TODO: hard-coded path!!
+        self.model_parameters_path = default_model_parameters_path['model_parameter_path']
+        
         self.digital_twin_model = self._digital_twin_initializer()
-        #self._plotters = {}
         self._plotters = PlotterFactory.create_all_plotters(problem=None,simulation_parameters=self.simulation_parameters)
 
     def assign_model_name(self):
@@ -111,18 +112,10 @@ class Orchestrator:
                 predictions.append(prediction)
         return predictions
 
-    def default_parameters(self):
+    def default_model_parameters_path(self):
 
         return {
             'model_parameter_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json',
-            'displacement_mesh_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh',
-            'thermal_mesh_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh',
-            'thermal_h5py_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.h5',
-            'thermal_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.xdmf',
-            'mesh_only_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal_mesh_only.xdmf',
-            'vtk_output_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal.vtk',
-            'displacement_h5py_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_displacement.h5',
-            'displacement_xdmf_path': '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_displacement.xdmf',
         }
 
     def compare(self, output, input_value):
@@ -131,62 +124,9 @@ class Orchestrator:
     def set_api_key(self, key):
         self.api_key = key
 
-    def load(self):     ##TODO: See if that can be moved to or merged somewhere else!!
-        """
-        Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
-
-        Args:
-            simulation_parameters (dict): The simulation parameters including virtual sensor positions.
-
-        Raises:
-            ValueError: If any virtual sensor lies outside the mesh domain.
-        """
-
-        model = self.simulation_parameters.get('model')
-        if model == 'TransientThermal_1':
-            path = self.default_parameters['thermal_mesh_path']
-        elif model == 'displacement_1':
-            path = self.default_parameters['displacement_mesh_path']
-        else:
-            raise ValueError(f"Unsupported model type: {model}")
-
-        mesh, _cell_tags, _facet_tags = df.io.gmshio.read_from_msh(
-            path, MPI.COMM_WORLD, 0, 3  # TODO: dim=2!
-        )
-
-        geometry = mesh.geometry.x
-
-        virtual_sensors = self.simulation_parameters.get(
-            'virtual_sensor_positions', [])
-        filtered_sensors = []
-
-        threshold = 1.29  # TODO: Max element size is ~1.283 m
-        print("")
-        for sensor in virtual_sensors:
-            coords = np.array([sensor['x'], sensor['y'], sensor['z']])
-            distances = np.linalg.norm(geometry - coords, axis=1)
-            min_dist = np.min(distances)
-
-            if min_dist > threshold:
-                print(
-                    f"Virtual {sensor['name']} is outside the domain and will be excluded from further processing.")
-            else:
-                print(f"Virtual {sensor['name']} is inside the domain.")
-                filtered_sensors.append(sensor)
-
-        self.simulation_parameters['virtual_sensor_positions'] = filtered_sensors
-
     def run(self, simulation_parameters=None):
         """
         Runs the digital twin model prediction.
-
-        TODO:
-        - Implement conditional execution based on prediction type.
-        - Support more flexible input types.
-
-        Args:
-            input_value : The input data for prediction.
-            model_to_run (str): Specifies which predefined model to execute.
 
         """
 
@@ -194,7 +134,7 @@ class Orchestrator:
             self.simulation_parameters = simulation_parameters
             self.model_to_run = self.assign_model_name()
 
-        self.load()
+        self.digital_twin_model.virtual_sensor_load(self.simulation_parameters)
         self.prediction = self.predict_dt(
             self.digital_twin_model, self.model_to_run, self.api_key)
         
@@ -207,7 +147,8 @@ class Orchestrator:
                 )
         
     def plot(self, plot_type: str, **kwargs):
-        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ", "plot_virtual_sensors_with_UQ"]
+        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ", 
+                         "plot_virtual_sensors_with_UQ", "plot_full_field_response", "plot_real_vs_virtual_sensors_together_with_UQ"]
         if plot_type not in self._plotters:
             #raise ValueError(f"Unknown plot type: {plot_type}")
             warnings.warn(f"Unknown plot type '{plot_type}'. Skipping plotting.")
@@ -234,6 +175,7 @@ if __name__ == "__main__":
     simulation_parameters = {
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
+        'model_type': '3D',
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-08-11T16:10:00Z',
         'time_step': '35min',
@@ -265,7 +207,7 @@ if __name__ == "__main__":
     orchestrator.plot("plot_virtual_sensors")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
-    orchestrator.plot("plot_full_field_response")       ##TODO: Make it proper!!!
+    orchestrator.plot("plot_full_field_response")       ##TODO: to be modified!!
 
 
 
@@ -274,9 +216,10 @@ if __name__ == "__main__":
     # simulation_parameters = {
     #     'simulation_name': 'TestSimulation',
     #     'model': 'TransientThermal_1',
+    #     'model_type': '3D',
     #     'start_time': '2023-08-11T08:00:00Z',
     #     'end_time': '2023-08-11T16:10:00Z',
-    #     'time_step': '1min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
+    #     'time_step': '1min',
     #     'virtual_sensor_positions': [
     #         {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
     #         {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -312,9 +255,10 @@ if __name__ == "__main__":
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
+        'model_type': '3D',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-08-13T02:10:00Z',
-        'time_step': '30min',
+        'time_step': '300min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -329,8 +273,8 @@ if __name__ == "__main__":
     }
 
     orchestrator.run(simulation_parameters)
-
-    orchestrator.plot("plot_all_sensors_together_with_UQ")      ##TODO: All sensors!!
+    orchestrator.plot("plot_real_vs_virtual_sensors_together_with_UQ")
+    orchestrator.plot("plot_all_sensors_together_with_UQ")
     orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
@@ -343,9 +287,10 @@ if __name__ == "__main__":
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
+        'model_type': '3D',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
-        'time_step': '45min',
+        'time_step': '600min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -360,11 +305,11 @@ if __name__ == "__main__":
     }
 
     orchestrator.run(simulation_parameters)
-
-    orchestrator.plot("plot_all_sensors_together_with_UQ")
+    
+    orchestrator.plot("plot_real_vs_virtual_sensors_together_with_UQ")
+    orchestrator.plot("plot_all_sensors_together_with_UQ")      ##TODO: ("plot_all_sensors_together")
     orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
-    orchestrator.plot("plot_real_vs_virtual_sensors")
     orchestrator.plot("plot_full_field_response")
 
 
@@ -375,9 +320,10 @@ if __name__ == "__main__":
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
         'model': 'TransientThermal_1',
+        'model_type': '3D',
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
-        'time_step': '450min',      ##TODO: To test problem.p.["dt"]!!! not funcitoning rn!
+        'time_step': '450min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
@@ -392,11 +338,11 @@ if __name__ == "__main__":
     }
 
     orchestrator.run(simulation_parameters)
-
+    
+    orchestrator.plot("plot_real_vs_virtual_sensors_together_with_UQ")
     orchestrator.plot("plot_all_sensors_together_with_UQ")
     orchestrator.plot("plot_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
-    orchestrator.plot("plot_real_vs_virtual_sensors")
     orchestrator.plot("plot_full_field_response")
 
     

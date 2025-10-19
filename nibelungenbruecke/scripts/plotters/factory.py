@@ -5,9 +5,10 @@ class PlotterFactory:
     
     _plotters = {
         "plot_real_vs_virtual_sensors_together": RealvsVirtualAllTogether,
+        "plot_real_vs_virtual_sensors_together_with_UQ": RealvsVirtualAllTogetherUQ,
         "plot_all_sensors_together": AllSensorsTogetherPlotter,
         "plot_all_sensors_together_with_UQ": AllSensorsTogetherPlotterUQ,
-        "plot_full_field_response": FullFieldPlotter,
+        "plot_full_field_response": FullFieldResponsePlotter,
         "plot_real_vs_virtual_sensors_with_UQ": RealVsVirtualPlotterUQ,
         "plot_real_vs_virtual_sensors": RealVsVirtualPlotter,
         "plot_virtual_sensors": VirtualSensorPlotter,

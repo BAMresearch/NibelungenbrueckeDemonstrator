@@ -42,12 +42,19 @@ class ThermalModelUQ(ThermalModel):
         # Assumes load_probeye_sensors is imported/available in this scope
         self.output_sensor_names = ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]
         
+    def extend_output_sensors(self):
+        
+        self.output_sensor_names = ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]
+        self.output_sensor_names.extend([i for i in self.problem.sensors.keys()])
+        
 
     def SolveMethod(self):
         # self.input_sensor_names = list(self.problem.sensors.keys())
         #self.input_sensor_names = ['additional_heat_constant', 'additional_heat_constant_bias', 'wind_forced_convection_parameter_constant', 'wind_forced_convection_parameter_constant_bias', 'air_temperature', 'inner_temperature', 'shortwave_irradiation', 'calculate_shortwave_irradiation']
-        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']     ##TODO: can be extended to have other sensors PCE
-
+        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
+        
+        self.extend_output_sensors()
+        
         """
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
         """
@@ -56,6 +63,7 @@ class ThermalModelUQ(ThermalModel):
         # Prepare input dictionary with bias model parameters and sensor data
         inp = {}
         data = self.api_dataFrame
+        #data = plot_df.drop(columns=[col for col in plot_df.columns if "40TU" not in col])
 
         # Add bias model parameters (mean and std/bias for each parameter)
         for param_dict in self.bias_model_parameters["parameters"]:
@@ -121,7 +129,7 @@ class ThermalModelUQ(ThermalModel):
                 for entry in trange(total_steps, desc="Solving IC steps"):
                     new_parameters = {}
                     for channel in self.input_sensor_names:
-                        new_parameters[channel] = inp[channel][entry]  ## XXX   ##TODO: 
+                        new_parameters[channel] = inp[channel][entry]
                         #new_parameters[channel] = inp[channel]
 
 
@@ -174,8 +182,11 @@ class ThermalModelUQ(ThermalModel):
             for ikey, key in enumerate(self.output_sensor_names):
                 #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
                 #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:])
-                sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
-        
+                if key in ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]:
+                    sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
+                else:
+                    sparse_evals[key].append(np.array(self.problem.sensors[key].data)[:])
+                        
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}
         for key in self.output_sensor_names:
@@ -201,11 +212,21 @@ class ThermalModelUQ(ThermalModel):
             sensor_stats[key] = {"mean": mean_val, "std": std_val}
             #%%
             
-        self.all_sensor_plot_data = sensor_stats
+
+        self.all_sensor_plot_data = self.pandas_data_form(data, sensor_stats)
         return self.all_sensor_plot_data
-        #self.plot_all_sensors_together(sensor_stats)  ##TODO: !!
-        # Optionally return results
-        # return return_dict
+
+        
+    def pandas_data_form(self, data, sensor_stats):
+        
+        len_data = sensor_stats['bridge_temperature_u']["mean"].shape[0]
+        plot_df = data.tail(len_data).copy() 
+        
+        for key, stats in sensor_stats.items():
+            plot_df[f"{key}_mean"] = stats["mean"].squeeze()
+            plot_df[f"{key}_std"] = stats["std"].squeeze()
+                
+        return plot_df
         
     def _sensor_map(self, probeye_sensor: str) -> str:
         sensor_map_dict = {

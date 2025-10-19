@@ -24,7 +24,7 @@ class API_Request:
         body: Request body parameters.
     """
     
-    def __init__(self, api_key, start_time, end_time, time_step):      ##TODO: time step !!!
+    def __init__(self, api_key, start_time, end_time, time_step):
         self.url = "https://func-70021-nibelungen-export.azurewebsites.net/samples"
         self.headers = {
             "Content-Type": "application/json"
@@ -47,6 +47,12 @@ class API_Request:
         start_time = start_time
         if not start_time:
             start_time = datetime.utcnow()
+        
+        start_time_dt = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ")
+
+        start_time_dt = start_time_dt - timedelta(weeks=2)      ## setting time two weeks earlier for model adaptation.
+        
+        start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         end_time = end_time
         if not end_time:

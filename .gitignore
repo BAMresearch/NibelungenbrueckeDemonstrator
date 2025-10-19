@@ -168,7 +168,7 @@ tests
 interface_NB_DT.ipynb
 use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup
 use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup2
-
+nibelungenbruecke/scripts/FullFieldResponse
 ##
 environment_backup.yml
 nibelungenbruecke.yml

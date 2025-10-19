@@ -1,7 +1,13 @@
 import os
 import json
+import numpy as np
+import h5py
 import pickle
 import importlib
+
+import dolfinx as df
+from mpi4py import MPI
+from petsc4py.PETSc import ScalarType
 
 from nibelungenbruecke.scripts.digital_twin_orchestrator.orchestrator_cache import ObjectCache
 
@@ -247,7 +253,6 @@ class DigitalTwin:
             digital_twin_model.problem.p["plot_pv"] = plot_pv
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
-            #digital_twin_model.problem.p["dt"] = int(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"])))     ##TODO: Check the influence on run and plotting!!!
             digital_twin_model.model_parameters["API_request_time_step"] = orchestrator_simulation_parameters["time_step"]
             
             self.digital_twin_models[self.model_to_run] = digital_twin_model
@@ -294,7 +299,7 @@ class DigitalTwin:
             dict or None: Loaded model parameters or None if the file is missing.
         """
         try:
-            ##TODO: 
+            ##TODO: hard-coded path!!
             rel_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/"
             with open(f"{rel_path}{self.model_to_run}_params.pkl", "rb") as f:
                 self.model_params = pickle.load(f)                
@@ -302,7 +307,7 @@ class DigitalTwin:
         
         except FileNotFoundError:
             self.model_params = None
-            print(f"Error: The file {self.model_to_run} was not found!")    #TODO: Use assertion instead!!
+            print(f"Error: The file {self.model_to_run} was not found!")    #TODO: Use assertion instead?!!
             return None
         
         except Exception as e:
@@ -334,3 +339,50 @@ class DigitalTwin:
                 triggered = True
                 
         return triggered
+    
+    
+    def virtual_sensor_load(self, orchestrator_simulation_parameters):     ##TODO: See if that can be changed, moved to or merged somewhere else!!
+        """
+        Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
+
+        Args:
+            simulation_parameters (dict): The simulation parameters including virtual sensor positions.
+
+        Raises:
+            ValueError: If any virtual sensor lies outside the mesh domain.
+        """
+
+        model = orchestrator_simulation_parameters.get('model')
+        if "Thermal" in model:
+            path = self.orchestrator_parameters["model_path"][0]["transientthermal_model_path"]
+                
+        elif "displacement" in model:
+            path = self.default_parameters['displacement_mesh_path']
+        else:
+            raise ValueError(f"Unsupported model type: {model}")
+
+        mesh, _cell_tags, _facet_tags = df.io.gmshio.read_from_msh(     ##TODO: for 3D!! Probably to be changed to a better approach!!!
+            path, MPI.COMM_WORLD, 0, 3  # TODO: dim=2!
+        )
+
+        geometry = mesh.geometry.x
+
+        virtual_sensors = orchestrator_simulation_parameters.get(
+            'virtual_sensor_positions', [])
+        filtered_sensors = []
+
+        threshold = 1.29  # TODO: Max element size is ~1.283 m
+        print("")
+        for sensor in virtual_sensors:
+            coords = np.array([sensor['x'], sensor['y'], sensor['z']])
+            distances = np.linalg.norm(geometry - coords, axis=1)
+            min_dist = np.min(distances)
+
+            if min_dist > threshold:
+                print(
+                    f"Virtual {sensor['name']} is outside the domain and will be excluded from further processing.")
+            else:
+                print(f"Virtual {sensor['name']} is inside the domain.")
+                filtered_sensors.append(sensor)
+
+        orchestrator_simulation_parameters['virtual_sensor_positions'] = filtered_sensors

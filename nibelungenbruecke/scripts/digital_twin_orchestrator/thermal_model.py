@@ -45,7 +45,6 @@ class ThermalModel(BaseModel):
         #super().__init__(model_path, model_parameters["thermal_model_parameters"],)
         
         self.dt_path = dt_path
-        #self.vs_path = self.model_parameters["virtual_sensor_added_output_path"] ##TODO: !!
         
     def LoadGeometry(self):
         """
@@ -82,7 +81,7 @@ class ThermalModel(BaseModel):
         self.api_dataFrame = self.api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
-        metadata_saver.saving_metadata()    ##TODO:
+        metadata_saver.saving_metadata()
 
         self.translator = Translator(self.model_parameters)
         self.translator.translator_to_sensor(self.experiment.mesh, virtual_sensor_positions)
@@ -159,7 +158,7 @@ class ThermalModel(BaseModel):
                 
         #self.plot_all_sensors_together(database)
         self.all_sensor_plot_data = plot_df
-        return self.all_sensor_plot_data     ##TODO: Name! 
+        return self.all_sensor_plot_data
         
         
     def plot_all_sensors_together(self, database):
@@ -226,8 +225,8 @@ class ThermalModel(BaseModel):
                                     self.problem.time)
 
     
-    ##TODO: !!
-    def update_parameters(self, updates, target_name=None):
+    ##TODO: to be deleted?!!
+    def update_parameters_to_be_deleted(self, updates, target_name=None):
         """
         Updates the specified parameters in the digital twin parameter file 
         (JSON format).
@@ -254,7 +253,7 @@ class ThermalModel(BaseModel):
                         if key in entry["parameters"]:
                             if entry["parameters"][key] != value:
                                 entry["parameters"][key] = value
-                                self.problem.p[key] = value  ##TODO: problem.p update!!
+                                self.problem.p[key] = value  ##TODO: problem.p update!! 
                                 model_type_params = entry
                                 updated = True
    
@@ -274,15 +273,6 @@ class ThermalModel(BaseModel):
     def solve(self, api_key, virtual_sensor_positions):
         """
         Reloading, model generating and solving model.
-        
-        With use of callback() methods, ceratin methods are called in each step 
-        of moving load case.
-        
-        TODO:
-            The re-loading of the model can be avoidede by recalculating and 
-            modifying the values in the constant fields of the Lamé constants
-            
-
         """
         self.LoadGeometry()
         self.GenerateModel()
@@ -290,9 +280,8 @@ class ThermalModel(BaseModel):
         self.SolveMethod()
   
 
-    def export_output(self, path: str): #TODO: json_path as a input parameters!! -> Changes' been done!
-        #json_path = "output_data.json" #TODO: move to json file
-        
+    def export_output(self, path: str):
+        ##TODO: hard-coded path!!
         json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/" + path + ".json"
         try:
             with open(json_path, 'r') as file:
