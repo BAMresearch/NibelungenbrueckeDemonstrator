@@ -282,7 +282,8 @@ class DigitalTwin:
         """
         self.uploader()
         self.initial_model.fields_assignment(self.model_params)
-        self.initial_model.solve(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"])
+        #self.initial_model.solve(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"])
+        self.initial_model.solve(api_key, orchestrator_simulation_parameters)
         self.initial_model.fields_data_storer(self.model_to_run)
 
         return self.initial_model

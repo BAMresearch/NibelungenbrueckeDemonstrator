@@ -63,6 +63,7 @@ class ThermalModelUQ(ThermalModel):
         # Prepare input dictionary with bias model parameters and sensor data
         inp = {}
         data = self.api_dataFrame
+        self.intial_adaptation_prep(data)
         #data = plot_df.drop(columns=[col for col in plot_df.columns if "40TU" not in col])
 
         # Add bias model parameters (mean and std/bias for each parameter)
@@ -124,7 +125,9 @@ class ThermalModelUQ(ThermalModel):
 #%%
             if not "ic_temperature_field" in self.__dict__:
                 #total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
-                total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
+                #total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
+                total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+                
 
                 for entry in trange(total_steps, desc="Solving IC steps"):
                     new_parameters = {}
@@ -158,7 +161,8 @@ class ThermalModelUQ(ThermalModel):
             #for entry in range(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"],len(inp[self.input_channel_names[0]])): 
             
             #start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
-            start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))      
+            #start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))      
+            start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
             end_idx = len(inp[self.input_sensor_names[0]])      
             
             for entry in trange(start_idx, end_idx, desc="Solving time steps"):

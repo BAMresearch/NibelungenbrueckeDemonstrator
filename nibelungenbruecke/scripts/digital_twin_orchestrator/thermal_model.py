@@ -3,6 +3,9 @@ import time
 import pickle
 import importlib
 import numpy as np
+import math
+
+from datetime import datetime, timedelta
 from tqdm import tqdm
 from tqdm import trange
 from copy import deepcopy
@@ -89,6 +92,18 @@ class ThermalModel(BaseModel):
         self.problem.import_sensors_from_metadata(
             self.model_parameters["MKP_meta_output_path"])
         
+        
+    def intial_adaptation_prep(self, data):
+        total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=2)])
+        #self.problem.p["initial_condition_steps"] = math.floor(total_steps*1)
+        #self.problem.p["burn_in_steps"] = math.ceil(total_steps*0)  ##TODO:!!
+        
+        self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*1)
+        #self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*0)
+        
+        #return data[:total_steps], data[total_steps:]
+        
+        
     def SolveMethod(self):
         """
        Solves the model
@@ -98,6 +113,9 @@ class ThermalModel(BaseModel):
         #data[cols_to_update] = data[cols_to_update] + 275
         
         data = self.api_dataFrame + 275
+        #prep_data, data = self.intial_adaptation_prep(self.api_dataFrame)
+        self.intial_adaptation_prep(data)
+        
         plot_df = data.drop(columns=[col for col in data.columns if "40TU" not in col])
 
         air_temperature_array = np.zeros(len(data))
@@ -106,7 +124,8 @@ class ThermalModel(BaseModel):
         
         if not hasattr(self, "ic_temperature_field"):
             self.problem.p['plot_pv'] = 0
-            total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
+            #total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
+            total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
             for i, (_, data_point) in enumerate(tqdm(data.iloc[:total_steps].iterrows(), total=total_steps)):
 
                 air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
@@ -128,7 +147,9 @@ class ThermalModel(BaseModel):
         self.problem.u_old.vector[:] = self.ic_temperature_field
         self.problem.fields.temperature.vector[:] = self.ic_temperature_field
         
-        start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))
+        #start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))
+        start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+        
         if pv_plot_flag:
             self.problem.p['plot_pv'] = 1
             
@@ -270,13 +291,13 @@ class ThermalModel(BaseModel):
 
     
 #%%
-    def solve(self, api_key, virtual_sensor_positions):
+    def solve(self, api_key, orchestrator_simulation_parameters):
         """
         Reloading, model generating and solving model.
         """
         self.LoadGeometry()
         self.GenerateModel()
-        self.GenerateData(api_key, virtual_sensor_positions)
+        self.GenerateData(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"])
         self.SolveMethod()
   
 
