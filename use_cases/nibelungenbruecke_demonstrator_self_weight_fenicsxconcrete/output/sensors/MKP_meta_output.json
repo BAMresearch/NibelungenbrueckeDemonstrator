@@ -139,9 +139,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
+                -2,
                 0.0,
-                0.0,
-                0.0
+                42.01
             ]
         },
         {

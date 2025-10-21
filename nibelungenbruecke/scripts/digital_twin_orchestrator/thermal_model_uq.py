@@ -63,7 +63,7 @@ class ThermalModelUQ(ThermalModel):
         # Prepare input dictionary with bias model parameters and sensor data
         inp = {}
         data = self.api_dataFrame
-        self.intial_adaptation_prep(data)
+        self.intial_adaptation_prep(data, init_cond=0.2)
         #data = plot_df.drop(columns=[col for col in plot_df.columns if "40TU" not in col])
 
         # Add bias model parameters (mean and std/bias for each parameter)
@@ -187,9 +187,12 @@ class ThermalModelUQ(ThermalModel):
                 #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
                 #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:])
                 if key in ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]:
-                    sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
+                    #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
+                    sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:])
+            
                 else:
-                    sparse_evals[key].append(np.array(self.problem.sensors[key].data)[:])
+                    sparse_evals[key].append(np.array(self.problem.sensors[key].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:])                    
+                    
                         
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}

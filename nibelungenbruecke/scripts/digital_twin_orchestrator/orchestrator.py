@@ -200,15 +200,17 @@ if __name__ == "__main__":
 
     # key = ""
     orchestrator.set_api_key(key)
-    orchestrator.run()
-
-    orchestrator.plot("plot_real_vs_virtual_sensors_together")
-    orchestrator.plot("plot_all_sensors_together")
-    orchestrator.plot("plot_virtual_sensors")
-    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
-    orchestrator.plot("plot_real_vs_virtual_sensors")
-    orchestrator.plot("plot_full_field_response")       ##TODO: to be modified!!
-
+# =============================================================================
+#     orchestrator.run()
+# 
+#     orchestrator.plot("plot_real_vs_virtual_sensors_together")
+#     orchestrator.plot("plot_all_sensors_together")
+#     orchestrator.plot("plot_virtual_sensors")
+#     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+#     orchestrator.plot("plot_real_vs_virtual_sensors")
+#     orchestrator.plot("plot_full_field_response")       ##TODO: to be modified!!
+# 
+# =============================================================================
 
 
     # %%
@@ -257,8 +259,8 @@ if __name__ == "__main__":
         'model': 'TransientThermal_1',
         'model_type': '3D',
         'start_time': '2024-08-11T08:00:00Z',
-        'end_time': '2024-08-13T02:10:00Z',
-        'time_step': '300min',
+        'end_time': '2024-09-13T02:10:00Z',
+        'time_step': '200min',
         'virtual_sensor_positions': [
             {'x': -2, 'y': 0.0, 'z': 42.01, 'name': 'Sensor1'},
             {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},

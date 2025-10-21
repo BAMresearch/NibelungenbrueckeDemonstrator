@@ -93,13 +93,13 @@ class ThermalModel(BaseModel):
             self.model_parameters["MKP_meta_output_path"])
         
         
-    def intial_adaptation_prep(self, data):
+    def intial_adaptation_prep(self, data, init_cond=1):
         total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=2)])
         #self.problem.p["initial_condition_steps"] = math.floor(total_steps*1)
         #self.problem.p["burn_in_steps"] = math.ceil(total_steps*0)  ##TODO:!!
         
-        self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*1)
-        #self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*0)
+        self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*init_cond)
+        self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*(1-init_cond))
         
         #return data[:total_steps], data[total_steps:]
         
@@ -114,7 +114,7 @@ class ThermalModel(BaseModel):
         
         data = self.api_dataFrame + 275
         #prep_data, data = self.intial_adaptation_prep(self.api_dataFrame)
-        self.intial_adaptation_prep(data)
+        self.intial_adaptation_prep(data, init_cond=1.0)
         
         plot_df = data.drop(columns=[col for col in data.columns if "40TU" not in col])
 
