@@ -29,34 +29,18 @@ class API_Request:
         self.headers = {
             "Content-Type": "application/json"
         }
-# =============================================================================
-#         if secrets_location == "":
-#             while True:
-#                 print("Connecting to sensor database...")
-#                 secret_code = input("\nEnter the code to connect API: ").strip()
-#                 if secret_code:
-#                     self.params = {"code": secret_code}
-#                     break
-#                 else:
-#                     print("Secret code cannot be empty. Please try again.")
-#         else:
-#             with open(secrets_location) as f:
-#                 self.params = {"code": f.read().strip()}
-# =============================================================================
+
         self.params = {"code": api_key}
-        start_time = start_time
         if not start_time:
-            start_time = datetime.utcnow()
+            start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         
         start_time_dt = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ")
-
-        start_time_dt = start_time_dt - timedelta(weeks=2)      ## setting time two weeks earlier for model adaptation.
-        
+        start_time_dt = start_time_dt - timedelta(weeks=2)
         start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        end_time = end_time
         if not end_time:
-            end_time = start_time + timedelta(days=5)  
+            end_time_dt = start_time_dt + timedelta(days=5)
+            end_time = end_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         #print(f"Time window:\n  Start: {start_time.isoformat()[:10]}\n  End:   {end_time.isoformat()[:10]}")
         
@@ -207,6 +191,7 @@ class API_Request:
             self.df_resampled = self.df
         else:
             self.df_resampled = self.df.resample(self.time_step).mean()
+            self.df_resampled = self.df_resampled.interpolate(method='time').ffill().bfill()
         #return pd.DataFrame(self.df_resampled[self.df], index=pd.to_datetime(self.df_resampled.index))
         return self.df_resampled
 
@@ -310,7 +295,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [-2.85, -5.17, 4.0],
+                "coordinate": [-2.85, -5.17, 0.0],
                 "height": 102.698                      
             })
             
@@ -477,14 +462,13 @@ class Translator:
                     
         for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
             if i == "Sensor_u":
-                where = [-2.85, -5.17, 4.0]       ##TODO:
+                where = [-2.85, -5.17, 0.0]       ##TODO:
             elif i == "Sensor_o":
-                 where = [-2.85, -0.2, 4.0]
+                 where = [-2.85, -0.2, 0.0]         ##TODO: Z axis was 4.0 before!!
             elif i == "Sensor_n":
-                 where = [-2.25, -2.37, 4.0]
+                 where = [-2.25, -2.37, 0.0]
             elif i == "Sensor_s":
-                 where = [-3.45, -2.37, 4.0]
-
+                 where = [-3.45, -2.37, 0.0]
             sensor_data = {
                 "id": i,
                 "type": "TemperatureSensor",

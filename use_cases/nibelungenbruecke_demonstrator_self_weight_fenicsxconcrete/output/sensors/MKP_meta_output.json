@@ -31,8 +31,8 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                3.716666666666667,
-                -4.1670833333375255,
+                3.85,
+                -4.69383593750463,
                 0.0
             ]
         },
@@ -43,9 +43,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                -2.85,
+                -2.7999999999992915,
                 -0.2,
-                4.0
+                0.0
             ]
         },
         {
@@ -56,8 +56,8 @@
             "dimensionality": "[temperature]",
             "where": [
                 -2.25,
-                -2.37,
-                4.0
+                -2.3500000000084933,
+                0.0
             ]
         },
         {
@@ -68,8 +68,8 @@
             "dimensionality": "[temperature]",
             "where": [
                 -3.45,
-                -2.37,
-                4.0
+                -2.349999999995247,
+                0.0
             ]
         },
         {
@@ -81,7 +81,7 @@
             "where": [
                 -2.85,
                 -5.17,
-                4.0
+                0.0
             ]
         },
         {
@@ -93,7 +93,7 @@
             "where": [
                 -2.85,
                 -5.17,
-                4.0
+                0.0
             ]
         },
         {
@@ -105,7 +105,7 @@
             "where": [
                 -2.85,
                 -0.2,
-                4.0
+                0.0
             ]
         },
         {
@@ -117,7 +117,7 @@
             "where": [
                 -2.25,
                 -2.37,
-                4.0
+                0.0
             ]
         },
         {
@@ -129,7 +129,7 @@
             "where": [
                 -3.45,
                 -2.37,
-                4.0
+                0.0
             ]
         },
         {
@@ -139,9 +139,9 @@
             "units": "kelvin",
             "dimensionality": "[temperature]",
             "where": [
-                -2,
                 0.0,
-                42.01
+                0.0,
+                0.0
             ]
         },
         {
@@ -154,18 +154,6 @@
                 1.0,
                 0.0,
                 0.0
-            ]
-        },
-        {
-            "id": "Sensor3",
-            "type": "TemperatureSensor",
-            "sensor_file": "temperature_sensor",
-            "units": "kelvin",
-            "dimensionality": "[temperature]",
-            "where": [
-                1.78,
-                0.0,
-                26.91
             ]
         },
         {

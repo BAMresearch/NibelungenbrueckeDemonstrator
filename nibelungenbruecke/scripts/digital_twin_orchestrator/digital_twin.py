@@ -35,7 +35,8 @@ class DigitalTwin:
            
        """
         self.model_to_run = model_to_run
-        self.orchestrator_parameters = self._extract_model_parameters(model_parameters_path)
+        self.model_parameters_path = model_parameters_path
+        self.orchestrator_parameters = self._extract_model_parameters(self.model_parameters_path)
         self._load_models()
         self.cache_object = ObjectCache()
         self.digital_twin_models = {}
@@ -64,7 +65,7 @@ class DigitalTwin:
         Loads the predefined model parameters from the json file.
         
         """
-        dt_params_path = self.orchestrator_parameters["generation_models_list"][0]["digital_twin_parameters_path"]      ##TODO: !!
+        dt_params_path = self.orchestrator_parameters["generation_models_list"][0]["digital_twin_parameters_path"]
         try:
             with open(dt_params_path, 'r') as json_file:
                 self._models = json.load(json_file)
@@ -89,8 +90,7 @@ class DigitalTwin:
         self.model_to_run = model_to_run
         
         if not self._set_model(orchestrator_simulation_parameters):
-            #self.digital_twin_model = self._initialize_default_model()  ## TODO:
-            #return 
+
             raise ValueError(f"There isn't any predefined model with name {self.model_to_run}. Please check the name or add the model to model parameters\n")
 
             
@@ -180,14 +180,14 @@ class DigitalTwin:
         if not self.cache_object.cache_model:
             parameters = self.cache_object.load_cache(self.cache_model_path, self.cache_model_name)
             if not parameters:
-                with open(self._default_parameters_path(), 'r') as file:
+                with open(self.model_parameters_path, 'r') as file:
                     parameters = json.load(file)
                 self.cache_object.cache_model = parameters
         else:
-            if self.cache_object.model_name != self.cache_object_name:      ##TODO
+            if self.cache_object.model_name != self.cache_object_name:
                 parameters = self.cache_object.load_cache(self.cache_model_path, self.cache_model_name)
                 if not parameters:
-                    with open(self._default_parameters_path(), 'r') as file:
+                    with open(self.model_parameters_path, 'r') as file:
                         parameters = json.load(file)
                         
                 self.cache_object.cache_model = parameters
@@ -219,6 +219,8 @@ class DigitalTwin:
             model_paths = self.cache_object.cache_model["model_path"][0]
             if "TransientThermal" in self.model_to_run:
                 model_path = model_paths["transientthermal_model_path"]
+
+                
             elif "Displacement" in self.model_to_run:
                 model_path = model_paths["displacement_model_path"]
             else:
@@ -254,6 +256,8 @@ class DigitalTwin:
             digital_twin_model.model_parameters["API_request_start_time"] = orchestrator_simulation_parameters["start_time"]
             digital_twin_model.model_parameters["API_request_end_time"] = orchestrator_simulation_parameters["end_time"]
             digital_twin_model.model_parameters["API_request_time_step"] = orchestrator_simulation_parameters["time_step"]
+            digital_twin_model.model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"]["dt"] = float(''.join(filter(str.isdigit, orchestrator_simulation_parameters["time_step"]))) * 60
+       
             
             self.digital_twin_models[self.model_to_run] = digital_twin_model
             return digital_twin_model
@@ -308,24 +312,11 @@ class DigitalTwin:
         
         except FileNotFoundError:
             self.model_params = None
-            print(f"Error: The file {self.model_to_run} was not found!")    #TODO: Use assertion instead?!!
+            print(f"Error: The file {self.model_to_run} was not found!")
             return None
         
         except Exception as e:
             print(f"An unexpected error!: {e}")
-    
-    def _default_parameters_path(self):
-        """
-        Returns the default parameters file path.
-        """
-        default_parameters_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json"
-        
-        ##TODO: !!
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.join(current_dir, default_parameters_path)
-        json_path = os.path.normpath(json_path)
-        
-        return json_path
    
     def store_update(self):            
         measured_vs_path = self.model_parameters["virtual_sensor_added_output_path"]
@@ -342,7 +333,7 @@ class DigitalTwin:
         return triggered
     
     
-    def virtual_sensor_load(self, orchestrator_simulation_parameters):     ##TODO: See if that can be changed, moved to or merged somewhere else!!
+    def virtual_sensor_load(self, orchestrator_simulation_parameters):
         """
         Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
 
@@ -362,8 +353,8 @@ class DigitalTwin:
         else:
             raise ValueError(f"Unsupported model type: {model}")
 
-        mesh, _cell_tags, _facet_tags = df.io.gmshio.read_from_msh(     ##TODO: for 3D!! Probably to be changed to a better approach!!!
-            path, MPI.COMM_WORLD, 0, 3  # TODO: dim=2!
+        mesh, _cell_tags, _facet_tags = df.io.gmshio.read_from_msh(
+            path, MPI.COMM_WORLD, 0, 3
         )
 
         geometry = mesh.geometry.x
@@ -372,7 +363,7 @@ class DigitalTwin:
             'virtual_sensor_positions', [])
         filtered_sensors = []
 
-        threshold = 1.29  # TODO: Max element size is ~1.283 m
+        threshold = 1.29  # TODO: Max element size is ~1.283 m - from 3d model. 
         print("")
         for sensor in virtual_sensors:
             coords = np.array([sensor['x'], sensor['y'], sensor['z']])

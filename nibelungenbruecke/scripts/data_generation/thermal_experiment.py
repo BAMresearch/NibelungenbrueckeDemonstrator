@@ -11,7 +11,7 @@ from fenicsxconcrete.util import Parameters, ureg
 class ThermalExperiment(Experiment):
     """Sets up a thermal experiment geometry from msh file or box."""
 
-    def __init__(self, parameters: dict[str, pint.Quantity] | None = None):
+    def __init__(self, parameters: dict[str, pint.Quantity] | None = None, model_path=None):
         """
         Initializes the ThermalExperiment object.
 
@@ -19,6 +19,11 @@ class ThermalExperiment(Experiment):
             parameters: Dictionary containing the required parameters for the experiment set-up.
         """
         #%%
+        ##TODO: 
+            
+        if model_path:
+            parameters["model_parameters"]["problem_parameters"]["mesh_path"] = model_path
+        
         params = ThermalExperiment.unitize_parameters(parameters["model_parameters"]["problem_parameters"],
             ThermalExperiment.pint_default_units()
         )
@@ -27,8 +32,6 @@ class ThermalExperiment(Experiment):
         super().__init__(params)
 
         #%%
-        #super().__init__(parameters)
-
     def setup(self) -> None:
         """
         Defines the mesh for 2D or 3D.
@@ -64,29 +67,34 @@ class ThermalExperiment(Experiment):
             self.mesh, self.cell_tags, self.facet_tags = df.io.gmshio.read_from_msh(
                 self.p["mesh_path"], MPI.COMM_WORLD, 0, self.p["dim"]
             )
+            
         else:
             raise ValueError(f'wrong geometry: {self.p["geometry"]} is not implemented for problem setup')
-
+    
     @staticmethod
-    def default_parameters() -> dict[str, pint.Quantity]:
-        """
-        Sets up a working set of parameter values as example.
+    def default_parameters(mesh_path) -> dict[str, pint.Quantity]:
+        """sets up a working set of parameter values as example
 
         Returns:
-            dict: Dictionary with a working set of the required parameter.
+            dictionary with a working set of the required parameter
+
         """
+
         setup_parameters = {}
-        setup_parameters["geometry"] = "gmsh" * ureg("")
-        setup_parameters["mesh_path"] = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh" * ureg("")
-        #setup_parameters["geometry"] = "box" * ureg("")
+        if mesh_path:
+            setup_parameters["geometry"] = "gmsh" * ureg("")
+        else:
+            setup_parameters["geometry"] = "box" * ureg("")
         setup_parameters["length"] = 1 * ureg("m")
         setup_parameters["height"] = 0.3 * ureg("m")
-        setup_parameters["width"] = 0.3 * ureg("m")
+        setup_parameters["width"] = 0.3 * ureg("m")  # only relevant for 3D case
         setup_parameters["dim"] = 3 * ureg("")
         setup_parameters["num_elements_length"] = 10 * ureg("")
         setup_parameters["num_elements_height"] = 3 * ureg("")
-        setup_parameters["num_elements_width"] = 3 * ureg("")
+        setup_parameters["num_elements_width"] = 3 * ureg("")  # only relevant for 3D case
+        
         return setup_parameters
+
     
     
     @staticmethod
@@ -190,7 +198,7 @@ class ThermalExperiment(Experiment):
     
             # Leave everything else untouched (e.g. str, list, None)
             else:
-                converted[key] = value
+                converted[key] = value * ureg.dimensionless
     
         return converted
 

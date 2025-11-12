@@ -111,8 +111,8 @@ class RealvsVirtualAllTogether(BasePlotter):
             if not col.endswith("_virtual_sensor"):
                 vs_col = col + "_virtual_sensor"
                 if vs_col in df.columns:
-                    plt.plot(df.index, df[col], label=f"{col} (real)", linestyle='-')
-                    plt.plot(df.index, df[vs_col], label=f"{col} (virtual)", linestyle='--')
+                    plt.plot(df.index, df[col], label=f"{col} (real)", linestyle='solid')
+                    plt.plot(df.index, df[vs_col], label=f"{col} (virtual)", linestyle='-.')
         
         plt.title("Real vs Virtual Sensor Data")
         plt.xlabel("Time")

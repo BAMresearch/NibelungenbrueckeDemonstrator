@@ -1,9 +1,0 @@
-<Xdmf Version="3.0"><Domain><Grid Name="mesh" GridType="Uniform">
-      <Topology TopologyType="Tetrahedron" NumberOfElements="6705" NodesPerElement="4">
-        <DataItem Dimensions="6705 4" NumberType="Int" Format="HDF">Nibelungenbruecke_thermal.h5:/Mesh/mesh/topology</DataItem>
-      </Topology>
-      <Geometry GeometryType="XYZ">
-        <DataItem Dimensions="2197 3" Format="HDF">Nibelungenbruecke_thermal.h5:/Mesh/mesh/geometry</DataItem>
-      </Geometry>
-    </Grid>
-    </Domain></Xdmf>

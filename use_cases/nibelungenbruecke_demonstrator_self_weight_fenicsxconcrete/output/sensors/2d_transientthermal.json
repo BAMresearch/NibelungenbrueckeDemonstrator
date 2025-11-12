@@ -2,7 +2,7 @@
     "model_path": [
         {
             "displacement_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
-            "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh"
+            "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh"
         }
     ],
     "output_parameters": {
@@ -19,12 +19,12 @@
                 "MKP_translated_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
                 "virtual_sensor_added_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
                 "secret_path": "",
-                "API_request_start_time": "2023-08-11T08:00:00Z",
-                "API_request_end_time": "2023-09-13T08:10:00Z",
-                "API_request_time_step": "250min",
+                "API_request_start_time": "2024-04-11T08:00:00Z",
+                "API_request_end_time": "2024-05-14T16:10:00Z",
+                "API_request_time_step": "200min",
                 "cache_path": "",
                 "paraview_output": true,
-                "paraview_thermal_output_name": "Nibelungenbruecke_thermal",
+                "paraview_thermal_output_name": "Nibelungenbruecke_thermal_2D_pilot",
                 "paraview_displacement_output_name": "Nibelungenbruecke_displacement",
                 "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
                 "material_parameters": {},
@@ -91,7 +91,7 @@
                             "inner_temperature": 293.0,
                             "initial_temperature": 293.0,
                             "heat_capacity": 870.0,
-                            "dt": 15000.0,
+                            "dt": 12000.0,
                             "theta": 1.0,
                             "density": 2400.0,
                             "conductivity": 2.5,
@@ -112,8 +112,8 @@
                             "top_tag": 9,
                             "bottom_tag": 8,
                             "end_tag": 7,
-                            "plot_pv": false,
-                            "mesh_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh"
+                            "plot_pv": true,
+                            "mesh_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh"
                         },
                         "sensor_metadata": "./input/sensors/sensors_temperature.json"
                     }

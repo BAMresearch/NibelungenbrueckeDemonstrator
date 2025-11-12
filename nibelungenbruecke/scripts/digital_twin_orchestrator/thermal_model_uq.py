@@ -11,7 +11,7 @@ class ThermalModelUQ(ThermalModel):
     A class representing a thermal model for NB simulations with UQ using PCE.
     """
 
-    def __init__(self, model_path: str, model_parameters: dict, dt_path: str, 
+    def __init__(self, model_path: str, model_parameters: dict, dt_path: str,
                  uq_params: dict = None):
         """
         Initializes the ThermalModelUQ with the given paths, parameters, and UQ settings.
@@ -21,7 +21,7 @@ class ThermalModelUQ(ThermalModel):
             dt_path (str): Path to the digital twin parameter file (JSON format).
             uq_params (dict): Dictionary with UQ settings (keys: 'order', 'distribution', 'param_names').
         """
-        super().__init__(model_path, model_parameters, dt_path)
+        super().__init__(model_path, model_parameters, dt_path, uq_extension=True)
         self.uq_params = uq_params or {
             "order": 2,
             "distribution": {"air_temperature": ("normal", 293.15, 2.0)},  # mean, std
@@ -49,15 +49,13 @@ class ThermalModelUQ(ThermalModel):
         
 
     def SolveMethod(self):
-        # self.input_sensor_names = list(self.problem.sensors.keys())
-        #self.input_sensor_names = ['additional_heat_constant', 'additional_heat_constant_bias', 'wind_forced_convection_parameter_constant', 'wind_forced_convection_parameter_constant_bias', 'air_temperature', 'inner_temperature', 'shortwave_irradiation', 'calculate_shortwave_irradiation']
-        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
-        
-        self.extend_output_sensors()
-        
         """
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
         """
+        
+        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
+        self.extend_output_sensors()
+        
         b_dist_list = []
 
         # Prepare input dictionary with bias model parameters and sensor data
@@ -120,23 +118,17 @@ class ThermalModelUQ(ThermalModel):
             self.problem.update_parameters(node)
             self.problem.reset_fields()
             self.problem.reset_sensors()
-            
 
-#%%
             if not "ic_temperature_field" in self.__dict__:
-                #total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
-                #total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
-                total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+                initial_condition_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
                 
 
-                for entry in trange(total_steps, desc="Solving IC steps"):
+                for entry in trange(initial_condition_steps, desc="Solving IC steps"):
                     new_parameters = {}
                     for channel in self.input_sensor_names:
                         new_parameters[channel] = inp[channel][entry]
                         #new_parameters[channel] = inp[channel]
 
-
-                    # FIXME: The unit should be read from the metadata, for now this is a hack
                     try:
                         new_parameters["air_temperature"] = new_parameters["air_temperature"] + 273.15
                     except KeyError:
@@ -156,13 +148,40 @@ class ThermalModelUQ(ThermalModel):
 
             self.problem.u_old.vector[:] = self.ic_temperature_field
             self.problem.fields.temperature.vector[:] = self.ic_temperature_field
-            #%%
-            # Run timeseries problem
-            #for entry in range(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"],len(inp[self.input_channel_names[0]])): 
             
-            #start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
-            #start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))      
-            start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+            
+            if not "burnin_temperature_field" in self.__dict__:
+                burn_in_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]
+                
+    
+                for entry in trange(initial_condition_steps, burn_in_steps, desc="Solving IC steps"):
+                    new_parameters = {}
+                    for channel in self.input_sensor_names:
+                        new_parameters[channel] = inp[channel][entry]
+                        #new_parameters[channel] = inp[channel]
+    
+                    try:
+                        new_parameters["air_temperature"] = new_parameters["air_temperature"] + 273.15
+                    except KeyError:
+                        pass
+                    try:
+                        new_parameters["inner_temperature"] = new_parameters["inner_temperature"] + 273.15
+                    except KeyError:
+                        pass
+    
+                    self.problem.update_parameters(new_parameters)
+                    self.problem.solve()
+                    
+                self.problem.fields.temperature.vector.assemble()
+                self.burnin_temperature_field = deepcopy(self.problem.fields.temperature.vector)
+                self.problem.reset_sensors()
+                self.problem.reset_fields()
+    
+            self.problem.u_old.vector[:] = self.burnin_temperature_field
+            self.problem.fields.temperature.vector[:] = self.burnin_temperature_field
+            #%%
+            # Run timeseries problem     
+            start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] + self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]
             end_idx = len(inp[self.input_sensor_names[0]])      
             
             for entry in trange(start_idx, end_idx, desc="Solving time steps"):
@@ -170,7 +189,6 @@ class ThermalModelUQ(ThermalModel):
                 for channel in self.input_sensor_names:
                     new_parameters[channel] = inp[channel][entry]
 
-                #FIXME: The unit should be read from the metadata, for now this is a hack
                 try:
                     new_parameters["air_temperature"] = new_parameters["air_temperature"] + 273.15
                 except KeyError:
@@ -184,10 +202,7 @@ class ThermalModelUQ(ThermalModel):
                 self.problem.solve()
 
             for ikey, key in enumerate(self.output_sensor_names):
-                #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:]-273.15)
-                #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[10:])
                 if key in ["bridge_temperature_u", "bridge_temperature_o", "bridge_temperature_n", "bridge_temperature_s"]:
-                    #sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[:])
                     sparse_evals[key].append(np.array(self.problem.sensors[self._inverse_sensor_map(key)].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:])
             
                 else:
@@ -205,20 +220,9 @@ class ThermalModelUQ(ThermalModel):
         # Compute mean and std for each sensor for plotting
         sensor_stats = {}
         for key in self.output_sensor_names:
-            # Evaluate mean and std using the fitted PCE surrogate
-            # Evaluate at the mean of the distribution
-            #all_nodes = np.array(sparse_evals[key])
-            #mean_val = np.mean(all_nodes, axis=0)
-            #std_val = np.std(all_nodes, axis=0)
-            #sensor_stats[key] = {"mean": mean_val, "std": std_val}
-
-            
-            #%%
             mean_val = chaospy.E(fitted_sparse[key], b_dist)
             std_val = chaospy.Std(fitted_sparse[key], b_dist)
-            sensor_stats[key] = {"mean": mean_val, "std": std_val}
-            #%%
-            
+            sensor_stats[key] = {"mean": mean_val, "std": std_val}            
 
         self.all_sensor_plot_data = self.pandas_data_form(data, sensor_stats)
         return self.all_sensor_plot_data

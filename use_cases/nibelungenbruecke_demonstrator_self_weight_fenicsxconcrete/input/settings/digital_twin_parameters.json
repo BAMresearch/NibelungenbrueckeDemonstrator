@@ -22,7 +22,7 @@
         "path": "Displacement_2.json"
     },
     {
-        "name": "TransientThermal_1",
+        "name": "3D_TransientThermal_1",
         "type": "thermal_model",
         "class": "ThermalModel",
         "parameters": {
@@ -31,5 +31,16 @@
             "nu": 0.28
         },
         "path": "transientthermal.json"
+    },
+    {
+        "name": "2D_TransientThermal_1",
+        "type": "thermal_model",
+        "class": "ThermalModel",
+        "parameters": {
+            "rho": 3002,
+            "E": 300000000000,
+            "nu": 0.28
+        },
+        "path": "2d_transientthermal.json"
     }
 ]

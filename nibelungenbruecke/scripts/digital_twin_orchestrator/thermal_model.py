@@ -30,7 +30,7 @@ class ThermalModel(BaseModel):
     
     """
     
-    def __init__(self, model_path: str, model_parameters: dict, dt_path: str):
+    def __init__(self, model_path: str, model_parameters: dict, dt_path: str, uq_extension=None):
         """
         Initializes the ThermalModel with the given paths and parameters.
         
@@ -40,7 +40,7 @@ class ThermalModel(BaseModel):
             and model-specific parameters.
             dt_path (str): Path to the digital twin parameter file (JSON format).
         """
-        
+        self.uq_extension = uq_extension
         #%%
         #super().__init__(model_path, model_parameters["thermal_model_parameters"]["model_parameters"]["problem_parameters"],)
         super().__init__(model_path, model_parameters)
@@ -64,12 +64,17 @@ class ThermalModel(BaseModel):
         using the 'NibelungenExperiment' and `LinearElasticityNibelungenbrueckeDemonstrator`respectively.
         
         """
-        self.experiment = ThermalExperiment(self.model_parameters["thermal_model_parameters"])
+        self.experiment = ThermalExperiment(self.model_parameters["thermal_model_parameters"], model_path=self.model_path)
         #self.problem = ThermoMechanicalNibelungenBrueckeProblem(
         #    [self.GenerateData, self.PostAPIData, self.ParaviewProcess], self.experiment, self.experiment.parameters, pv_path=self.model_parameters["paraview_output_path"])
         
-        self.problem = ThermoMechanicalNibelungenBrueckeProblem(experiment=self.experiment, parameters=self.experiment.parameters, 
-                                                                pv_name=self.model_parameters["paraview_thermal_output_name"],pv_path=self.model_parameters["paraview_output_path"])
+        if self.uq_extension:
+            self.problem = ThermoMechanicalNibelungenBrueckeProblem(experiment=self.experiment, parameters=self.experiment.parameters, 
+                                                                    pv_name=self.model_parameters["paraview_thermal_output_name"]+"_UQ", pv_path=self.model_parameters["paraview_output_path"])
+        else:
+            
+            self.problem = ThermoMechanicalNibelungenBrueckeProblem(experiment=self.experiment, parameters=self.experiment.parameters, 
+                                                                pv_name=self.model_parameters["paraview_thermal_output_name"] , pv_path=self.model_parameters["paraview_output_path"])
         
         
     def GenerateData(self, api_key, virtual_sensor_positions):
@@ -95,26 +100,19 @@ class ThermalModel(BaseModel):
         
     def intial_adaptation_prep(self, data, init_cond=1):
         total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=2)])
-        #self.problem.p["initial_condition_steps"] = math.floor(total_steps*1)
-        #self.problem.p["burn_in_steps"] = math.ceil(total_steps*0)  ##TODO:!!
-        
+
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*init_cond)
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*(1-init_cond))
         
-        #return data[:total_steps], data[total_steps:]
         
         
     def SolveMethod(self):
         """
        Solves the model
        """
-        #data = self.api_dataFrame.copy()
-        #cols_to_update = [col for col in self.api_dataFrame.columns if "040TU" in col]
-        #data[cols_to_update] = data[cols_to_update] + 275
         
-        data = self.api_dataFrame + 275
-        #prep_data, data = self.intial_adaptation_prep(self.api_dataFrame)
-        self.intial_adaptation_prep(data, init_cond=1.0)
+        data = self.api_dataFrame + 273.15      ##TODO: 'F_plus_000S_KaS-o-_Avg1' reaches to values higher than 1000??
+        self.intial_adaptation_prep(data, init_cond=0.1)
         
         plot_df = data.drop(columns=[col for col in data.columns if "40TU" not in col])
 
@@ -123,13 +121,13 @@ class ThermalModel(BaseModel):
         pv_plot_flag = self.problem.p["plot_pv"]
         
         if not hasattr(self, "ic_temperature_field"):
-            self.problem.p['plot_pv'] = 0
-            #total_steps = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data) / 2))
-            total_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
-            for i, (_, data_point) in enumerate(tqdm(data.iloc[:total_steps].iterrows(), total=total_steps)):
+            self.problem.p["plot_pv"] = 0
+            
+            initial_condition_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+            for i, (_, data_point) in enumerate(tqdm(data.iloc[:initial_condition_steps].iterrows(), total=initial_condition_steps)):
 
-                air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
-                inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                air_temperature_array[i] = 293  #data_point["F_plus_000TA_KaS-o-_Avg1"]
+                inner_temperature_array[i] = 293    #data_point["E_plus_040TI_HSS-u-_Avg"]
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[i],
                     "inner_temperature": inner_temperature_array[i],
@@ -147,8 +145,31 @@ class ThermalModel(BaseModel):
         self.problem.u_old.vector[:] = self.ic_temperature_field
         self.problem.fields.temperature.vector[:] = self.ic_temperature_field
         
-        #start_idx = min(self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"], int(len(data)/2))
-        start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
+        if not hasattr(self, "burnin_temperature_field"):
+            self.problem.p['plot_pv'] = 0
+            burn_in_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]
+            for i, (_, data_point) in enumerate(tqdm(data.iloc[initial_condition_steps:burn_in_steps].iterrows(), total=burn_in_steps), 
+                                                start=initial_condition_steps):
+
+                air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+                inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                self.problem.update_parameters({
+                    "air_temperature": air_temperature_array[i],
+                    "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+                    "calculate_shortwave_irradiation": False,
+                })
+                
+                self.problem.solve()
+        
+            self.problem.fields.temperature.vector.assemble()
+            self.burnin_temperature_field = deepcopy(self.problem.fields.temperature.vector)
+            self.problem.reset_sensors()
+            self.problem.reset_fields()
+        
+        self.problem.u_old.vector[:] = self.burnin_temperature_field
+        self.problem.fields.temperature.vector[:] = self.burnin_temperature_field
+        
+        start_idx = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] + self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]
         
         if pv_plot_flag:
             self.problem.p['plot_pv'] = 1
@@ -245,49 +266,6 @@ class ThermalModel(BaseModel):
                 xdmf.write_function(self.problem.fields.displacement, 
                                     self.problem.time)
 
-    
-    ##TODO: to be deleted?!!
-    def update_parameters_to_be_deleted(self, updates, target_name=None):
-        """
-        Updates the specified parameters in the digital twin parameter file 
-        (JSON format).
-        
-        Args:
-            updates (dict): A dictionary containing parameters to be updated 
-            (key: value).
-            target_name (str): The name of the model whose parameters need to 
-            be updated (optional).
-        
-
-        """
-        try:
-            with open(self.dt_path, 'r') as f:
-                dt_params = json.load(f)
-    
-            updated = False
-            model_type_params = None
-            
-            # Update parameters in matching entries
-            for entry in dt_params:
-                if entry["name"] == target_name:
-                    for key, value in updates.items():
-                        if key in entry["parameters"]:
-                            if entry["parameters"][key] != value:
-                                entry["parameters"][key] = value
-                                self.problem.p[key] = value  ##TODO: problem.p update!! 
-                                model_type_params = entry
-                                updated = True
-   
-            # Save the updated JSON back to the file
-            if updated:
-                with open(self.dt_path, 'w') as file:
-                    json.dump(dt_params, file, indent=4)
-                return True, model_type_params
-            else:
-                return False, None
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return False
 
     
 #%%

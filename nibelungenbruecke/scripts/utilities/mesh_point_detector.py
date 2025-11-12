@@ -33,8 +33,13 @@ def is_point_inside_cell(cell_geometry: np.ndarray, point: np.ndarray) -> bool:
 
     # Use Delaunay triangulation to check if point is inside the convex hull of the cell
     try:
-        hull = Delaunay(cell_geometry)
-        return hull.find_simplex(point) >= 0
+        if (cell_geometry[:, 2:] == 0).all():
+            hull = Delaunay(cell_geometry[:, :2])
+            inside = hull.find_simplex(point[:2]) >= 0
+        else:
+            hull = Delaunay(cell_geometry)
+            inside = hull.find_simplex(point) >= 0
+        return inside
     except Exception as e:
         raise ValueError(f"Unsupported geometry or degenerate cell: {e}")
 
