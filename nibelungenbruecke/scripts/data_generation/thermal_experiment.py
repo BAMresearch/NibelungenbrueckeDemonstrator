@@ -24,12 +24,12 @@ class ThermalExperiment(Experiment):
         if model_path:
             parameters["model_parameters"]["problem_parameters"]["mesh_path"] = model_path
         
-        params = ThermalExperiment.unitize_parameters(parameters["model_parameters"]["problem_parameters"],
+        self.params = ThermalExperiment.unitize_parameters(parameters["model_parameters"]["problem_parameters"],
             ThermalExperiment.pint_default_units()
         )
         
         
-        super().__init__(params)
+        super().__init__(self.params)
 
         #%%
     def setup(self) -> None:
@@ -72,19 +72,15 @@ class ThermalExperiment(Experiment):
             raise ValueError(f'wrong geometry: {self.p["geometry"]} is not implemented for problem setup')
     
     @staticmethod
-    def default_parameters(mesh_path) -> dict[str, pint.Quantity]:
+    def default_parameters() -> dict[str, pint.Quantity]:
         """sets up a working set of parameter values as example
 
         Returns:
             dictionary with a working set of the required parameter
 
         """
-
         setup_parameters = {}
-        if mesh_path:
-            setup_parameters["geometry"] = "gmsh" * ureg("")
-        else:
-            setup_parameters["geometry"] = "box" * ureg("")
+        setup_parameters["geometry"] = "gmsh" * ureg("")
         setup_parameters["length"] = 1 * ureg("m")
         setup_parameters["height"] = 0.3 * ureg("m")
         setup_parameters["width"] = 0.3 * ureg("m")  # only relevant for 3D case
