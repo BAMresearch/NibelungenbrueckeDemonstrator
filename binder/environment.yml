@@ -27,6 +27,7 @@ dependencies:
   - tqdm
   - pvlib
   - git
+  - jupyterview
 
   - pip:
       - git+https://github.com/BAMresearch/FenicsXConcrete@my-grf
