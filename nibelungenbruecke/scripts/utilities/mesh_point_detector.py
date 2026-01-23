@@ -4,44 +4,62 @@ from dolfinx.io import gmshio
 from dolfinx.geometry import BoundingBoxTree, compute_collisions, compute_closest_entity, create_midpoint_tree
 
 
+import numpy as np
 from scipy.spatial import Delaunay
 
-def is_point_inside_cell(cell_geometry: np.ndarray, point: np.ndarray) -> bool:
+def is_point_inside_cell(cell_geometry: np.ndarray, point: np.ndarray, tol=1e-12) -> bool:
     """
-    Check if a point is inside a 2D or 3D convex cell by triangulation.
+    Check if a point is inside a convex 1D, 2D, or 3D cell.
 
     Supports:
-        - 2D: triangle (3 points), quadrilateral (4 points)
-        - 3D: tetrahedron (4 points), hexahedron (8 points)
+        - 1D: line segment (2 points)
+        - 2D: triangle (3), quadrilateral (4)
+        - 3D: tetrahedron (4), hexahedron (8)
 
     Args:
-        cell_geometry (np.ndarray): Shape (n_vertices, dim)
-        point (np.ndarray): Shape (dim,)
+        cell_geometry (np.ndarray): (n_vertices, dim)
+        point (np.ndarray): (dim,)
 
     Returns:
-        bool: True if point is inside the convex cell, False otherwise
+        bool
     """
-    point = np.asarray(point, dtype=np.float64)
-    cell_geometry = np.asarray(cell_geometry, dtype=np.float64)
+    cell_geometry = np.asarray(cell_geometry, dtype=float)
+    point = np.asarray(point, dtype=float)
 
     if cell_geometry.ndim != 2 or point.ndim != 1:
-        raise ValueError("Invalid input shape.")
+        raise ValueError("Invalid input shape")
 
-    num_vertices, dim = cell_geometry.shape
+    n, dim = cell_geometry.shape
     if point.shape[0] != dim:
-        raise ValueError(f"Point must be {dim}D, got {point.shape[0]}D.")
+        raise ValueError("Point dimension mismatch")
 
-    # Use Delaunay triangulation to check if point is inside the convex hull of the cell
-    try:
-        if (cell_geometry[:, 2:] == 0).all():
-            hull = Delaunay(cell_geometry[:, :2])
-            inside = hull.find_simplex(point[:2]) >= 0
-        else:
-            hull = Delaunay(cell_geometry)
-            inside = hull.find_simplex(point) >= 0
-        return inside
-    except Exception as e:
-        raise ValueError(f"Unsupported geometry or degenerate cell: {e}")
+    # Remove zero-variance dimensions
+    active = np.std(cell_geometry, axis=0) > tol
+    geom = cell_geometry[:, active]
+    p = point[active]
+
+    intrinsic_dim = geom.shape[1]
+
+    # 0D
+    if intrinsic_dim == 0:
+        return np.linalg.norm(cell_geometry[0] - point) < tol
+
+    # 1D (line segment)
+    if intrinsic_dim == 1:
+        if n != 2:
+            raise ValueError("Invalid 1D cell")
+        a, b = geom
+        t = np.dot(p - a, b - a) / np.dot(b - a, b - a)
+        return -tol <= t <= 1 + tol
+
+    # 2D / 3D (use Delaunay)
+    if intrinsic_dim in (2, 3):
+        if n < intrinsic_dim + 1:
+            raise ValueError("Not enough vertices for Delaunay")
+        hull = Delaunay(geom)
+        return hull.find_simplex(p) >= 0
+
+    raise ValueError("Unsupported geometry")
 
 def is_point_inside_mesh(point, mesh):
     """

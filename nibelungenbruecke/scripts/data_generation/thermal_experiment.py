@@ -27,7 +27,7 @@ class ThermalExperiment(Experiment):
         self.params = ThermalExperiment.unitize_parameters(parameters["model_parameters"]["problem_parameters"],
             ThermalExperiment.pint_default_units()
         )
-        
+        ##TODO:
         
         super().__init__(self.params)
 

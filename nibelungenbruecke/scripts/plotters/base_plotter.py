@@ -117,7 +117,7 @@ class RealvsVirtualAllTogether(BasePlotter):
         plt.title("Real vs Virtual Sensor Data")
         plt.xlabel("Time")
         plt.ylabel("Sensor Value")
-        plt.legend(loc="best")
+        plt.legend(loc="lower right", fontsize='small')
         plt.grid(True)
         plt.tight_layout()
         plt.show()
@@ -152,10 +152,12 @@ class RealvsVirtualAllTogetherUQ(BasePlotter):
             plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
         
-        plt.title("Sensor Temperature (Raw vs Mean ± Std)")
+        #plt.title("Sensor Temperature (Raw vs Mean ± Std)")
+        plt.title("Real vs Virtual UQ Sensor Data")
         plt.xlabel("Time / Index")
         plt.ylabel("Temperature (K)")
-        plt.legend(loc='upper right', fontsize='small')
+        #plt.legend(loc='upper right', fontsize='small')
+        plt.legend(loc="best")
         plt.tight_layout()
         plt.show()
             
@@ -182,7 +184,8 @@ class AllSensorsTogetherPlotter(BasePlotter):
         plt.title("Virtual Sensors")
         plt.xlabel("Index")
         plt.ylabel("Value")
-        plt.legend(title="Sensors")
+        #plt.legend(loc='lower right', fontsize='small')
+        plt.legend(loc="best")
         plt.grid(True)
         plt.show()
         
@@ -215,10 +218,11 @@ class AllSensorsTogetherPlotterUQ(BasePlotter):
             plt.plot(df.index, mean, label=f"{sensor}_mean± Std")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
         
-        plt.title("Sensor Temperature (Raw vs Mean ± Std)")
+        plt.title("Virtual Sensors UQ ")
         plt.xlabel("Time / Index")
         plt.ylabel("Temperature (K)")
-        plt.legend(loc='upper right', fontsize='small')
+        #plt.legend(loc='upper right', fontsize='small')
+        plt.legend(loc="best")
         plt.tight_layout()
         plt.show()
     
@@ -255,7 +259,7 @@ class RealVsVirtualPlotter(BasePlotter):
             plt.title(f"Sensor Comparison: {real_col} vs {self._sensor_map(mapped_col)}")
             plt.xlabel("Time index")
             plt.ylabel("Sensor Value")
-            plt.legend()
+            plt.legend(loc='upper left', fontsize='small')
             plt.grid(True)
             plt.tight_layout()
             plt.show()
@@ -297,9 +301,6 @@ class RealVsVirtualPlotterUQ(BasePlotter):
         #selected_sensors.extend([n for n in vs_sensor_map_dict.keys()])
         #sensor_names = [s for s in sensor_names if s in selected_sensors]
 
-        
-
-        
         for i, sensor in enumerate(sensor_names):
             
             plt.figure(figsize=(14, 6))
@@ -314,11 +315,14 @@ class RealVsVirtualPlotterUQ(BasePlotter):
             plt.plot(df.index, api_data, label=f"{sensor}")
             plt.plot(df.index, mean, label=f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean ± Std")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
-        
-            plt.title("Sensor Temperature (real vs virtual UQ)")
+            
+            plt.title(f"Sensor Comparison: {sensor} vs {vs_sensor_map_dict[sensor_mapping[sensor]]}_UQ")
+            
+
             plt.xlabel("Time")
             plt.ylabel("Temperature (K)")
-            plt.legend(loc='upper right', fontsize='small')
+            #plt.legend(loc='upper right', fontsize='small')
+            plt.legend()
             plt.tight_layout()
             plt.show()
     
@@ -351,8 +355,8 @@ class VirtualSensorPlotter(BasePlotter):
         
             # Plotting
             plt.figure(figsize=(14, 6))
-            plt.plot(times, values, "-b", label="Virtual Sensor Value")
-            plt.title(f"Virtual Sensor: {name}")
+            plt.plot(times, values, "-b", label=f"Virtual {name}")
+            plt.title(f"Temperature at User-Provided Virtual Sensor: {name}")
             plt.xlabel("Time")
             plt.ylabel("Value")
             plt.grid(True)
@@ -381,10 +385,8 @@ class VirtualSensorPlotterUQ(BasePlotter):
         selected_sensors = {x["name"] for x in self.simulation_parameters.get("virtual_sensor_positions", [])}
         sensor_names = [s for s in sensor_names if s in selected_sensors]
 
-        
-        plt.figure(figsize=(14, 6))
-        
         for i, sensor in enumerate(sensor_names):
+            plt.figure(figsize=(14, 6))
             
             mean_col = f"{sensor}_mean"
             std_col = f"{sensor}_std"
@@ -395,12 +397,12 @@ class VirtualSensorPlotterUQ(BasePlotter):
             plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
         
-        plt.title("Sensor Temperature (Raw vs Mean ± Std)")
-        plt.xlabel("Time / Index")
-        plt.ylabel("Temperature (K)")
-        plt.legend(loc='upper right', fontsize='small')
-        plt.tight_layout()
-        plt.show()
+            plt.title(f"Temperature at User-Provided Virtual Sensor: {sensor}  (Raw vs. Mean ± Std)")
+            plt.xlabel("Time / Index")
+            plt.ylabel("Temperature (K)")
+            plt.legend(loc='upper right', fontsize='small')
+            plt.tight_layout()
+            plt.show()
     
     
 

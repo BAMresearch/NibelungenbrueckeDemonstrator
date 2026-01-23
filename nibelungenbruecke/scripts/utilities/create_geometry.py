@@ -3,7 +3,6 @@ import numpy as np
 
 from checks import check_path_exists
 
-
 def create_geometry(parameters):
     "Creates the geometry of the Nibelungenbrücke from a set of parameters and the cross-sections"
 
@@ -14,11 +13,14 @@ def create_geometry(parameters):
 
     # Sanity checks
     check_path_exists(
+        "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/"
+          +
         geo_parameters["cross_section_path"]
         + "_span"
         + geo_parameters["cross_section_format"]
     )
     check_path_exists(
+        "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/" +
         geo_parameters["cross_section_path"]
         + "_pilot"
         + geo_parameters["cross_section_format"]
@@ -40,7 +42,7 @@ def create_geometry(parameters):
     # Import cross-section geometries
 
     # Span
-    gmsh.merge(
+    gmsh.merge("../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/"+
         geo_parameters["cross_section_path"]
         + "_span"
         + geo_parameters["cross_section_format"]
@@ -52,7 +54,7 @@ def create_geometry(parameters):
         surfaces_list.append(surface_span[0][1])
 
     # Pilot
-    gmsh.merge(
+    gmsh.merge("../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/"+
         geo_parameters["cross_section_path"]
         + "_pilot"
         + geo_parameters["cross_section_format"]
@@ -406,3 +408,10 @@ def _check_valid_extrusion(extrusion):
             f"[Geometry creation] Extrude mode {extrusion} not defined. \
         Valid modes are {valid_formats_str}"
         )
+
+if __name__ == "__main__":
+    import json
+    json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/model_parameters_2d_span.json"
+    with open(json_path, "r") as f:
+        parameters = json.load(f)
+    create_geometry(parameters)

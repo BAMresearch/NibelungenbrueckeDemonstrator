@@ -1,7 +1,8 @@
 {
     "model_path": [{
         "displacement_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
-        "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh"
+        "transientthermal_model_path_pilot": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh",
+        "transientthermal_model_path_span": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_span.msh"
         }],
     "output_parameters":{
         "output_path": "./input/data",

@@ -743,6 +743,12 @@ class ThermoMechanicalNibelungenBrueckeProblem(MaterialProblem):
 
             with df.io.XDMFFile(self.mesh.comm, self.pv_output_file, "a") as f:
                 f.write_function(self.fields.temperature, self.time)
+                
+            ## VTK save
+            output_path = '../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview/Nibelungenbruecke_thermal_2D_pilot.pvd'
+            with df.io.VTKFile(self.mesh.comm, output_path, "a") as vtk:
+                vtk.write_mesh(self.mesh)
+                vtk.write_function(self.fields.temperature, self.time)
 
     def assign_full_field_values(self, field_name: str, values: list[list[float]], burn:int) -> None:
         """

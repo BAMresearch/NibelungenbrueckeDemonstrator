@@ -12,100 +12,23 @@
     <Grid Name="temperature" GridType="Collection" CollectionType="Temporal">
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="12000" />
+        <Time Value="45000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/12000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/45000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="24000" />
+        <Time Value="90000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/24000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/90000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="36000" />
+        <Time Value="135000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/36000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="48000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/48000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="60000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/60000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="72000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/72000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="84000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/84000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="96000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/96000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="108000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/108000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="120000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/120000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="132000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/132000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="144000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/144000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="156000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/156000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="168000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/168000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/135000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -117,100 +40,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="192000" />
+        <Time Value="225000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/192000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/225000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="204000" />
+        <Time Value="270000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/204000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/270000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="216000" />
+        <Time Value="315000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/216000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="228000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/228000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="240000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/240000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="252000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/252000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="264000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/264000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="276000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/276000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="288000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/288000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="300000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/300000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="312000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/312000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="324000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/324000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="336000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/336000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="348000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/348000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/315000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -222,100 +68,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="372000" />
+        <Time Value="405000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/372000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/405000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="384000" />
+        <Time Value="450000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/384000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/450000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="396000" />
+        <Time Value="495000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/396000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="408000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/408000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="420000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/420000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="432000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/432000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="444000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/444000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="456000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/456000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="468000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/468000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="480000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/480000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="492000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/492000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="504000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/504000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="516000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/516000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="528000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/528000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/495000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -327,100 +96,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="552000" />
+        <Time Value="585000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/552000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/585000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="564000" />
+        <Time Value="630000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/564000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/630000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="576000" />
+        <Time Value="675000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/576000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="588000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/588000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="600000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/600000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="612000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/612000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="624000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/624000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="636000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/636000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="648000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/648000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="660000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/660000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="672000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/672000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="684000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/684000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="696000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/696000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="708000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/708000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/675000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -432,100 +124,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="732000" />
+        <Time Value="765000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/732000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/765000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="744000" />
+        <Time Value="810000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/744000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/810000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="756000" />
+        <Time Value="855000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/756000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="768000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/768000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="780000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/780000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="792000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/792000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="804000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/804000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="816000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/816000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="828000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/828000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="840000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/840000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="852000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/852000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="864000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/864000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="876000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/876000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="888000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/888000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/855000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -537,100 +152,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="912000" />
+        <Time Value="945000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/912000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/945000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="924000" />
+        <Time Value="990000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/924000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/990000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="936000" />
+        <Time Value="1035000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/936000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="948000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/948000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="960000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/960000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="972000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/972000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="984000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/984000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="996000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/996000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1008000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1008000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1020000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1020000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1032000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1032000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1044000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1044000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1056000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1056000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1068000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1068000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1035000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -642,100 +180,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1092000" />
+        <Time Value="1125000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1092000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1125000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1104000" />
+        <Time Value="1170000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1104000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1170000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1116000" />
+        <Time Value="1215000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1116000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1128000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1128000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1140000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1140000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1152000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1152000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1164000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1164000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1176000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1176000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1188000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1188000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1200000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1200000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1212000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1212000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1224000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1224000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1236000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1236000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1248000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1248000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1215000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -747,100 +208,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1272000" />
+        <Time Value="1305000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1272000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1305000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1284000" />
+        <Time Value="1350000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1284000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1350000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1296000" />
+        <Time Value="1395000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1296000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1308000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1308000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1320000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1320000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1332000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1332000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1344000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1344000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1356000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1356000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1368000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1368000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1380000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1380000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1392000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1392000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1404000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1404000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1416000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1416000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1428000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1428000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1395000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -852,100 +236,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1452000" />
+        <Time Value="1485000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1452000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1485000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1464000" />
+        <Time Value="1530000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1464000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1530000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1476000" />
+        <Time Value="1575000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1476000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1488000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1488000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1500000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1500000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1512000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1512000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1524000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1524000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1536000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1536000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1548000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1548000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1560000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1560000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1572000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1572000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1584000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1584000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1596000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1596000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1608000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1608000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1575000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -957,100 +264,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1632000" />
+        <Time Value="1665000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1632000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1665000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1644000" />
+        <Time Value="1710000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1644000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1710000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1656000" />
+        <Time Value="1755000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1656000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1668000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1668000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1680000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1680000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1692000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1692000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1704000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1704000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1716000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1716000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1728000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1728000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1740000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1740000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1752000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1752000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1764000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1764000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1776000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1776000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1788000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1788000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1755000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1062,100 +292,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1812000" />
+        <Time Value="1845000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1812000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1845000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1824000" />
+        <Time Value="1890000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1824000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1890000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1836000" />
+        <Time Value="1935000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1836000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1848000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1848000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1860000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1860000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1872000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1872000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1884000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1884000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1896000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1896000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1908000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1908000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1920000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1920000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1932000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1932000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1944000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1944000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1956000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1956000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1968000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1968000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1935000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1167,100 +320,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="1992000" />
+        <Time Value="2025000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/1992000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2025000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2004000" />
+        <Time Value="2070000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2004000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2070000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2016000" />
+        <Time Value="2115000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2016000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2028000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2028000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2040000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2040000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2052000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2052000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2064000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2064000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2076000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2076000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2088000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2088000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2100000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2100000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2112000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2112000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2124000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2124000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2136000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2136000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2148000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2148000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2115000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1272,100 +348,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2172000" />
+        <Time Value="2205000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2172000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2205000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2184000" />
+        <Time Value="2250000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2184000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2250000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2196000" />
+        <Time Value="2295000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2196000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2208000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2208000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2220000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2220000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2232000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2232000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2244000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2244000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2256000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2256000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2268000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2268000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2280000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2280000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2292000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2292000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2304000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2304000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2316000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2316000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2328000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2328000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2295000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1377,100 +376,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2352000" />
+        <Time Value="2385000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2352000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2385000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2364000" />
+        <Time Value="2430000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2364000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2430000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2376000" />
+        <Time Value="2475000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2376000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2388000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2388000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2400000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2400000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2412000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2412000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2424000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2424000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2436000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2436000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2448000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2448000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2460000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2460000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2472000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2472000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2484000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2484000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2496000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2496000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2508000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2508000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2475000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1482,100 +404,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2532000" />
+        <Time Value="2565000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2532000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2565000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2544000" />
+        <Time Value="2610000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2544000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2610000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2556000" />
+        <Time Value="2655000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2556000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2568000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2568000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2580000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2580000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2592000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2592000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2604000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2604000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2616000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2616000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2628000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2628000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2640000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2640000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2652000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2652000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2664000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2664000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2676000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2676000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2688000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2688000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2655000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1587,100 +432,23 @@
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2712000" />
+        <Time Value="2745000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2712000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2745000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2724000" />
+        <Time Value="2790000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2724000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2790000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
         <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2736000" />
+        <Time Value="2835000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2736000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2748000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2748000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2760000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2760000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2772000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2772000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2784000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2784000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2796000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2796000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2808000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2808000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2820000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2820000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2832000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2832000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2844000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2844000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2856000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2856000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2868000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2868000</DataItem>
+          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2835000</DataItem>
         </Attribute>
       </Grid>
       <Grid Name="temperature" GridType="Uniform">
@@ -1688,13 +456,6 @@
         <Time Value="2880000" />
         <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
           <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2880000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2892000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2611 1" Format="HDF">Nibelungenbruecke_thermal_2D_pilot.h5:/Function/temperature/2892000</DataItem>
         </Attribute>
       </Grid>
     </Grid>

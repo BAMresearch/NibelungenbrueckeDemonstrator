@@ -5,7 +5,7 @@ def create_cross_section2D(parameters):
     
     # Import parameters
     cs_parameters = _get_default_parameters()
-    for key, value in parameters.items():
+    for key, value in parameters["cross_section"].items():
         cs_parameters[key] = value
 
     # Sanity checks
@@ -63,7 +63,7 @@ def create_cross_section2D(parameters):
     gmsh.model.geo.synchronize()
     
     # Save the model
-    gmsh.write(cs_parameters["output_path"]+"_pilot"+cs_parameters["output_format"])
+    gmsh.write(cs_parameters["output_path"]+"_span"+cs_parameters["output_format"])
 
     # Finalize gmsh
     gmsh.finalize()
@@ -248,7 +248,8 @@ def create_cross_section3D(parameters):
     gmsh.model.geo.synchronize()
     
     # Save the model
-    gmsh.write(cs_parameters["output_path"]+"_pilot"+cs_parameters["output_format"])
+    #gmsh.write(cs_parameters["output_path"]+"_pilot"+cs_parameters["output_format"])
+    gmsh.write(cs_parameters["output_path"]+"_span"+cs_parameters["output_format"])
 
     # Finalize gmsh
     gmsh.finalize()
@@ -370,19 +371,24 @@ def _get_default_parameters():
     #                                 ||          pilot_bottom
     
     default_parameters = {
-        "output_path": "input/models/cross_section",
-        "output_format": ".geo",
+        "output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/cross_section",
+        "output_format": ".geo_unrolled",
         "pilot_bottom_height": 99.328,
         "pilot_top_height": 105.849,
         "pilot_width": 2.0,
         "pilot_fly": 3.47,
+        "pilot_hole_height":4.0,
         "span_bottom_height": 102.698,
         "span_top_height": 105.198,
         "span_width": 2.0,
         "span_fly": 3.15,
         "deck_thickness": 0.2,
         "gap_length": 3.70,
-        "wall_thickness": 0.4
+        "wall_thickness": 0.4,
+        #"physical_group_tag_top": 101,
+        #"physical_group_tag_bottom": 102
+        "physical_group_tag_top": 8,
+        "physical_group_tag_bottom": 9
     }
 
     return default_parameters
@@ -399,8 +405,9 @@ def _check_valid_formats(extension):
     
 if __name__ == "__main__":
     import json
-    json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/model_parameters_2d_pilot.json"
+    json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/model_parameters_2d_span.json"
+    #json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/model_parameters.json"
     with open(json_path, "r") as f:
         parameters = json.load(f)
-    create_cross_section2D(parameters)
+    create_cross_section3D(parameters)
 

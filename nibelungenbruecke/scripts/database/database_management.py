@@ -1,14 +1,19 @@
+from pathlib import Path
 import sqlite3
 import numpy as np
 import datetime
 import pandas as pd
 import random
+import os
 from typing import Optional, List, Dict, Union
 
 class Database:
     def __init__(self, db_name="NB_database_rev1.db"):
-        self.db_name = db_name
-        self.conn = sqlite3.connect(self.db_name)
+        base_dir = Path(__file__).resolve().parent
+        self.db_path = base_dir / db_name
+        
+        #self.db_name = db_name
+        self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
 
         self.tables_list = [
@@ -97,8 +102,59 @@ class Database:
         if merged_df is not None:
             merged_df = merged_df.sort_values("time").reset_index(drop=True)
             
-        return merged_df
             
+        merged_df["time"] = pd.to_datetime(merged_df["time"])
+        merged_df = merged_df.sort_values("time")
+        
+        '''
+        for col in merged_df.columns:
+            if col != "time":
+                merged_df[col] = (
+                    merged_df
+                    .set_index("time")[col]
+                    .interpolate(method="nearest", limit_area="inside")
+                    .reset_index(drop=True)
+                )
+        '''
+        
+        #X = merged_df.copy(deep=True)
+        
+        for col in merged_df.columns:
+            if col != "time":
+                s = merged_df[["time", col]].dropna()
+                merged_df[col] = pd.merge_asof(
+                    merged_df[["time"]],
+                    s,
+                    on="time",
+                    direction="nearest"
+                )[col]
+
+            
+        return merged_df
+    
+    def trim_time_range(self, dataframe, start_time, end_time):
+        
+        df = dataframe.copy()
+    
+        df["time"] = pd.to_datetime(df["time"], utc=True)
+        start_time = pd.to_datetime(start_time, utc=True)
+        end_time = pd.to_datetime(end_time, utc=True)
+    
+        df = df.sort_values("time")
+    
+        start_idx = (df["time"] - start_time).abs().idxmin()
+        end_idx = (df["time"] - end_time).abs().idxmin()
+    
+        if start_idx > end_idx:
+            start_idx, end_idx = end_idx, start_idx
+
+        df_trim = df.loc[start_idx:end_idx].copy()
+    
+        df_trim.iloc[0, df_trim.columns.get_loc("time")] = start_time
+        df_trim.iloc[-1, df_trim.columns.get_loc("time")] = end_time
+    
+        return df_trim.reset_index(drop=True)
+
 
     def _insert_testing_data(self, seed=None):
         """Generate random data using NumPy and insert into tables."""
@@ -170,7 +226,7 @@ if __name__ == "__main__":
     db = Database()
     # db._insert_testing_data()
     start_time = datetime.datetime(2023, 5, 5, 0, 0)
-    end_time = datetime.datetime(2024, 7, 19, 16, 6, 2, 938178)
+    end_time = datetime.datetime(2023, 11, 19, 16, 6, 2, 938178)
     parameters = ['natural_convection_coefficient',
      'wind_forced_convection',
      'wind_forced_convection_parameter_constant',
@@ -179,11 +235,13 @@ if __name__ == "__main__":
      'shortwave_radiation_constant',
      'shortwave_irradiation',
      'calculate_shortwave_irradiation']
-    db_get_data = db.get_data_aligned(start_time, end_time, parameters)
-    new_time = datetime.datetime(2024, 9, 20, 12, 0)
-    new_value = 5.5
+    #db_get_data = db.get_data_aligned(start_time, end_time, parameters)
+    new_time = datetime.datetime(2025, 11, 20, 12, 0)
+    new_value = 2.5
     
-    db.insert_parameter("wind_speed", new_time, new_value)
+    #db.insert_parameter("wind_forced_convection", new_time, new_value)
     
     df = db.request_data()
     print(df)
+    
+    df_trim = db.trim_time_range(df, start_time, end_time)

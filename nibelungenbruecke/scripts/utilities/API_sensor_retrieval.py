@@ -35,9 +35,11 @@ class API_Request:
             start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         
         start_time_dt = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ")
-        start_time_dt = start_time_dt - timedelta(weeks=2)
-        start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        start_time_dt = start_time_dt - timedelta(weeks=3)
 
+        start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        
         if not end_time:
             end_time_dt = start_time_dt + timedelta(days=5)
             end_time = end_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")

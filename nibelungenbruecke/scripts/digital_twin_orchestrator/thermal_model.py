@@ -85,7 +85,8 @@ class ThermalModel(BaseModel):
         """
 
         self.api_request = API_Request(api_key, start_time = self.model_parameters["API_request_start_time"], 
-                                       end_time=self.model_parameters["API_request_end_time"], time_step=self.model_parameters["API_request_time_step"])
+                                       end_time=self.model_parameters["API_request_end_time"], 
+                                       time_step=self.model_parameters["API_request_time_step"])
         self.api_dataFrame = self.api_request.fetch_data()
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
@@ -99,18 +100,18 @@ class ThermalModel(BaseModel):
         
         
     def intial_adaptation_prep(self, data, init_cond=1):
-        total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=2)])
+        total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=3)])
 
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*init_cond)
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*(1-init_cond))
         
         
         
-    def SolveMethod(self):
+    def SolveMethod(self, env_params):
         """
        Solves the model
        """
-        
+        count = 0
         data = self.api_dataFrame + 273.15      ##TODO: 'F_plus_000S_KaS-o-_Avg1' reaches to values higher than 1000??
         self.intial_adaptation_prep(data, init_cond=0.1)
         
@@ -134,6 +135,7 @@ class ThermalModel(BaseModel):
                     "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                     "calculate_shortwave_irradiation": False,
                 })
+
                 
                 self.problem.solve()
         
@@ -183,6 +185,14 @@ class ThermalModel(BaseModel):
                 "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                 "calculate_shortwave_irradiation": False,
             })
+            
+                            
+            
+            if data.index[start_idx+i-1] <= env_params.time[count] <= data.index[start_idx+i]:
+                param_dict = {x: env_params[x][count] for x in env_params.columns if x != "time"}
+                self.problem.update_parameters(param_dict)
+                count += 1
+            
             self.problem.solve()
 
         
@@ -269,15 +279,16 @@ class ThermalModel(BaseModel):
 
     
 #%%
-    def solve(self, api_key, orchestrator_simulation_parameters):
+    def solve(self, api_key, orchestrator_simulation_parameters, env_params):
         """
         Reloading, model generating and solving model.
         """
         self.LoadGeometry()
         self.GenerateModel()
         self.GenerateData(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"])
-        self.SolveMethod()
-  
+        self.SolveMethod(env_params)
+            
+      
 
     def export_output(self, path: str):
         ##TODO: hard-coded path!!

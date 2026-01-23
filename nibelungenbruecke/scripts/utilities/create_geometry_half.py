@@ -1,7 +1,8 @@
 import gmsh
 import numpy as np
 
-from nibelungenbruecke_utils.scripts.utilities.checks import check_path_exists
+#from nibelungenbruecke_utils.scripts.utilities.checks import check_path_exists
+from nibelungenbruecke.scripts.utilities.checks import check_path_exists
 
 
 def create_geometry_half(parameters):
@@ -349,7 +350,7 @@ def create_geometry_half(parameters):
 
 def _get_default_parameters():
     default_parameters = {
-        "cross_section_path": "input/models/cross_section",
+        "cross_section_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/cross_section",
         "cross_section_format": ".geo_unrolled",
         "length": 95.185,
         "number_of_divisions": 31,
@@ -407,3 +408,10 @@ def _check_valid_extrusion(extrusion):
             f"[Geometry creation] Extrude mode {extrusion} not defined. \
         Valid modes are {valid_formats_str}"
         )
+
+if __name__ == "__main__":
+    import json
+    json_path = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/model_parameters_2d_span.json"
+    with open(json_path, "r") as f:
+        parameters = json.load(f)
+    create_geometry_half(parameters)

@@ -3,6 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from tqdm import trange
 from copy import deepcopy
+import dolfinx as df
 import matplotlib.pyplot as plt
 from nibelungenbruecke.scripts.digital_twin_orchestrator.thermal_model import ThermalModel
 
@@ -48,11 +49,11 @@ class ThermalModelUQ(ThermalModel):
         self.output_sensor_names.extend([i for i in self.problem.sensors.keys()])
         
 
-    def SolveMethod(self):
+    def SolveMethod(self, env_params):
         """
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
         """
-        
+
         self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
         self.extend_output_sensors()
         
@@ -113,7 +114,9 @@ class ThermalModelUQ(ThermalModel):
         input_nodes = [{key: value for key, value in node.items() if key in self.parameters_minus_bias} for node in theta_quads]
         # Evaluate the nodes
         sparse_evals = {key: [] for key in self.output_sensor_names}
+        paraview_result = {"test_1": []}
         for node in input_nodes:
+            count = 0
             # Run timeseries problem
             self.problem.update_parameters(node)
             self.problem.reset_fields()
@@ -197,6 +200,13 @@ class ThermalModelUQ(ThermalModel):
                     new_parameters["inner_temperature"] = new_parameters["inner_temperature"] + 273.15
                 except KeyError:
                     pass
+                
+                if data.index[entry-1] <= env_params.time[count] <= data.index[entry]:
+                    input_nodes_params = [list(node.keys())[0] for node in input_nodes] ##TODO: Exterior iteration runs through "input_nodes" elements!!! That probably needs to be checked!
+                    exclude_columns = input_nodes_params + ["time"]
+                    param_dict = {x: env_params[x][count] for x in env_params.columns if x not in exclude_columns}
+                    self.problem.update_parameters(param_dict)
+                    count += 1
 
                 self.problem.update_parameters(new_parameters)
                 self.problem.solve()
@@ -207,7 +217,10 @@ class ThermalModelUQ(ThermalModel):
             
                 else:
                     sparse_evals[key].append(np.array(self.problem.sensors[key].data)[self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]:])                    
-                    
+               
+                
+            #paraview_result["test_1"].append(np.array(self.problem.fields.temperature.vector[start_idx:end_idx]))
+    
                         
         # Generate the expansion of orthogonal polynomials and fit the Fourier coefficients
         fitted_sparse = {}
@@ -222,10 +235,56 @@ class ThermalModelUQ(ThermalModel):
         for key in self.output_sensor_names:
             mean_val = chaospy.E(fitted_sparse[key], b_dist)
             std_val = chaospy.Std(fitted_sparse[key], b_dist)
-            sensor_stats[key] = {"mean": mean_val, "std": std_val}            
-
+            #inferred_noise     ##TODO
+            #prescribed_noise   ##TODO
+            sensor_stats[key] = {"mean": mean_val, "std": std_val} 
+            
         self.all_sensor_plot_data = self.pandas_data_form(data, sensor_stats)
+
+##%%
+       # num_chunks = 10  # Define the number of chunks
+       # chunk_size = (end_idx - start_idx) // num_chunks
+        #chunk_size = len(evaluations_temperature[0, :timesteps, 0]) // num_chunks
+
+       # coefficients_temperature_list = []
+
+        #for i, sample in enumerate(tqdm(range(num_chunks), desc="Evaluating samples")):
+        #    chunk_evaluations_temperature = np.array(paraview_result["test_1"][:, i*chunk_size:(i+1)*chunk_size, :])
+
+         #   # Perform the pseudospectral projection for each chunk
+          #  chunk_coefficients_temperature = chaospy.fit_quadrature(expansion, np.array(sparse_quads[0]), np.array(sparse_quads[1]), chunk_evaluations_temperature)
+
+          #  coefficients_temperature_list.append(chunk_coefficients_temperature)
+
+          #  print("Assigning full field temperature statistics")
+          #  joint_distribution = chaospy.LogNormal(b_dist_list[0]._parameters["shift"], b_dist_list[0]._parameters["scale"])
+          #  means_temperature = chaospy.E(chunk_coefficients_temperature, joint_distribution)
+          #  stds_temperature = chaospy.Std(chunk_coefficients_temperature, joint_distribution)
+
+         #   self.assign_full_field_values("means_temperature", means_temperature, burn = 0+i*chunk_size)
+           # self.assign_full_field_values("stds_temperature", stds_temperature, burn = 0+i*chunk_size)
+
+##%%
         return self.all_sensor_plot_data
+    
+    def assign_full_field_values(self, field_name: str, values: list[list[float]], burn: int) -> None:
+        """
+        Assign full field vector values to function for all timesteps.
+
+        Args:
+            field_name (str): The name of the field.
+            values (list[list[float]]): List of list of nodal values for each timestep.
+        """
+
+        # Create the function field
+        field = df.fem.Function(self.V, name=field_name)
+
+        # Assign values to the function field for each timestep and plot to Paraview
+        for i, timestep_values in enumerate(values):
+            field.vector[:] = timestep_values
+            with df.io.XDMFFile(self.mesh.comm, self.pv_output_file, "a") as f:
+                f.write_function(field, (i+burn+2) * self.p["dt"])
+
 
         
     def pandas_data_form(self, data, sensor_stats):

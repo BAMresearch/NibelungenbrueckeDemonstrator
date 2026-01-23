@@ -2,7 +2,8 @@
     "model_path": [
         {
             "displacement_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
-            "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh"
+            "transientthermal_model_path_pilot": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh",
+            "transientthermal_model_path_span": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_span.msh"
         }
     ],
     "output_parameters": {
@@ -21,13 +22,17 @@
                 "secret_path": "",
                 "API_request_start_time": "2024-04-11T08:00:00Z",
                 "API_request_end_time": "2024-05-14T16:10:00Z",
-                "API_request_time_step": "200min",
+                "API_request_time_step": "750min",
                 "cache_path": "",
                 "paraview_output": true,
                 "paraview_thermal_output_name": "Nibelungenbruecke_thermal_2D_pilot",
                 "paraview_displacement_output_name": "Nibelungenbruecke_displacement",
                 "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
-                "material_parameters": {},
+                "material_parameters": {
+                    "E": 40000000000000.0,
+                    "nu": 0.2,
+                    "rho": 2350
+                },
                 "bias_model_parameters": {
                     "parameters": [
                         {
@@ -81,8 +86,8 @@
                     "model_type": "embedded_for_noise",
                     "model_parameters": {
                         "model_name": "temperature",
-                        "initial_condition_steps": 200,
-                        "burn_in_steps": 300,
+                        "initial_condition_steps": 4,
+                        "burn_in_steps": 37,
                         "experiment_parameters": {
                             "dim": 2
                         },
@@ -91,7 +96,7 @@
                             "inner_temperature": 293.0,
                             "initial_temperature": 293.0,
                             "heat_capacity": 870.0,
-                            "dt": 12000.0,
+                            "dt": 45000.0,
                             "theta": 1.0,
                             "density": 2400.0,
                             "conductivity": 2.5,
@@ -116,7 +121,15 @@
                             "mesh_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_2d_pilot.msh"
                         },
                         "sensor_metadata": "./input/sensors/sensors_temperature.json"
-                    }
+                    },
+                    "natural_convection_coefficient": 8.480671617626216,
+                    "wind_forced_convection": 1.0809469393217606,
+                    "wind_forced_convection_parameter_constant": 1.261546861008987,
+                    "wind_speed": 2.610922631370278,
+                    "shortwave_radiation": -0.9816100155979315,
+                    "shortwave_radiation_constant": 0.6503601966351023,
+                    "shortwave_irradiation": 0.03850836083681635,
+                    "calculate_shortwave_irradiation": 0.0
                 },
                 "tension_z": 0.0,
                 "mass": 50000.0,
