@@ -178,8 +178,8 @@ class RealvsVirtualAllTogetherUQ(BasePlotter):
                 total_std = self.noise_map_to_results(vs_noise_col, mean, std)
                               
                 plt.plot(df.index, api_data, linestyle='--', alpha=0.6, label=sensor)
-                plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
-                plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
+                plt.plot(df.index, mean, label=f"{sensor}_mean ± $\\sigma$")
+                plt.plot(df.index, mean, label=f"{sensor}_mean ± $\\sqrt{{\\sigma^2 + \\varepsilon^2}}$")
                 plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
                 plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
             
@@ -250,7 +250,7 @@ class AllSensorsTogetherPlotterUQ(BasePlotter):
                 std = df[std_col]
                 #total_std = self.noise_map_to_results(vs_noise_col, mean, std)
                 
-                plt.plot(df.index, mean, label=f"{sensor}_mean± Std")
+                plt.plot(df.index, mean, label=f"{sensor}_mean± $\\sigma$")
                 plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
                 #plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
                 #plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
@@ -351,7 +351,7 @@ class RealVsVirtualPlotterUQ(BasePlotter):
                 std = df[std_col]
                 
                 plt.plot(df.index, api_data, label=f"{sensor}")
-                plt.plot(df.index, mean, label=f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean ± Std")
+                plt.plot(df.index, mean, label=f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean ± $\\sigma$")
                 plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
                 
                 plt.title(f"Sensor Comparison: {sensor} vs {vs_sensor_map_dict[sensor_mapping[sensor]]}_UQ")
@@ -434,8 +434,8 @@ class VirtualSensorPlotterUQ(BasePlotter):
             std = df[std_col]
             total_std = self.noise_map_to_results(vs_noise_col, mean, std)
             
-            plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
-            plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
+            plt.plot(df.index, mean, label=f"{sensor}_mean ± $\\sigma$")
+            plt.plot(df.index, mean, label=f"{sensor}_mean ± $\\sqrt{{\\sigma^2 + \\varepsilon^2}}$")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
             plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
         
