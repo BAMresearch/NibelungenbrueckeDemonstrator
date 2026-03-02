@@ -168,7 +168,7 @@ class Orchestrator:
                 self.digital_twin_model.model_parameters_path = self.digital_twin_model.model_parameters_path
                 self.digital_twin_model.orchestrator_parameters = self.digital_twin_model._extract_model_parameters(self.model_parameters_path)
                 self.digital_twin_model._set_model(self.simulation_parameters)
-                self.digital_twin_model._set_model(self.simulation_parameters)
+                #self.digital_twin_model._set_model(self.simulation_parameters)
                             
         self.digital_twin_model.virtual_sensor_load(self.simulation_parameters)
         self.digital_twin_model.model_parameters_path = self.default_model_parameters_path()
@@ -180,10 +180,15 @@ class Orchestrator:
                 problem = self.digital_twin_model.initial_model.problem,
                 simulation_parameters=self.simulation_parameters, 
                 default_parameters={}, api_data_frame=self.digital_twin_model.initial_model.api_dataFrame,
-                all_sensors_combined=self.digital_twin_model.initial_model.all_sensor_plot_data
+                all_sensors_combined=self.digital_twin_model.initial_model.all_sensor_plot_data,
+                virtual_sensor_noise=self.digital_twin_model.noise_on_sensors
                 )
+            #break
         
     def plot(self, plot_type: str, **kwargs):
+        
+        #database = self.digital_twin_model._request_environmental_parameters(self.simulation_parameters["start_time"], self.simulation_parameters["end_time"])
+        
         plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ", 
                          "plot_virtual_sensors_with_UQ", "plot_real_vs_virtual_sensors_together_with_UQ"]
         if plot_type not in self._plotters:
@@ -201,6 +206,10 @@ class Orchestrator:
                 return
             
         self._plotters[plot_type].plot(**kwargs)
+        
+
+#def inner_outer_temp(inner_temp, outer):
+#    
         
 
 if __name__ == "__main__":
@@ -293,6 +302,7 @@ if __name__ == "__main__":
     #%%
     # # %%
     # orchestration initialization and Transient Thermal model without UQ - 2D
+
     simulation_parameters = {
         'simulation_name': 'TestSimulation',
         'model': '2D_TransientThermal_1',
@@ -300,6 +310,51 @@ if __name__ == "__main__":
             'type': '2D', 
             'path': 'Pilot'
             },
+        'data_source': 'OpenMeteo', # or 'MKP'
+        'start_time': '2024-04-11T08:00:00Z',
+        'end_time': '2024-05-14T16:10:00Z',
+        'time_step': '20min',
+        'virtual_sensor_positions': [
+            {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1', 'bias': 0.02},
+            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2', 'bias': 0.01},
+            {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+            {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'},
+            {'x': -73, 'y': 10.0, 'z': 230.0, 'name': 'Sensor5'},
+            {'x': -4.5, 'y': 10.0, 'z': 0.0, 'name': 'Sensor6'},
+
+        ],
+        'plot_pv': True,
+        # Set to True if you want full field results, the simulation will take longer and the results will be larger
+        'full_field_results': True,
+        # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+        'uncertainty_quantification': False,
+    }
+
+    orchestrator = Orchestrator(simulation_parameters)
+    #key = input("\nEnter the code to connect API: ").strip()
+
+    # key = ""
+    orchestrator.set_api_key(key)  
+    orchestrator.run()
+
+    orchestrator.plot("plot_real_vs_virtual_sensors_together")
+    orchestrator.plot("plot_all_sensors_together")
+    orchestrator.plot("plot_virtual_sensors")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors")
+    orchestrator.plot("plot_full_field_response")       ##TODO: to be modified!!
+    
+    #%%
+    # # %%
+    # orchestration initialization and Transient Thermal model without UQ - 2D
+    simulation_parameters = {
+        'simulation_name': 'TestSimulation',
+        'model': '2D_TransientThermal_1',
+        'model_info': {
+            'type': '2D', 
+            'path': 'Pilot'
+            },
+        'data_source': 'MKP', # or 'OpenMeteo'
         'start_time': '2024-04-11T08:00:00Z',
         'end_time': '2024-05-14T16:10:00Z',
         'time_step': '750min',
@@ -331,8 +386,45 @@ if __name__ == "__main__":
     orchestrator.plot("plot_virtual_sensors")
     orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
     orchestrator.plot("plot_real_vs_virtual_sensors")
-    orchestrator.plot("plot_full_field_response")       ##TODO: to be modified!!
-    
+    orchestrator.plot("plot_full_field_response")  
+
+    # %%
+    # Transient Thermal model with UQ - 2D
+    simulation_parameters = {
+        'simulation_name': 'TestSimulation',
+        'model': '2D_TransientThermal_1',        
+        'model_info': {
+                    'type': '2D', 
+                    'path': 'Pilot'
+                    },
+        'data_source': 'MKP', # or 'OpenMeteo'
+        'start_time': '2023-08-11T08:00:00Z',
+        'end_time': '2023-09-11T16:10:00Z',
+        'time_step': '400min',
+        'virtual_sensor_positions': [
+            {'x': 0.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor1'},
+            {'x': 1.0, 'y': 0.0, 'z': 0.0, 'name': 'Sensor2'},
+            {'x': 1.78, 'y': 0.0, 'z': 26.91, 'name': 'Sensor3'},
+            {'x': -1.83, 'y': 0.0, 'z': 0.0, 'name': 'Sensor4'},
+            {'x': -73, 'y': 10.0, 'z': 230.0, 'name': 'Sensor5'},
+            {'x': -4.5, 'y': 10.0, 'z': 0.0, 'name': 'Sensor6'},
+
+        ],
+        'plot_pv': False,
+        # Set to True if you want full field results, the simulation will take longer and the results will be larger
+        'full_field_results': True,
+        # Set to True if you want uncertainty quantification, the simulation will take longer and the results will be larger.
+        'uncertainty_quantification': True,
+    }
+
+    orchestrator.run(simulation_parameters)
+
+    orchestrator.plot("plot_real_vs_virtual_sensors_together_with_UQ")
+    orchestrator.plot("plot_all_sensors_together_with_UQ")
+    orchestrator.plot("plot_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_real_vs_virtual_sensors_with_UQ")
+    orchestrator.plot("plot_full_field_response")
+
     
     # %%
     # Transient Thermal model with UQ - 2D
@@ -343,6 +435,7 @@ if __name__ == "__main__":
                     'type': '2D', 
                     'path': 'Pilot'
                     },
+        'data_source': 'OpenMeteo', # or 'MKP'
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-09-11T16:10:00Z',
         'time_step': '400min',
@@ -380,6 +473,7 @@ if __name__ == "__main__":
                     'type': '3D', 
                     'path': ''
                     },
+        'data_source': 'OpenMeteo', # or 'MKP'
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-09-13T08:10:00Z',
         'time_step': '250min',
@@ -416,6 +510,7 @@ if __name__ == "__main__":
                     'type': '3D', 
                     'path': ''
                     },
+        'data_source': 'OpenMeteo', # or 'MKP'
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-09-13T08:10:00Z',
         'time_step': '250min',
@@ -528,8 +623,12 @@ if __name__ == "__main__":
     # orchestration initialization and Transient Thermal model without UQ
     simulation_parameters = {
         'simulation_name': 'TestSimulation',
-        'model': 'TransientThermal_1',
-        'model_type': '3D',
+        'model': '3D_TransientThermal_1',
+        'model_info': {
+                    'type': '3D', 
+                    'path': ''
+                    },
+        'data_source': 'MKP', # or 'MKP'
         'start_time': '2023-08-11T08:00:00Z',
         'end_time': '2023-08-11T16:10:00Z',
         'time_step': '1min',
@@ -567,8 +666,12 @@ if __name__ == "__main__":
 
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
-        'model': 'TransientThermal_1',
-        'model_type': '3D',
+        'model': '3D_TransientThermal_1',
+        'model_info': {
+                    'type': '3D', 
+                    'path': ''
+                    },
+        'data_source': 'MKP', # or 'MKP'
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
         'time_step': '200min',
@@ -599,8 +702,12 @@ if __name__ == "__main__":
 
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
-        'model': 'TransientThermal_1',
-        'model_type': '3D',
+        'model': '3D_TransientThermal_1',
+        'model_info': {
+                    'type': '3D', 
+                    'path': ''
+                    },
+        'data_source': 'MKP', # or 'MKP'
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-08-25T02:10:00Z',
         'time_step': '10min',
@@ -632,8 +739,12 @@ if __name__ == "__main__":
 
     simulation_parameters = {  # Throw an error checking UQ!!
         'simulation_name': 'TestSimulation',
-        'model': 'TransientThermal_1',
-        'model_type': '3D',
+        'model': '3D_TransientThermal_1',
+        'model_info': {
+                    'type': '3D', 
+                    'path': ''
+                    },
+        'data_source': 'MKP', # or 'MKP'
         'start_time': '2024-08-11T08:00:00Z',
         'end_time': '2024-09-13T02:10:00Z',
         'time_step': '450min',

@@ -24,12 +24,16 @@ class Database:
             "shortwave_radiation",
             "shortwave_radiation_constant",
             "shortwave_irradiation",
-            "calculate_shortwave_irradiation"
+            "calculate_shortwave_irradiation",
+            "E_plus_040TU_HS--o-_Avg1",
+            "E_plus_040TU_HSN-m-_Avg1",
+            "E_plus_040TU_HSS-m-_Avg1",
+            "E_plus_040TU_HS--u-_Avg1"
         ]
 
         for table in self.tables_list:
             self.cursor.execute(f'''
-                CREATE TABLE IF NOT EXISTS {table} (
+                CREATE TABLE IF NOT EXISTS "{table}" (
                     time TEXT PRIMARY KEY,
                     parameter REAL
                 )
@@ -41,20 +45,20 @@ class Database:
     
         for table in parameters:
             self.cursor.execute(
-                f"SELECT time, parameter FROM {table} WHERE time <= ? ORDER BY time DESC LIMIT 1",
+                f'SELECT time, parameter FROM "{table}" WHERE time <= ? ORDER BY time DESC LIMIT 1',
                 (start_time.isoformat(),)
             )
             row_start = self.cursor.fetchone()
     
             self.cursor.execute(
-                f"SELECT time, parameter FROM {table} WHERE time >= ? ORDER BY time ASC LIMIT 1",
+                f'SELECT time, parameter FROM "{table}" WHERE time >= ? ORDER BY time ASC LIMIT 1',
                 (end_time.isoformat(),)
             )
             row_end = self.cursor.fetchone()
     
             if row_start and row_end:
                 self.cursor.execute(
-                    f"SELECT time, parameter FROM {table} WHERE time BETWEEN ? AND ? ORDER BY time ASC",
+                    f'SELECT time, parameter FROM "{table}" WHERE time BETWEEN ? AND ? ORDER BY time ASC',
                     (row_start[0], row_end[0])
                 )
                 data = self.cursor.fetchall()
@@ -82,10 +86,10 @@ class Database:
             if query_dict and table in query_dict:
                 start_time = query_dict[table]["start_time"]
                 end_time = query_dict[table]["end_time"]
-                query = f"SELECT * FROM {table} WHERE time BETWEEN ? AND ?"
+                query = f'SELECT * FROM "{table}" WHERE time BETWEEN ? AND ?'
                 params = (start_time, end_time)
             else:
-                query = f"SELECT * FROM {table}"
+                query = f'SELECT * FROM "{table}"'
                 params = None 
             
             df = pd.read_sql(query, self.conn, params=params)
@@ -155,7 +159,26 @@ class Database:
     
         return df_trim.reset_index(drop=True)
 
+    def create_table(self, table_name):
+        sql = f'''
+        CREATE TABLE IF NOT EXISTS "{table_name}" (
+            time TEXT NOT NULL,
+            parameter REAL NOT NULL
+        );
+        '''
+        self.cursor.execute(sql)
+        self.conn.commit()
 
+    def insert_bias_data(self, table_name, rows):
+        """
+        rows: iterable of (time, parameter)
+        """
+        self.cursor.executemany(
+            f'INSERT OR IGNORE INTO "{table_name}" (time, parameter) VALUES (?, ?)',
+            rows
+        )
+        self.conn.commit()
+    
     def _insert_testing_data(self, seed=None):
         """Generate random data using NumPy and insert into tables."""
         if seed is not None:
@@ -174,6 +197,10 @@ class Database:
             "shortwave_radiation_constant": [np.random.normal(1, 0.5) for _ in range(random.randint(10, 20))],
             "shortwave_irradiation": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))],
             "calculate_shortwave_irradiation": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))],
+            "E_plus_040TU_HS--o-_Avg1": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))],
+            "E_plus_040TU_HSN-m-_Avg1": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))],
+            "E_plus_040TU_HSS-m-_Avg1": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))],
+            "E_plus_040TU_HS--u-_Avg1": [np.random.normal(0, 1) for _ in range(random.randint(10, 20))]
         }
 
         for table in self.tables_list:
@@ -185,7 +212,7 @@ class Database:
             
                 rows.append((rand_date.isoformat(), float(param)))
                 
-            self.cursor.executemany(f"INSERT OR IGNORE INTO {table} (time, parameter) VALUES (?, ?)", rows)
+            self.cursor.executemany(f'INSERT OR IGNORE INTO "{table}" (time, parameter) VALUES (?, ?)', rows)
 
         self.conn.commit()
         
@@ -197,19 +224,19 @@ class Database:
             
             if len(data_dict[table]["time"]) != len(data_dict[table]["parameter"]):
                 raise ValueError(
-                    f"Parameter length ({len(data_dict[table]['parameter'])}) for table '{table}' does not match number of times ({len(data_dict[table]['time'])})"
+                    f"Parameter length ({len(data_dict[table]['parameter'])}) for table {table} does not match number of times ({len(data_dict[table]['time'])})"
                 )
                 
             else:
                 rows = list(zip(data_dict[table]["time"], data_dict[table]["parameter"]))
-                self.cursor.executemany(f"INSERT OR IGNORE INTO {table} (time, parameter) VALUES (?, ?)", rows)
+                self.cursor.executemany(f"INSERT OR IGNORE INTO '{table}' (time, parameter) VALUES (?, ?)", rows)
                 
         self.conn.commit()
         
     
     def insert_parameter(self, table_name: str, time: datetime.datetime, value: float):
         self.cursor.execute(
-            f"INSERT OR IGNORE INTO {table_name} (time, parameter) VALUES (?, ?)",
+            f"INSERT OR IGNORE INTO '{table_name}' (time, parameter) VALUES (?, ?)",
             (time.isoformat(), value)
         )
         self.conn.commit()
@@ -224,7 +251,7 @@ if __name__ == "__main__":
     # checkt the time ranges!
     
     db = Database()
-    # db._insert_testing_data()
+    db._insert_testing_data()
     start_time = datetime.datetime(2023, 5, 5, 0, 0)
     end_time = datetime.datetime(2023, 11, 19, 16, 6, 2, 938178)
     parameters = ['natural_convection_coefficient',

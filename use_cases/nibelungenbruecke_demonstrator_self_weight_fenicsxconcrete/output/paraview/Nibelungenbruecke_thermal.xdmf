@@ -1284,69 +1284,6 @@
           <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2730000</DataItem>
         </Attribute>
       </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2745000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2745000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2760000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2760000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2775000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2775000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2790000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2790000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2805000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2805000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2820000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2820000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2835000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2835000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2850000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2850000</DataItem>
-        </Attribute>
-      </Grid>
-      <Grid Name="temperature" GridType="Uniform">
-        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
-        <Time Value="2865000" />
-        <Attribute Name="temperature" AttributeType="Scalar" Center="Node">
-          <DataItem Dimensions="2197 1" Format="HDF">Nibelungenbruecke_thermal.h5:/Function/temperature/2865000</DataItem>
-        </Attribute>
-      </Grid>
     </Grid>
   </Domain>
 </Xdmf>

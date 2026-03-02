@@ -26,12 +26,13 @@ class BasePlotter(ABC):
         
         #self.output_file = "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/sensor_timeseries.json"
         
-    def set_attributes(self, problem, simulation_parameters, default_parameters, api_data_frame, all_sensors_combined):
+    def set_attributes(self, problem, simulation_parameters, default_parameters, api_data_frame, all_sensors_combined, virtual_sensor_noise):
         self.problem = problem
         self.simulation_parameters = simulation_parameters
         #self.default_parameters = default_parameters
         self.api_dataFrame = api_data_frame
         self.all_sensor_plot_data = all_sensors_combined
+        self.virtual_sensor_noise = virtual_sensor_noise
         
         
     def extract_virtual_sensor_data(self):
@@ -50,6 +51,28 @@ class BasePlotter(ABC):
                     df[sensor_id] = temperature_value_list
 
         return df
+    
+    def noise_map_to_results(self, sensor, mean, std):
+        vs_noise_df = self.virtual_sensor_noise
+        vs_noise_df['time'] = pd.to_datetime(vs_noise_df['time'])
+        
+        df = self.all_sensor_plot_data
+        vs_noise_mapped = np.zeros(len(df))
+        
+        for i in range(len(vs_noise_df)):
+            start_time = vs_noise_df['time'].iloc[i]
+            if i < len(vs_noise_df) - 1:
+                end_time = vs_noise_df['time'].iloc[i + 1]
+            else:
+                end_time = df.index[-1] + pd.Timedelta(seconds=1)
+            
+            mask = (df.index >= start_time) & (df.index < end_time)
+            
+            vs_noise_mapped[mask] = vs_noise_df[sensor].iloc[i]
+            
+        total_std = np.sqrt(std**2 + vs_noise_mapped**2)
+        
+        return total_std
     
     def _sensor_map(self, probeye_sensor: str) -> str:
         sensor_map_dict = {
@@ -103,63 +126,71 @@ class BasePlotter(ABC):
 class RealvsVirtualAllTogether(BasePlotter):
     
     def plot(self):
-        
-        df = self.all_sensor_plot_data
-        
-        plt.figure(figsize=(14, 6))
-        for col in df.columns:
-            if not col.endswith("_virtual_sensor"):
-                vs_col = col + "_virtual_sensor"
-                if vs_col in df.columns:
-                    plt.plot(df.index, df[col], label=f"{col} (real)", linestyle='solid')
-                    plt.plot(df.index, df[vs_col], label=f"{col} (virtual)", linestyle='-.')
-        
-        plt.title("Real vs Virtual Sensor Data")
-        plt.xlabel("Time")
-        plt.ylabel("Sensor Value")
-        plt.legend(loc="lower right", fontsize='small')
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
+            
+        if self.simulation_parameters["data_source"] == "MKP":
+            
+            df = self.all_sensor_plot_data
+            
+            plt.figure(figsize=(14, 6))
+            for col in df.columns:
+                if not col.endswith("_virtual_sensor"):
+                    vs_col = col + "_virtual_sensor"
+                    if vs_col in df.columns:
+                        plt.plot(df.index, df[col], label=f"{col} (real)", linestyle='solid')
+                        plt.plot(df.index, df[vs_col], label=f"{col} (virtual)", linestyle='-.')
+            
+            plt.title("Real vs Virtual Sensor Data")
+            plt.xlabel("Time")
+            plt.ylabel("Sensor Value")
+            plt.legend(loc="lower right", fontsize='small')
+            plt.grid(True)
+            plt.tight_layout()
+            plt.show()
         
 class RealvsVirtualAllTogetherUQ(BasePlotter):
     
     def plot(self):
-        
-        df = self.all_sensor_plot_data
-        
-        sensor_names = sorted(
-            set(
-                col.replace('_mean', '')
-                for col in df.columns
-                if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+        if self.simulation_parameters["data_source"] == "MKP":
+            
+            df = self.all_sensor_plot_data.copy()
+            
+            sensor_names = sorted(
+                set(
+                    col.replace('_mean', '')
+                    for col in df.columns
+                    if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+                )
             )
-        )
-        
-        sensor_names = [s for s in sensor_names if "Sensor" not in s and "bridge" not in s and "TU" in s]
-        
-        plt.figure(figsize=(14, 6))
-        
-        for i, sensor in enumerate(sensor_names):
-            mean_col = f"{sensor}_mean"
-            std_col = f"{sensor}_std"
             
-            api_data = df[sensor]+275
-            mean = df[mean_col]
-            std = df[std_col]
+            sensor_names = [s for s in sensor_names if "Sensor" not in s and "bridge" not in s and "TU" in s]
             
-            plt.plot(df.index, api_data, linestyle='--', alpha=0.6, label=sensor)
-            plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
-            plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
-        
-        #plt.title("Sensor Temperature (Raw vs Mean ± Std)")
-        plt.title("Real vs Virtual UQ Sensor Data")
-        plt.xlabel("Time / Index")
-        plt.ylabel("Temperature (K)")
-        #plt.legend(loc='upper right', fontsize='small')
-        plt.legend(loc="best")
-        plt.tight_layout()
-        plt.show()
+            plt.figure(figsize=(14, 6))
+            
+            for i, sensor in enumerate(sensor_names):
+                mean_col = f"{sensor}_mean"
+                std_col = f"{sensor}_std"
+                vs_noise_col = f"{sensor}"
+                
+                api_data = df[sensor] + 273.15
+                mean = df[mean_col]
+                std = df[std_col]
+                #vs_noise = self.virtual_sensor_noise[vs_noise_col]
+                total_std = self.noise_map_to_results(vs_noise_col, mean, std)
+                              
+                plt.plot(df.index, api_data, linestyle='--', alpha=0.6, label=sensor)
+                plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
+                plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
+                plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
+                plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
+            
+            #plt.title("Sensor Temperature (Raw vs Mean ± Std)")
+            plt.title("Real vs Virtual UQ Sensor Data")
+            plt.xlabel("Time / Index")
+            plt.ylabel("Temperature (K)")
+            #plt.legend(loc='upper right', fontsize='small')
+            plt.legend(loc="best")
+            plt.tight_layout()
+            plt.show()
             
         
 class AllSensorsTogetherPlotter(BasePlotter):
@@ -168,64 +199,70 @@ class AllSensorsTogetherPlotter(BasePlotter):
         super().__init__(**kwargs)
 
     def plot(self):
-        df = self.extract_virtual_sensor_data()
-        sensor_map_dict = self._sensor_map_to_real()
-        
-        real_cols_to_plot = [col for col in sensor_map_dict.keys() if col in df.columns]
-
-        vs_cols_to_plot = [sensor_map_dict[i] for i in real_cols_to_plot]
-        
-        #plot_df_real = df[real_cols_to_plot]
-        plot_df_vs = df[vs_cols_to_plot].rename(columns=lambda x: self._sensor_map(x))
-        
-        #plot_df = pd.concat([plot_df_real, plot_df_vs], axis=1)
-        
-        plot_df_vs.plot(figsize=(14, 6))
-        plt.title("Virtual Sensors")
-        plt.xlabel("Index")
-        plt.ylabel("Value")
-        #plt.legend(loc='lower right', fontsize='small')
-        plt.legend(loc="best")
-        plt.grid(True)
-        plt.show()
-        
+        if self.simulation_parameters["data_source"] == "MKP":
+            df = self.extract_virtual_sensor_data()
+            sensor_map_dict = self._sensor_map_to_real()
+            
+            real_cols_to_plot = [col for col in sensor_map_dict.keys() if col in df.columns]
+    
+            vs_cols_to_plot = [sensor_map_dict[i] for i in real_cols_to_plot]
+            
+            #plot_df_real = df[real_cols_to_plot]
+            plot_df_vs = df[vs_cols_to_plot].rename(columns=lambda x: self._sensor_map(x))
+            
+            #plot_df = pd.concat([plot_df_real, plot_df_vs], axis=1)
+            
+            plot_df_vs.plot(figsize=(14, 6))
+            plt.title("Virtual Sensors")
+            plt.xlabel("Index")
+            plt.ylabel("Value")
+            #plt.legend(loc='lower right', fontsize='small')
+            plt.legend(loc="best")
+            plt.grid(True)
+            plt.show()
+            
 class AllSensorsTogetherPlotterUQ(BasePlotter):
     
     def plot(self):
-        
-        df = self.all_sensor_plot_data
-        
-        sensor_names = sorted(
-            set(
-                col.replace('_mean', '')
-                for col in df.columns
-                if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+        if self.simulation_parameters["data_source"] == "MKP":
+            
+            df = self.all_sensor_plot_data.copy()
+            
+            sensor_names = sorted(
+                set(
+                    col.replace('_mean', '')
+                    for col in df.columns
+                    if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+                )
             )
-        )
-        
-        sensor_names = [s for s in sensor_names if "bridge" in s]
-        
-        plt.figure(figsize=(14, 6))
-        
-        for i, sensor in enumerate(sensor_names):
             
-            mean_col = f"{sensor}_mean"
-            std_col = f"{sensor}_std"
-
-            mean = df[mean_col]
-            std = df[std_col]
+            sensor_names = [s for s in sensor_names if "bridge" in s]
             
-            plt.plot(df.index, mean, label=f"{sensor}_mean± Std")
-            plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
-        
-        plt.title("Virtual Sensors UQ ")
-        plt.xlabel("Time / Index")
-        plt.ylabel("Temperature (K)")
-        #plt.legend(loc='upper right', fontsize='small')
-        plt.legend(loc="best")
-        plt.tight_layout()
-        plt.show()
+            plt.figure(figsize=(14, 6))
+            
+            for i, sensor in enumerate(sensor_names):
+                
+                mean_col = f"{sensor}_mean"
+                std_col = f"{sensor}_std"
+                vs_noise_col = f"{sensor}"
     
+                mean = df[mean_col]
+                std = df[std_col]
+                #total_std = self.noise_map_to_results(vs_noise_col, mean, std)
+                
+                plt.plot(df.index, mean, label=f"{sensor}_mean± Std")
+                plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
+                #plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
+                #plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
+            
+            plt.title("Virtual Sensors UQ ")
+            plt.xlabel("Time / Index")
+            plt.ylabel("Temperature (K)")
+            #plt.legend(loc='upper right', fontsize='small')
+            plt.legend(loc="best")
+            plt.tight_layout()
+            plt.show()
+        
 
 
 class RealVsVirtualPlotter(BasePlotter):
@@ -234,35 +271,36 @@ class RealVsVirtualPlotter(BasePlotter):
         super().__init__(**kwargs)
 
     def plot(self, sensor_mapping=None):
-        df = self.extract_virtual_sensor_data()
-        
-        if sensor_mapping is None:
-            sensor_mapping = {
-                "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
-                "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
-                "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
-                "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
-            }
-
-        #df = self.api_dataFrame + 273.15
-        #measured_times = df.index
-
-        for real_col, mapped_col in sensor_mapping.items():
-            if real_col not in df.columns or mapped_col not in df.columns:
-                print(f"Skipping mapping: {real_col} -> {mapped_col} (column missing)")
-                continue
-        
-            plt.figure(figsize=(14, 6))
-            plt.plot(df.index, df[real_col], label=f"{real_col}", linestyle='-')
-            plt.plot(df.index, df[mapped_col], label=f"{self._sensor_map(mapped_col)}", linestyle='--')
-        
-            plt.title(f"Sensor Comparison: {real_col} vs {self._sensor_map(mapped_col)}")
-            plt.xlabel("Time index")
-            plt.ylabel("Sensor Value")
-            plt.legend(loc='upper left', fontsize='small')
-            plt.grid(True)
-            plt.tight_layout()
-            plt.show()
+        if self.simulation_parameters["data_source"] == "MKP":
+            df = self.extract_virtual_sensor_data()
+            
+            if sensor_mapping is None:
+                sensor_mapping = {
+                    "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
+                    "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
+                    "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
+                    "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
+                }
+    
+            #df = self.api_dataFrame + 273.15
+            #measured_times = df.index
+    
+            for real_col, mapped_col in sensor_mapping.items():
+                if real_col not in df.columns or mapped_col not in df.columns:
+                    print(f"Skipping mapping: {real_col} -> {mapped_col} (column missing)")
+                    continue
+            
+                plt.figure(figsize=(14, 6))
+                plt.plot(df.index, df[real_col], label=f"{real_col}", linestyle='-')
+                plt.plot(df.index, df[mapped_col], label=f"{self._sensor_map(mapped_col)}", linestyle='--')
+            
+                plt.title(f"Sensor Comparison: {real_col} vs {self._sensor_map(mapped_col)}")
+                plt.xlabel("Time index")
+                plt.ylabel("Sensor Value")
+                plt.legend(loc='upper left', fontsize='small')
+                plt.grid(True)
+                plt.tight_layout()
+                plt.show()
 
 class RealVsVirtualPlotterUQ(BasePlotter):
     
@@ -271,60 +309,60 @@ class RealVsVirtualPlotterUQ(BasePlotter):
 
         
     def plot(self, sensor_mapping=None):
-        
-        if sensor_mapping is None:
-            sensor_mapping = {
-                "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
-                "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
-                "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
-                "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
+        if self.simulation_parameters["data_source"] == "MKP":
+            if sensor_mapping is None:
+                sensor_mapping = {
+                    "E_plus_040TU_HS--o-_Avg1": "Sensor_o",
+                    "E_plus_040TU_HSN-m-_Avg1": "Sensor_n",
+                    "E_plus_040TU_HSS-m-_Avg1": "Sensor_s",
+                    "E_plus_040TU_HS--u-_Avg1": "Sensor_u",
+                }
+                
+            vs_sensor_map_dict = {
+                "Sensor_u": "bridge_temperature_u",
+                "Sensor_o": "bridge_temperature_o",
+                "Sensor_n": "bridge_temperature_n",
+                "Sensor_s": "bridge_temperature_s",
             }
+    
+            df = self.all_sensor_plot_data
             
-        vs_sensor_map_dict = {
-            "Sensor_u": "bridge_temperature_u",
-            "Sensor_o": "bridge_temperature_o",
-            "Sensor_n": "bridge_temperature_n",
-            "Sensor_s": "bridge_temperature_s",
-        }
-
-        df = self.all_sensor_plot_data
-        
-        sensor_names = sorted(
-            set(
-                col.replace('_mean', '')
-                for col in df.columns
-                if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+            sensor_names = sorted(
+                set(
+                    col.replace('_mean', '')
+                    for col in df.columns
+                    if col.endswith('_mean') and f"{col.replace('_mean', '')}_std" in df.columns
+                )
             )
-        )
-        
-        sensor_names = [i for i in sensor_mapping.keys()]
-        #selected_sensors.extend([n for n in vs_sensor_map_dict.keys()])
-        #sensor_names = [s for s in sensor_names if s in selected_sensors]
-
-        for i, sensor in enumerate(sensor_names):
             
-            plt.figure(figsize=(14, 6))
-            
-            mean_col = f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean"
-            std_col = f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_std"
-            
-            api_data = df[sensor] + 275
-            mean = df[mean_col]
-            std = df[std_col]
-            
-            plt.plot(df.index, api_data, label=f"{sensor}")
-            plt.plot(df.index, mean, label=f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean ± Std")
-            plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
-            
-            plt.title(f"Sensor Comparison: {sensor} vs {vs_sensor_map_dict[sensor_mapping[sensor]]}_UQ")
-            
-
-            plt.xlabel("Time")
-            plt.ylabel("Temperature (K)")
-            #plt.legend(loc='upper right', fontsize='small')
-            plt.legend()
-            plt.tight_layout()
-            plt.show()
+            sensor_names = [i for i in sensor_mapping.keys()]
+            #selected_sensors.extend([n for n in vs_sensor_map_dict.keys()])
+            #sensor_names = [s for s in sensor_names if s in selected_sensors]
+    
+            for i, sensor in enumerate(sensor_names):
+                
+                plt.figure(figsize=(14, 6))
+                
+                mean_col = f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean"
+                std_col = f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_std"
+                
+                api_data = df[sensor] + 275
+                mean = df[mean_col]
+                std = df[std_col]
+                
+                plt.plot(df.index, api_data, label=f"{sensor}")
+                plt.plot(df.index, mean, label=f"{vs_sensor_map_dict[sensor_mapping[sensor]]}_mean ± Std")
+                plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
+                
+                plt.title(f"Sensor Comparison: {sensor} vs {vs_sensor_map_dict[sensor_mapping[sensor]]}_UQ")
+                
+    
+                plt.xlabel("Time")
+                plt.ylabel("Temperature (K)")
+                #plt.legend(loc='upper right', fontsize='small')
+                plt.legend()
+                plt.tight_layout()
+                plt.show()
     
 
 class VirtualSensorPlotter(BasePlotter):
@@ -390,14 +428,18 @@ class VirtualSensorPlotterUQ(BasePlotter):
             
             mean_col = f"{sensor}_mean"
             std_col = f"{sensor}_std"
+            vs_noise_col = f"{sensor}"
 
             mean = df[mean_col]
             std = df[std_col]
+            total_std = self.noise_map_to_results(vs_noise_col, mean, std)
             
             plt.plot(df.index, mean, label=f"{sensor}_mean ± Std")
+            plt.plot(df.index, mean, label=f"{sensor}_mean ± sqrt(Std²+noise²)")
             plt.fill_between(df.index, mean - std, mean + std, alpha=0.2)
+            plt.fill_between(df.index, mean - total_std, mean + total_std, alpha=0.2)
         
-            plt.title(f"Temperature at User-Provided Virtual Sensor: {sensor}  (Raw vs. Mean ± Std)")
+            plt.title(f"Temperature at User-Provided Virtual Sensor: {sensor}")
             plt.xlabel("Time / Index")
             plt.ylabel("Temperature (K)")
             plt.legend(loc='upper right', fontsize='small')
@@ -431,6 +473,7 @@ class FullFieldResponsePlotter(BasePlotter):
                 "Full-field responses are not plotted. "
                 "To plot them, set 'plot_pyvista' to True when calling this method."
             )
+            
 
 #%%
 # =============================================================================

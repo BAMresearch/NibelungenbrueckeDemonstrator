@@ -4,6 +4,8 @@ import numpy as np
 import h5py
 import pickle
 import importlib
+from datetime import datetime
+import pandas as pd
 
 import dolfinx as df
 from mpi4py import MPI
@@ -40,6 +42,7 @@ class DigitalTwin:
         self._load_models()
         self.cache_object = ObjectCache()
         self.digital_twin_models = {}
+        self.db = Database()
     
     def _extract_model_parameters(self, path):
         """
@@ -93,7 +96,6 @@ class DigitalTwin:
 
             raise ValueError(f"There isn't any predefined model with name {self.model_to_run}. Please check the name or add the model to model parameters\n")
 
-            
         if self.model_to_run not in self.digital_twin_models.keys() or UQ_flag:
             self._loaded_params = self._get_or_load_parameters(dimension_change_flag)
             self.initial_model = self._initialize_default_model(api_key, orchestrator_simulation_parameters)
@@ -101,7 +103,6 @@ class DigitalTwin:
             self.initial_model = self.digital_twin_models[self.model_to_run]
             self.update_dt_model(orchestrator_simulation_parameters)
             
-        
         env_params = self._request_environmental_parameters(orchestrator_simulation_parameters["start_time"], orchestrator_simulation_parameters["end_time"])
         updated = False
         updated_params = {}
@@ -123,12 +124,14 @@ class DigitalTwin:
             )
             self._update_cached_model(self._loaded_params, updated_params)
             
+            self.noise_on_sensors = self.insert_VS_bias_data(orchestrator_simulation_parameters, self.initial_model, env_params)
+            
         else:
             print("Same model with the same parameters!!\n")
             return None
             
         return self.initial_model
-    
+            
     
     def update_dt_model(self, orchestrator_simulation_parameters):
         plot_pv = orchestrator_simulation_parameters.get("plot_pv", False)
@@ -284,11 +287,46 @@ class DigitalTwin:
             raise ValueError(f"Model '{model_name}' not found in available models.")
 
     def _request_environmental_parameters(self, start_time, end_time):
-        db = Database()
-        df = db.request_data()
-        df_trim = db.trim_time_range(df, start_time, end_time)
+        df = self.db.request_data()
+        df_trim = self.db.trim_time_range(df, start_time, end_time)
         
         return df_trim
+    
+    
+    def insert_VS_bias_data(
+        self,
+        orchestrator_simulation_parameters,
+        initial_model, env_params,
+        default_bias=0.01
+    ):
+        data_dict = {}
+
+        for sensor in orchestrator_simulation_parameters["virtual_sensor_positions"]:
+            data_dict[sensor["name"]] = sensor.get("bias", default_bias)
+
+        #for col in initial_model.all_sensor_plot_data.columns:
+        #    if "Avg1_virtual_sensor" in col:
+        #        data_dict[col] = default_bias
+            
+
+        for table_name, bias in data_dict.items():
+            #self.db.create_table(table_name)
+            
+            rows = [(i.replace(tzinfo=None).isoformat(), float(bias)) for i in env_params["time"]]
+            new_df = pd.DataFrame(rows, columns=["time", table_name])
+            new_df["time"] = pd.to_datetime(new_df["time"], utc=True)
+            env_params = env_params.merge(new_df, on="time", how="left")
+            
+            #rows = [(i.strftime("%Y-%m-%dT%H:%M:%S"), float(bias)) for i in env_params["time"]]
+
+
+            #rows = [
+            #    (datetime.now().isoformat(), float(bias))
+            #]
+
+            #self.db.insert_bias_data(table_name, rows)
+            
+        return env_params
         
         
     def _update_cached_model(self, parameters, updated_params):
@@ -358,7 +396,7 @@ class DigitalTwin:
         return triggered
     
     
-    def virtual_sensor_load(self, orchestrator_simulation_parameters):
+    def virtual_sensor_load(self, orchestrator_simulation_parameters):  ##TODO: Make sure it is correct!
         """
         Validates simulation parameters by checking if virtual sensor positions lie within the mesh domain.
 

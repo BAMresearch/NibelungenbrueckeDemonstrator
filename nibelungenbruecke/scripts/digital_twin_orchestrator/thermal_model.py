@@ -22,6 +22,7 @@ from nibelungenbruecke.scripts.utilities.offloaders import offload_sensors
 from nibelungenbruecke.scripts.digital_twin_orchestrator.base_model import BaseModel
 from nibelungenbruecke.scripts.data_generation.thermal_experiment import ThermalExperiment
 from nibelungenbruecke.scripts.utilities.API_sensor_retrieval import API_Request, MetadataSaver, Translator
+from nibelungenbruecke.scripts.utilities.openmeteo_API import OpenMeteo
 
 
 class ThermalModel(BaseModel):
@@ -77,17 +78,25 @@ class ThermalModel(BaseModel):
                                                                 pv_name=self.model_parameters["paraview_thermal_output_name"] , pv_path=self.model_parameters["paraview_output_path"])
         
         
-    def GenerateData(self, api_key, virtual_sensor_positions):
+    def GenerateData(self, api_key, virtual_sensor_positions, which_api="MKP"):
         """
         Requests data from an API, transforms it into metadata, 
         and saves it for use with virtual sensors.
 
         """
-
-        self.api_request = API_Request(api_key, start_time = self.model_parameters["API_request_start_time"], 
-                                       end_time=self.model_parameters["API_request_end_time"], 
-                                       time_step=self.model_parameters["API_request_time_step"])
-        self.api_dataFrame = self.api_request.fetch_data()
+        
+        if which_api == "MKP":
+            self.api_request = API_Request(api_key, start_time = self.model_parameters["API_request_start_time"], 
+                                           end_time=self.model_parameters["API_request_end_time"], 
+                                           time_step=self.model_parameters["API_request_time_step"])
+            self.api_dataFrame = self.api_request.fetch_data()
+            
+        elif which_api == "OpenMeteo":
+            start_time = self.model_parameters["API_request_start_time"][:10]
+            end_time = self.model_parameters["API_request_end_time"][:10]
+                                           
+            OPM = OpenMeteo(start_time, end_time, time_step=self.model_parameters["API_request_time_step"])
+            self.api_dataFrame = OPM.result
 
         metadata_saver = MetadataSaver(self.model_parameters, self.api_dataFrame)
         metadata_saver.saving_metadata()
@@ -129,10 +138,16 @@ class ThermalModel(BaseModel):
 
                 air_temperature_array[i] = 293  #data_point["F_plus_000TA_KaS-o-_Avg1"]
                 inner_temperature_array[i] = 293    #data_point["E_plus_040TI_HSS-u-_Avg"]
+                shortwave_value = data_point.get(
+                    "F_plus_000S_KaS-o-_Avg1",
+                    data_point.get("shortwave_irradiation")
+                    )
+                
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[i],
                     "inner_temperature": inner_temperature_array[i],
-                    "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+                    "shortwave_irradiation": shortwave_value,
                     "calculate_shortwave_irradiation": False,
                 })
 
@@ -152,12 +167,24 @@ class ThermalModel(BaseModel):
             burn_in_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"]
             for i, (_, data_point) in enumerate(tqdm(data.iloc[initial_condition_steps:burn_in_steps].iterrows(), total=burn_in_steps), 
                                                 start=initial_condition_steps):
-
-                air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
-                inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                
+                air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
+                                                data_point.get("air_temperature"))
+                inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
+                shortwave_value = data_point.get(
+                    "F_plus_000S_KaS-o-_Avg1",
+                    data_point.get("shortwave_irradiation"))
+                
+                #air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+                #inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                air_temperature_array[i] = air_temp_value
+                inner_temperature_array[i] = inner_temp_value
+                
+                
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[i],
-                    "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
+                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],             
+                    "shortwave_irradiation": shortwave_value,
                     "calculate_shortwave_irradiation": False,
                 })
                 
@@ -177,30 +204,47 @@ class ThermalModel(BaseModel):
             self.problem.p['plot_pv'] = 1
             
         for i, (_, data_point) in enumerate(tqdm(data.iloc[start_idx:].iterrows(), total=len(data) - start_idx)):
-            air_temperature_array[start_idx+i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
-            inner_temperature_array[start_idx+i] = data_point["E_plus_040TI_HSS-u-_Avg"]
-            self.problem.update_parameters({
-                "air_temperature": air_temperature_array[start_idx+i],
-                "inner_temperature": inner_temperature_array[start_idx+i],
-                "shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
-                "calculate_shortwave_irradiation": False,
-            })
             
-                            
-            
-            if data.index[start_idx+i-1] <= env_params.time[count] <= data.index[start_idx+i]:
-                param_dict = {x: env_params[x][count] for x in env_params.columns if x != "time"}
-                self.problem.update_parameters(param_dict)
-                count += 1
-            
-            self.problem.solve()
+                air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
+                                                data_point.get("air_temperature"))
+                inner_temp_value = air_temp_value - 20  ##TODO: This should be something better! ##FIXME:
+                shortwave_value = data_point.get(
+                    "F_plus_000S_KaS-o-_Avg1",
+                    data_point.get("shortwave_irradiation"))
+                
+                air_temperature_array[start_idx+i] = air_temp_value
+                inner_temperature_array[start_idx+i] = inner_temp_value
+                #air_temperature_array[start_idx+i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+                #inner_temperature_array[start_idx+i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+                    
+                self.problem.update_parameters({
+                    "air_temperature": air_temperature_array[start_idx+i],
+                    "inner_temperature": inner_temperature_array[start_idx+i],
+                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],        
+                    "shortwave_irradiation": shortwave_value,
+                    "calculate_shortwave_irradiation": False,
+                })
+                
+                if data.index[start_idx+i-1] <= env_params.time[count] <= data.index[start_idx+i]:
+                    param_dict = {x: env_params[x][count] for x in env_params.columns if x != "time"}
+                    self.problem.update_parameters(param_dict)
+                    if count < len(env_params)-1:
+                        count += 1
+                
+                self.problem.solve()
 
+        if len(plot_df.columns) > 0:
+            first_sensor_id = plot_df.columns[0]
+            temperature_value = self.problem.sensors.get(first_sensor_id, None)
+            
+        else:
+            first_sensor_id  = "Sensor_u"
+            temperature_value = self.problem.sensors.get(first_sensor_id, None)
         
-        first_sensor_id = plot_df.columns[0]
-        temperature_value = self.problem.sensors.get(first_sensor_id, None)
         plot_df = plot_df.tail(len(temperature_value.data))
           
-        for sensor_id in plot_df.columns:
+        #for sensor_id in plot_df.columns:
+        for sensor_id in self.problem.sensors.keys():
             temperature_value = self.problem.sensors.get(sensor_id, None)
             
             if temperature_value is not None:
@@ -285,7 +329,8 @@ class ThermalModel(BaseModel):
         """
         self.LoadGeometry()
         self.GenerateModel()
-        self.GenerateData(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"])
+        self.GenerateData(api_key, orchestrator_simulation_parameters["virtual_sensor_positions"], 
+                          which_api=orchestrator_simulation_parameters["data_source"])
         self.SolveMethod(env_params)
             
       

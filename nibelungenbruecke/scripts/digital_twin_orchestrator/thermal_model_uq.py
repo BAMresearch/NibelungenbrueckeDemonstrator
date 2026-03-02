@@ -76,9 +76,20 @@ class ThermalModelUQ(ThermalModel):
         shortwave_irradiation_array = np.zeros(len(data))
 
         for i, (_, data_point) in enumerate(tqdm(data.iterrows(), total=len(data))):
-            air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
-            inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
-            shortwave_irradiation_array[i] = data_point["F_plus_000S_KaS-o-_Avg1"]
+            #air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
+            #inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
+            #shortwave_irradiation_array[i] = data_point["F_plus_000S_KaS-o-_Avg1"]
+            
+            air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
+                                            data_point.get("air_temperature"))
+            inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
+            shortwave_value = data_point.get(
+                "F_plus_000S_KaS-o-_Avg1",
+                data_point.get("shortwave_irradiation"))
+            
+            air_temperature_array[i] = air_temp_value
+            inner_temperature_array[i] = inner_temp_value
+            shortwave_irradiation_array[i] = shortwave_value
 
         inp["air_temperature"] = air_temperature_array
         inp["inner_temperature"] = inner_temperature_array
@@ -206,7 +217,8 @@ class ThermalModelUQ(ThermalModel):
                     exclude_columns = input_nodes_params + ["time"]
                     param_dict = {x: env_params[x][count] for x in env_params.columns if x not in exclude_columns}
                     self.problem.update_parameters(param_dict)
-                    count += 1
+                    if count < len(env_params)-1:
+                        count += 1
 
                 self.problem.update_parameters(new_parameters)
                 self.problem.solve()
