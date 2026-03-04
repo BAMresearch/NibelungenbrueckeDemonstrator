@@ -136,8 +136,11 @@ class ThermalModel(BaseModel):
             initial_condition_steps = self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"]
             for i, (_, data_point) in enumerate(tqdm(data.iloc[:initial_condition_steps].iterrows(), total=initial_condition_steps)):
 
-                air_temperature_array[i] = 293  #data_point["F_plus_000TA_KaS-o-_Avg1"]
-                inner_temperature_array[i] = 293    #data_point["E_plus_040TI_HSS-u-_Avg"]
+                #air_temperature_array[i] = 293  #data_point["F_plus_000TA_KaS-o-_Avg1"]
+                air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
+                                                data_point.get("air_temperature"))
+                inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg", 
+                                                  air_temp_value - 20)   #data_point["E_plus_040TI_HSS-u-_Avg"]
                 shortwave_value = data_point.get(
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation")
@@ -170,7 +173,8 @@ class ThermalModel(BaseModel):
                 
                 air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
                                                 data_point.get("air_temperature"))
-                inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
+                inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg", 
+                                                  air_temp_value - 20)  ##TODO: This should be something better!
                 shortwave_value = data_point.get(
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation"))
@@ -207,7 +211,8 @@ class ThermalModel(BaseModel):
             
                 air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
                                                 data_point.get("air_temperature"))
-                inner_temp_value = air_temp_value - 20  ##TODO: This should be something better! ##FIXME:
+                inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg", 
+                                                  air_temp_value - 20)   ##TODO: This should be something better! ##FIXME:
                 shortwave_value = data_point.get(
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation"))
