@@ -82,7 +82,10 @@ class ThermalModelUQ(ThermalModel):
             
             air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
                                             data_point.get("air_temperature"))
-            inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
+            
+            inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg", 
+                                              air_temp_value - 20)
+            #inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
             shortwave_value = data_point.get(
                 "F_plus_000S_KaS-o-_Avg1",
                 data_point.get("shortwave_irradiation"))
