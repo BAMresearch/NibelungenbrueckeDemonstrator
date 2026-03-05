@@ -109,12 +109,11 @@ class ThermalModel(BaseModel):
         
         
     def intial_adaptation_prep(self, data, init_cond=1):
-        total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=3)])
+        total_steps = len(self.api_dataFrame.loc[self.api_dataFrame.index < self.api_dataFrame.index[0] + timedelta(weeks=2)])
 
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["initial_condition_steps"] = math.floor(total_steps*init_cond)
         self.model_parameters["thermal_model_parameters"]["model_parameters"]["burn_in_steps"] = math.ceil(total_steps*(1-init_cond))
-        
-        
+
         
     def SolveMethod(self, env_params):
         """

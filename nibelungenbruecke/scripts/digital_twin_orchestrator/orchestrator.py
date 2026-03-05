@@ -152,6 +152,30 @@ class Orchestrator:
     def set_api_key(self, key):
         self.api_key = key
 
+    def get_paraview_paths(self):
+        """Return absolute paths for the XDMF/H5 output and the VTU conversion targets.
+
+        The method should be called *after* :meth:`run` so that the model
+        parameters have been fully populated.
+
+        Returns
+        -------
+        dict with keys:
+            ``h5_file``   – absolute path to the HDF5 companion file.
+            ``xdmf_file`` – absolute path to the XDMF time-series file.
+            ``vtu_dir``   – directory where converted VTU files should be written.
+            ``pvd_file``  – path for the output PVD collection file.
+        """
+        model_params = self.digital_twin_model.initial_model.model_parameters
+        pv_path = os.path.abspath(model_params["paraview_output_path"])
+        pv_name = model_params["paraview_thermal_output_name"]
+        return {
+            "h5_file":   os.path.join(pv_path, pv_name + ".h5"),
+            "xdmf_file": os.path.join(pv_path, pv_name + ".xdmf"),
+            "vtu_dir":   os.path.join(pv_path, "vtu_series"),
+            "pvd_file":  os.path.join(pv_path, "pv_output.pvd"),
+        }
+
     def run(self, simulation_parameters=None):
         """
         Runs the digital twin model prediction.
