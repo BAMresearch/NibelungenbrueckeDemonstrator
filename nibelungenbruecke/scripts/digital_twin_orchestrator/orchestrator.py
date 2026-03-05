@@ -16,6 +16,7 @@ import warnings
 from nibelungenbruecke.scripts.digital_twin_orchestrator.digital_twin import DigitalTwin
 from nibelungenbruecke.scripts.utilities.mesh_point_detector import query_point
 from nibelungenbruecke.scripts.plotters.factory import *
+from nibelungenbruecke.scripts.plotters.sensor_strategy import TemperatureStrategy, DisplacementStrategy
 
 class Orchestrator:
     """
@@ -49,7 +50,14 @@ class Orchestrator:
         self.model_parameters_path = self.default_model_parameters_path()
         
         self.digital_twin_model = self._digital_twin_initializer()
-        self._plotters = PlotterFactory.create_all_plotters(problem=None,simulation_parameters=self.simulation_parameters)
+        # Build plotter sets for all supported sensor-type strategies.
+        # Temperature plotters use bare keys (e.g. "plot_virtual_sensors");
+        # displacement plotters use suffixed keys (e.g. "plot_virtual_sensors_displacement").
+        self._plotters = PlotterFactory.create_all_plotters_for_strategies(
+            problem=None,
+            simulation_parameters=self.simulation_parameters,
+            strategies=[TemperatureStrategy(), DisplacementStrategy()],
+        )
 
     def assign_model_name(self):
         model_to_run = self.simulation_parameters["model"]
@@ -201,34 +209,50 @@ class Orchestrator:
         
         for plotter in self._plotters.values():
             plotter.set_attributes(
-                problem = self.digital_twin_model.initial_model.problem,
-                simulation_parameters=self.simulation_parameters, 
-                default_parameters={}, api_data_frame=self.digital_twin_model.initial_model.api_dataFrame,
+                problem=self.digital_twin_model.initial_model.problem,
+                simulation_parameters=self.simulation_parameters,
+                default_parameters={},
+                api_data_frame=self.digital_twin_model.initial_model.api_dataFrame,
                 all_sensors_combined=self.digital_twin_model.initial_model.all_sensor_plot_data,
-                virtual_sensor_noise=self.digital_twin_model.noise_on_sensors
-                )
-            #break
+                virtual_sensor_noise=self.digital_twin_model.noise_on_sensors,
+            )
         
     def plot(self, plot_type: str, **kwargs):
         
         #database = self.digital_twin_model._request_environmental_parameters(self.simulation_parameters["start_time"], self.simulation_parameters["end_time"])
         
-        plots_with_UQ = ["plot_all_sensors_together_with_UQ", "plot_real_vs_virtual_sensors_with_UQ", 
-                         "plot_virtual_sensors_with_UQ", "plot_real_vs_virtual_sensors_together_with_UQ"]
+        # Base UQ keys; displacement variants follow the same _with_UQ naming convention
+        # with the additional _displacement suffix, so we strip any strategy suffix
+        # before checking the UQ constraint.
+        _base_uq_keys = {
+            "plot_all_sensors_together_with_UQ",
+            "plot_real_vs_virtual_sensors_with_UQ",
+            "plot_virtual_sensors_with_UQ",
+            "plot_real_vs_virtual_sensors_together_with_UQ",
+        }
+        # Derive UQ status from the bare plot type name (strip known strategy suffixes).
+        _known_suffixes = ("_displacement",)  # extend as new strategies are added
+        _bare_plot_type = plot_type
+        for _sfx in _known_suffixes:
+            if _bare_plot_type.endswith(_sfx):
+                _bare_plot_type = _bare_plot_type[: -len(_sfx)]
+                break
+        is_uq_plot = _bare_plot_type in _base_uq_keys
+
         if plot_type not in self._plotters:
             print(f"Unknown plot method '{plot_type}'. Skipping plotting.")
-            
+            return
+
         if self.simulation_parameters["uncertainty_quantification"] and plot_type != "plot_full_field_response":
-            if plot_type not in plots_with_UQ:
+            if not is_uq_plot:
                 print(f"Plot method '{plot_type}' is not supported when uncertainty quantification is enabled.")
                 return
-            
+
         if not self.simulation_parameters["uncertainty_quantification"] and plot_type != "plot_full_field_response":
-            if plot_type in plots_with_UQ:
-                #raise ValueError(f"Plot type '{plot_type}' is not supported when uncertainty quantification is not enabled.")
+            if is_uq_plot:
                 print(f"Plot method '{plot_type}' is not supported when uncertainty quantification is not enabled.")
                 return
-            
+
         self._plotters[plot_type].plot(**kwargs)
         
 
