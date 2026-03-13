@@ -214,7 +214,7 @@ class Orchestrator:
 
 if __name__ == "__main__":
     
-    API_password_path = "../../../../Old/API_request_password"
+    API_password_path = "../../../../API_request_password"
 
 
     with open(API_password_path, "r") as f:
