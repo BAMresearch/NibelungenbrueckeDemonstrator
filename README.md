@@ -148,3 +148,120 @@ It is initially set-up with a predefined model and settings, that can potentiall
 In its current state, the demonstrator provides displacements information at virtual sensor positions. However, this can be easily extended to perform automatically evaluations on the predictions, obtaining key performance indicators (KPIs) or providing further insight on the state of the bridge to be provided to the end user. This can be easily implemented as post-processing tasks or as external modules.
 
 
+# Orchestration & Digital Twin Framework
+
+This repository implements a simulation-based Digital Twin framework coordinated through an Orchestrator layer. The architecture separates the workflow control from the physical simulation models, enabling modular integration of different physics models, external data sources, and prediction pipelines.
+
+The Orchestrator manages simulation execution, parameter loading, Digital Twin initialization, prediction workflow and result visualization.
+
+The Digital Twin module encapsulates the physical and computational models used to simulate the system.This allows the Digital Twin to be reused with different models while the Orchestrator handles the overall execution logic.
+
+## Framework Architecture
+
+The Digital Twin workflow is organized around an orchestration layer that coordinates simulation parameters, the Digital Twin model, numerical solvers, and external data sources.
+
+![Screenshot](documentation/demo.png)
+
+
+# Orchestrator
+
+The Orchestrator acts as the top-level controller of the Digital Twin workflow. It is responsible for coordinating the interaction between the simulation configuration, the Digital Twin module, and the physical simulation pipeline.
+
+The Orchestrator is initialized with simulation parameters, which describe the system to be simulated. These parameters typically include physical model description, API data requirements, virtual sensor definitions, solver configuration
+simulation settings.
+
+Simulation Parameters
+        │
+        ▼
+   Orchestrator
+        │
+        ▼
+   Digital Twin
+        │
+        ▼
+       Models
+        │
+        ▼
+      Results
+        │
+        ▼
+      Plotter
+
+Based on this information, the Orchestrator initializes the corresponding Digital Twin and stores the instantiated models internally. This allows previously created Digital Twin objects to be reused in subsequent simulation runs, avoiding unnecessary model reinitialization.
+
+## Main Workflow
+
+A simulation is initiated by calling the run() method of the Orchestrator.
+
+Internally, this method triggers the Digital Twin prediction routine and coordinates the execution of the full simulation pipeline. The typical execution sequence is:
+
+1. Simulation parameters are provided to the Orchestrator.
+2. The Orchestrator initializes or retrieves the corresponding Digital Twin instance.
+3. The Digital Twin predict() method is executed.
+4. External parameters and measurement data are retrieved from databases or APIs.
+5. The physical simulation model is executed.
+6. Simulation results are returned and optionally visualized.
+
+This workflow allows the Orchestrator to manage multiple Digital Twin instances while maintaining a clear separation between workflow logic and simulation models.
+
+
+# Digital Twin Module
+
+The Digital Twin module encapsulates the computational representation of the physical system.
+
+It manages:
+
+1.  physical model initialization
+2. parameter updates
+3. simulation execution
+4. prediction routines
+5. state management
+
+The Digital Twin acts as the main interface between the Orchestrator and the simulation models.
+
+
+## Digital Twin Prediction Workflow
+
+The central method of the Digital Twin is predict(). When triggered by the Orchestrator, the method performs the following steps:
+
+1. **Digital Twin Object Management**
+The Digital Twin first checks whether the Orchestrator already contains a Digital Twin object corresponding to the simulation parameters.
+If a matching Digital Twin already exists, it is reused. Otherwise, a new Digital Twin object is created using default model parameters. This mechanism avoids unnecessary model reinitialization and improves computational efficiency.
+
+2. **Parameter Update from Database**
+Before running the simulation, the Digital Twin retrieves updated parameters from the database, which may include:
+- external physical parameters
+- time-dependent environmental conditions
+- sensor biases
+- calibration data
+These parameters are used to update the current physical model state.
+
+3. **Model State Synchronization**
+To maintain temporal consistency between simulation runs, the framework stores physical model fields from previous simulations.
+Before starting a new simulation, the Digital Twin retrieves the latest stored fields and assigns them to the current model state. This allows the Digital Twin to continue simulations from the latest known system state instead of restarting from initial conditions.
+
+4. **Physical Simulation Execution**
+The Digital Twin then executes the simulation of the selected physical model. Currently supported models include:
+- transient thermal simulation
+- transient thermal simulation with uncertainty quantification
+
+The modular design of Demonstrator and Orchestrator is designed to allow future extensions such as displacement models, structural mechanics models, etc.
+
+
+# Physical Simulation Pipeline
+The physical simulation workflow consists of three main stages.
+
+- **GenerateModel**: This stage constructs the computational representation of the physical system. Typical tasks include defining the finite element model, setting up geometry and mesh, defining boundary conditions, and initializing the solver.
+The framework uses FEniCSxConcrete's Experiment and Problem submodules.
+
+- **GenerateData**: The `GenerateData` stage retrieves external data through APIs. Depending on the selected API, the retrieved data may vary. For example, when using **OpenMeteo**, the API provides environmental measurements such as weather conditions. When using the **MKP private API**, the system retrieves measurements from sensors installed on the bridge.
+
+- **Solve**: The Solve stage executes the numerical simulation using the generated model and input data. The solver integrates the physical model using the provided conditions and produces the corresponding simulation results.
+
+After each simulation run, the framework stores the resulting physical fields. These stored fields allow the Digital Twin to resume simulations from the latest state, maintain temporal continuity, and avoid unnecessary recomputation.
+
+The framework is designed to support future Digital Twin capabilities, including; model calibration using sensor measurements, automatic parameter updating, model improvement based on discrepancies between simulated and measured data, 
+uncertainty quantification workflows, additional physics models such as displacement or structural simulations.
+
+
+
