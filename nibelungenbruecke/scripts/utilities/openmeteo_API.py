@@ -22,7 +22,8 @@ class OpenMeteo:
         	"longitude": 13.41,
         	"start_date": "2026-01-21",
         	"end_date": "2026-02-04",
-        	"hourly": ["temperature_2m", "shortwave_radiation_instant", "shortwave_radiation"],
+        	"hourly": ["temperature_2m", "shortwave_radiation_instant", "shortwave_radiation", "wind_speed_10m"],
+        	"wind_speed_unit": "ms",
         }
         
         # Nibelungenbrücke coords
@@ -53,6 +54,7 @@ class OpenMeteo:
         hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
         hourly_shortwave_radiation_instant = hourly.Variables(1).ValuesAsNumpy()
         hourly_shortwave_radiation = hourly.Variables(2).ValuesAsNumpy()
+        hourly_wind_speed_10m = hourly.Variables(3).ValuesAsNumpy()
         
         hourly_data = {"date": pd.date_range(
         	start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
@@ -64,6 +66,7 @@ class OpenMeteo:
         hourly_data["air_temperature"] = hourly_temperature_2m
         hourly_data["shortwave_radiation"] = hourly_shortwave_radiation_instant ##TODO: Not relevant!
         hourly_data["shortwave_irradiation"] = hourly_shortwave_radiation
+        hourly_data["wind_speed"] = hourly_wind_speed_10m
         
         hourly_dataframe = pd.DataFrame(data = hourly_data)
         #print("\nHourly data\n", hourly_dataframe)

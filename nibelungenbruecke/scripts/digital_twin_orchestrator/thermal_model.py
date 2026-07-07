@@ -121,6 +121,8 @@ class ThermalModel(BaseModel):
        """
         count = 0
         data = self.api_dataFrame + 273.15      ##TODO: 'F_plus_000S_KaS-o-_Avg1' reaches to values higher than 1000??
+        if "wind_speed" in self.api_dataFrame.columns:
+            data["wind_speed"] = self.api_dataFrame["wind_speed"]
         self.intial_adaptation_prep(data, init_cond=0.1)
         
         plot_df = data.drop(columns=[col for col in data.columns if "40TU" not in col])
@@ -144,13 +146,15 @@ class ThermalModel(BaseModel):
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation")
                     )
-                
+                wind_speed_value = data_point.get("wind_speed", self.problem.p["wind_speed"])
+
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[i],
                     "inner_temperature": inner_temperature_array[i],
                     #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                     "shortwave_irradiation": shortwave_value,
                     "calculate_shortwave_irradiation": False,
+                    "wind_speed": wind_speed_value,
                 })
 
                 
@@ -177,18 +181,20 @@ class ThermalModel(BaseModel):
                 shortwave_value = data_point.get(
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation"))
-                
+                wind_speed_value = data_point.get("wind_speed", self.problem.p["wind_speed"])
+
                 #air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
                 #inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
                 air_temperature_array[i] = air_temp_value
                 inner_temperature_array[i] = inner_temp_value
-                
-                
+
+
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[i],
-                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],             
+                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                     "shortwave_irradiation": shortwave_value,
                     "calculate_shortwave_irradiation": False,
+                    "wind_speed": wind_speed_value,
                 })
                 
                 self.problem.solve()
@@ -215,18 +221,20 @@ class ThermalModel(BaseModel):
                 shortwave_value = data_point.get(
                     "F_plus_000S_KaS-o-_Avg1",
                     data_point.get("shortwave_irradiation"))
-                
+                wind_speed_value = data_point.get("wind_speed", self.problem.p["wind_speed"])
+
                 air_temperature_array[start_idx+i] = air_temp_value
                 inner_temperature_array[start_idx+i] = inner_temp_value
                 #air_temperature_array[start_idx+i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
                 #inner_temperature_array[start_idx+i] = data_point["E_plus_040TI_HSS-u-_Avg"]
-                    
+
                 self.problem.update_parameters({
                     "air_temperature": air_temperature_array[start_idx+i],
                     "inner_temperature": inner_temperature_array[start_idx+i],
-                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],        
+                    #"shortwave_irradiation": data_point["F_plus_000S_KaS-o-_Avg1"],
                     "shortwave_irradiation": shortwave_value,
                     "calculate_shortwave_irradiation": False,
+                    "wind_speed": wind_speed_value,
                 })
                 
                 if data.index[start_idx+i-1] <= env_params.time[count] <= data.index[start_idx+i]:

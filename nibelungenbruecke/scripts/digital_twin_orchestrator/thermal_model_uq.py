@@ -54,7 +54,7 @@ class ThermalModelUQ(ThermalModel):
         Solves the model for each quadrature node in the PCE expansion and computes statistics.
         """
 
-        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation']
+        self.input_sensor_names = ['air_temperature', 'inner_temperature', 'shortwave_irradiation', 'wind_speed']
         self.extend_output_sensors()
         
         b_dist_list = []
@@ -74,29 +74,33 @@ class ThermalModelUQ(ThermalModel):
         air_temperature_array = np.zeros(len(data))
         inner_temperature_array = np.zeros(len(data))
         shortwave_irradiation_array = np.zeros(len(data))
+        wind_speed_array = np.zeros(len(data))
 
         for i, (_, data_point) in enumerate(tqdm(data.iterrows(), total=len(data))):
             #air_temperature_array[i] = data_point["F_plus_000TA_KaS-o-_Avg1"]
             #inner_temperature_array[i] = data_point["E_plus_040TI_HSS-u-_Avg"]
             #shortwave_irradiation_array[i] = data_point["F_plus_000S_KaS-o-_Avg1"]
-            
+
             air_temp_value = data_point.get("F_plus_000TA_KaS-o-_Avg1",
                                             data_point.get("air_temperature"))
-            
-            inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg", 
+
+            inner_temp_value = data_point.get("E_plus_040TI_HSS-u-_Avg",
                                               air_temp_value - 20)
             #inner_temp_value = air_temp_value - 20  ##TODO: This should be something better!
             shortwave_value = data_point.get(
                 "F_plus_000S_KaS-o-_Avg1",
                 data_point.get("shortwave_irradiation"))
-            
+            wind_speed_value = data_point.get("wind_speed", self.problem.p["wind_speed"])
+
             air_temperature_array[i] = air_temp_value
             inner_temperature_array[i] = inner_temp_value
             shortwave_irradiation_array[i] = shortwave_value
+            wind_speed_array[i] = wind_speed_value
 
         inp["air_temperature"] = air_temperature_array
         inp["inner_temperature"] = inner_temperature_array
         inp["shortwave_irradiation"] = shortwave_irradiation_array
+        inp["wind_speed"] = wind_speed_array
         inp["calculate_shortwave_irradiation"] = False
 
         # Run surrogate
