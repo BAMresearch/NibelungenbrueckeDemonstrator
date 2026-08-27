@@ -121,7 +121,7 @@ convert_xdmf_to_pvd(
 show_full_field_widget(_pv_paths["pvd_file"])
 ```
 
-It does not include the UQ section. **Note**: the markdown of that notebook still describes an interactive viewer with a Play button and a time slider; the current implementation instead renders an animated GIF (see [Full-field response](#full-field-response)).
+It does not include the UQ section. The animation it produces is shown in [Full-field response](#full-field-response) below.
 
 # The Orchestrator API
 The `Orchestrator` class ([nibelungenbruecke/scripts/digital_twin_orchestrator/orchestrator.py](nibelungenbruecke/scripts/digital_twin_orchestrator/orchestrator.py)) is the central controller of the workflow. It selects the model and its settings file, initializes the `DigitalTwin` ([digital_twin.py](nibelungenbruecke/scripts/digital_twin_orchestrator/digital_twin.py)), requests the environmental data, runs the simulation and exposes the results through a set of plotters.
@@ -230,7 +230,19 @@ show_full_field_widget(_pv_paths["pvd_file"])
 ```
 
 - `convert_xdmf_to_pvd` ([xdmf_to_vtu_converter.py](nibelungenbruecke/scripts/utilities/xdmf_to_vtu_converter.py)) writes one base64-encoded VTU per time step plus the `.pvd` collection. The `encoding="raw"` option produces smaller files intended for the ParaView desktop application. The module can also be called from the command line.
-- `show_full_field_widget` ([full_field_viewer.py](nibelungenbruecke/scripts/utilities/full_field_viewer.py)) extracts a **cross-section at mid-span (constant z)** for every time step and saves it as an **animated GIF**, which is then displayed inline in the notebook. The GIF is written to a `figures/` directory next to the PVD file. It is not an interactive 3D widget: for rotating, zooming and slicing the mesh, open the generated `.pvd` (or the original `.xdmf`) in ParaView.
+- `show_full_field_widget` ([full_field_viewer.py](nibelungenbruecke/scripts/utilities/full_field_viewer.py)) builds one frame per time step, saves them as an **animated GIF** in a `figures/` directory next to the PVD file, and displays it inline in the notebook:
+
+![Full-field temperature response of the bridge deck](docs/figures/full_field_3d.gif)
+
+  Its `view` argument selects what is drawn:
+
+  | `view` | Result |
+  | :----- | :----- |
+  | `"3d"` | The exterior surface of the tetrahedral mesh, coloured by the field. Default for volumetric meshes. |
+  | `"slice"` | A cross-section at mid-span (constant z). Default for the planar meshes of the 2D models, where a 3D view adds nothing. |
+  | `"auto"` | Picks one of the two from the mesh extents (the default). |
+
+  `max_frames` samples the series evenly to keep the GIF small, and `celsius` converts the values from kelvin for display (automatic for `temperature`). The animation is drawn with matplotlib only, so it requires no OpenGL context and works on headless JupyterHub/Binder instances. It is not an interactive widget: for rotating, zooming and arbitrary cut planes, open the generated `.pvd` (or the original `.xdmf`) in ParaView.
 
 ## Output files
 With the default settings ([digital_twin_default_parameters.json](use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_default_parameters.json)), a run writes to `use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/`:
@@ -240,6 +252,8 @@ With the default settings ([digital_twin_default_parameters.json](use_cases/nibe
 | `output/paraview/Nibelungenbruecke_thermal.xdmf` / `.h5` | Full-field thermal time series. |
 | `output/paraview/vtu_series/`, `output/paraview/pv_output.pvd` | VTU conversion of the above. |
 | `output/paraview/figures/` | Animated GIFs produced by the viewer. |
+
+The animation shown above is additionally kept under [docs/figures/](docs/figures/) so that it renders on GitHub, both in this file and in [3D_View_interface.ipynb](3D_View_interface.ipynb) — GitHub does not display the animated GIF *output* of a notebook cell, only images referenced from markdown.
 | `output/sensors/transientthermal.json`, `transientthermal_UQ.json` | Simulated virtual-sensor time series. |
 | `output/sensors/MKP_meta_output.json`, `MKP_translated.json`, `virtual_sensor_added_translated.json` | Retrieved sensor metadata and its translation to the demonstrator format. |
 | `input/sensors/API_df_output.csv`, `API_meta_output.json` | Raw environmental data retrieved from the API. |
