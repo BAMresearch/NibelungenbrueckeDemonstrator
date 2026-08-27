@@ -1,0 +1,172 @@
+{
+    "model_path": [
+        {
+            "displacement_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
+            "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh"
+        }
+    ],
+    "output_parameters": {
+        "output_path": "./input/data",
+        "output_format": ".h5"
+    },
+    "generation_models_list": [
+        {
+            "digital_twin_parameters_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json",
+            "model_parameters": {
+                "df_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+                "meta_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+                "MKP_meta_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+                "MKP_translated_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+                "virtual_sensor_added_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
+                "secret_path": "",
+                "API_request_start_time": "2023-08-11T08:00:00Z",
+                "API_request_end_time": "2023-09-11T16:10:00Z",
+                "API_request_time_step": "250min",
+                "cache_path": "",
+                "paraview_output": true,
+                "paraview_thermal_output_name": "Nibelungenbruecke_thermal",
+                "paraview_displacement_output_name": "Nibelungenbruecke_displacement",
+                "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
+                "material_parameters": {
+                    "E": 40000000000000.0,
+                    "nu": 0.2,
+                    "rho": 2350
+                },
+                "bias_model_parameters": {
+                    "parameters": [
+                        {
+                            "variable_name": "wind_forced_convection_parameter_constant",
+                            "bias_name": "wind_forced_convection_parameter_constant_bias",
+                            "distribution": "normal",
+                            "mean": 2.0,
+                            "std": 0.4
+                        }
+                    ],
+                    "pol_order": 2
+                },
+                "thermal_model_parameters": {
+                    "name": "Nibelungenbr\u00fccke thermal",
+                    "experiments": [
+                        "TestSeries_1"
+                    ],
+                    "input_sensors_path": "./input/sensors/sensors_temperature_probeye_input.json",
+                    "output_sensors_path": "./input/sensors/sensors_temperature_probeye_output.json",
+                    "problem_parameters": [
+                        "sensor_location_u",
+                        "sensor_location_n",
+                        "sensor_location_s",
+                        "sensor_location_o",
+                        "wind_forced_convection_parameter_constant",
+                        "wind_forced_convection_parameter_constant_bias",
+                        "additional_heat_constant",
+                        "additional_heat_constant_bias",
+                        "shortwave_radiation_constant",
+                        "diffusivity",
+                        "sigma_u",
+                        "sigma_n",
+                        "sigma_s",
+                        "sigma_o"
+                    ],
+                    "parameter_key_paths": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ],
+                    "model_type": "embedded_for_noise",
+                    "model_parameters": {
+                        "model_name": "temperature",
+                        "initial_condition_steps": 12,
+                        "burn_in_steps": 109,
+                        "experiment_parameters": {
+                            "dim": 2
+                        },
+                        "problem_parameters": {
+                            "air_temperature": 293.0,
+                            "inner_temperature": 293.0,
+                            "initial_temperature": 293.0,
+                            "heat_capacity": 870.0,
+                            "dt": 15000.0,
+                            "theta": 1.0,
+                            "density": 2400.0,
+                            "conductivity": 2.5,
+                            "diffusivity": 1e-06,
+                            "sensor_location_u": -4.3,
+                            "sensor_location_s": -2.2,
+                            "sensor_location_n": -3.56,
+                            "sensor_location_o": -0.17,
+                            "convection": false,
+                            "natural_convection_coefficient": 10.0,
+                            "wind_forced_convection": true,
+                            "wind_forced_convection_parameter_constant": 1.4098188908276303,
+                            "wind_speed": 5.0,
+                            "shortwave_radiation": true,
+                            "shortwave_radiation_constant": 1.0,
+                            "shortwave_irradiation": 0.5379897967520848,
+                            "calculate_shortwave_irradiation": false,
+                            "top_tag": 9,
+                            "bottom_tag": 8,
+                            "end_tag": 7,
+                            "plot_pv": true,
+                            "mesh_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh"
+                        },
+                        "sensor_metadata": "./input/sensors/sensors_temperature.json"
+                    },
+                    "natural_convection_coefficient": 10.631679475788662,
+                    "wind_forced_convection": -0.08262494109206786,
+                    "wind_forced_convection_parameter_constant": 1.5129986886273992,
+                    "wind_speed": 5.851708303064407,
+                    "shortwave_radiation": -2.850155006220987,
+                    "shortwave_radiation_constant": 0.6086800990139144,
+                    "shortwave_irradiation": -1.0253094082214997,
+                    "calculate_shortwave_irradiation": 0.03793418849453185,
+                    "E_plus_040TU_HS--o-_Avg1": -1.386184085385524,
+                    "E_plus_040TU_HSN-m-_Avg1": -0.8019712823413886,
+                    "E_plus_040TU_HSS-m-_Avg1": 0.977289580108703,
+                    "E_plus_040TU_HS--u-_Avg1": -0.8323824764621769
+                },
+                "tension_z": 0.0,
+                "mass": 50000.0,
+                "g": 9.81,
+                "initial_position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "speed": 1.0,
+                "length": 7.5,
+                "width": 5.0,
+                "height": 6.5,
+                "length_road": 95.185,
+                "width_road": 14.0,
+                "thickness_deck": 0.2,
+                "dt": 10.0,
+                "boundary_conditions": {
+                    "bc1": {
+                        "model": "clamped_edge",
+                        "side_coord_1": 0.0,
+                        "coord_1": 2,
+                        "side_coord_2": 0.0,
+                        "coord_2": 1
+                    },
+                    "bc2": {
+                        "model": "clamped_edge",
+                        "side_coord_1": 95.185,
+                        "coord_1": 2,
+                        "side_coord_2": 0.0,
+                        "coord_2": 1
+                    }
+                }
+            }
+        }
+    ]
+}

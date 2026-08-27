@@ -1,0 +1,184 @@
+{
+    "sensors": [
+        {
+            "id": "F_plus_000TA_KaS-o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                1.0,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "F_plus_000S_KaS-o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                1.0,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TI_HSS-u-_Avg",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                3.716666666666667,
+                -4.1670833333375255,
+                0.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--o-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.85,
+                -0.2,
+                4.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSN-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.25,
+                -2.37,
+                4.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HSS-m-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -3.45,
+                -2.37,
+                4.0
+            ]
+        },
+        {
+            "id": "E_plus_040TU_HS--u-_Avg1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.85,
+                -5.17,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor_u",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.85,
+                -5.17,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor_o",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.85,
+                -0.2,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor_n",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -2.25,
+                -2.37,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor_s",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -3.45,
+                -2.37,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor1",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor2",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                1.0,
+                0.0,
+                0.0
+            ]
+        },
+        {
+            "id": "Sensor3",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                1.78,
+                0.0,
+                26.91
+            ]
+        },
+        {
+            "id": "Sensor4",
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [
+                -1.83,
+                0.0,
+                0.0
+            ]
+        }
+    ]
+}

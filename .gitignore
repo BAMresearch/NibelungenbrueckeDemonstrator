@@ -136,16 +136,16 @@ dmypy.json
 
 ### I/O files ###
 input/data/*
-input/models/*
-output/logs/*
-output/figures/*
-output/results/*
-output/paraview/*
-*.nc
-*.h5
-*.xdmf
-*.msh
-*.geo_unrolled
+#input/models/*
+#output/logs/*
+#output/figures/*
+#output/results/*
+#output/paraview/*
+#*.nc
+#*.h5
+#*.xdmf
+#*.msh
+#*.geo_unrolled
 
 ### Keep README.md ###
 !README.md
@@ -158,7 +158,18 @@ use_cases/nibelungenbruecke_demonstrator_self_weight/output/*
 *.pdf
 
 ### sensor output files ###
-use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/*
-use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json
-use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json
-use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/*.csv
+#use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/*
+#use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/20230215092338.json
+#use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json
+#use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/*.csv
+
+### fenicsxconcrete_demonstrator test
+tests
+interface_NB_DT.ipynb
+use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup
+use_cases/nibelungenbruecke_demonstrator_self_weight/input/settings/digital_twin_default_parameters_backup2
+nibelungenbruecke/scripts/FullFieldResponse
+##
+environment_backup.yml
+nibelungenbruecke.yml
+environment.yml

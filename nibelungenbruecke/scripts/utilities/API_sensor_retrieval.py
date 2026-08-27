@@ -1,5 +1,3 @@
- 
-#%%
 # Importieren der erforderlichen Bibliotheken
 import requests
 import pandas as pd
@@ -12,7 +10,7 @@ import json
 import h5py
 import math
 from pyproj import Proj, transform
-
+from nibelungenbruecke.scripts.utilities.mesh_point_detector import query_point
 
 
 class API_Request:
@@ -26,30 +24,59 @@ class API_Request:
         body: Request body parameters.
     """
     
-    def __init__(self, secrets_location):
+    def __init__(self, api_key, start_time, end_time, time_step):
         self.url = "https://func-70021-nibelungen-export.azurewebsites.net/samples"
         self.headers = {
             "Content-Type": "application/json"
-            }
-        self.params = {
-            "code": open(secrets_location).read().strip()    # der Code aus den über Keeper mitgetielten Zugangdaten 
-        }  
+        }
+
+        self.params = {"code": api_key}
+        if not start_time:
+            start_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        start_time_dt = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ")
+        
+        start_time_dt = start_time_dt - timedelta(weeks=3)
+
+        start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        if not end_time:
+            end_time_dt = start_time_dt + timedelta(days=5)
+            end_time = end_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        #print(f"Time window:\n  Start: {start_time.isoformat()[:10]}\n  End:   {end_time.isoformat()[:10]}")
+        
         self.body = {
-            "startTime": "2023-08-11T08:00:00Z",
-            "endTime": "2023-08-11T09:00:00Z",
+            "startTime": start_time,
+            "endTime": end_time,
             "meta_channel": True,
-            "columns": ['E_plus_445LVU_HS--o-_Avg1',
-             'E_plus_445LVU_HS--u-_Avg1',
-             'E_plus_413TU_HSS-m-_Avg1',
-             ]
+            "columns": ["F_plus_000TA_KaS-o-_Avg1",
+                        "F_plus_000S_KaS-o-_Avg1",
+                        "E_plus_040TI_HSS-u-_Avg",
+                        "E_plus_040TU_HS--o-_Avg1",
+                        "E_plus_040TU_HSN-m-_Avg1",
+                        "E_plus_040TU_HSS-m-_Avg1",
+                        "E_plus_040TU_HS--u-_Avg1",
+                        ]
             }
         
+        self.time_step = time_step
+        
+        # Body for requesting data of all the sensors
         """
         self.body = {
             "startTime": "2023-08-11T08:00:00Z",
             "endTime": "2023-09-11T08:01:00Z",
             "meta_channel": True,
-            "columns": ['E_plus_413TU_HS--o-_Avg1',
+            "columns": [   
+            "F_plus_000TA_KaS-o-_Avg1", 
+            "F_plus_000S_KaS-o-_Avg1", 
+            "E_plus_040TU_HS--u-_Avg1", 
+            "E_plus_040TI_HSS-u-_Avg",
+            "E_plus_080DU_HSN-u-_Avg1"
+            'E_plus_413TU_HS--o-_Avg1',
+         
+                
              'E_plus_413TU_HSN-m-_Avg1',
              'E_plus_413TU_HSS-m-_Avg1',
              'E_plus_413TU_HS--u-_Avg1',
@@ -75,6 +102,7 @@ class API_Request:
             }
         """
 
+        # Sensors
         """
         TU: Temperaturmessung des Überbaus
         LI: Luftfeuchtigkeit im Inneren des Hohlkastens
@@ -157,10 +185,17 @@ class API_Request:
         data = response.json()
         self.df = pd.DataFrame(data["rows"], columns=[col["ColumnName"] for col in data["columns"]])
         #self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"], format="ISO8601")
-        self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"])
+        #format_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+        self.df["Timestamp"] = pd.to_datetime(self.df["Timestamp"], format='ISO8601', utc=True)
         self.df = self.df.set_index("Timestamp")
         # print(self.df)
-        return pd.DataFrame(self.df[self.df.columns], index=pd.to_datetime(self.df.index))
+        if self.time_step == '10T' or self.time_step == '10min':
+            self.df_resampled = self.df
+        else:
+            self.df_resampled = self.df.resample(self.time_step).mean()
+            self.df_resampled = self.df_resampled.interpolate(method='time').ffill().bfill()
+        #return pd.DataFrame(self.df_resampled[self.df], index=pd.to_datetime(self.df_resampled.index))
+        return self.df_resampled
 
 # %%
 class MetadataSaver:
@@ -185,7 +220,6 @@ class MetadataSaver:
     def saving_metadata(self):
 
         # Origin: "49.630742, 8.378049"
-        
         for i in range(len(self.df.columns)):
             if self.df.columns[i] == 'E_plus_413TU_HS--o-_Avg1':
                 column_name = self.df.columns[i]
@@ -233,7 +267,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, 0.0, 0.0],
+                "coordinate": [-2.85, -0.2, 4.0],
                 "height": 107.438                         
             })
 
@@ -243,7 +277,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -2.37, 0.005],
+                "coordinate": [-2.25, -2.37, 4.0],
                 "height": 105.068                        
             })
 
@@ -253,7 +287,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -2.37, 0.005],
+                "coordinate": [-3.45, -2.37, 4.0],
                 "height": 105.068                       
             })
 
@@ -263,7 +297,7 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [4, -4.74, 0.355],
+                "coordinate": [-2.85, -5.17, 0.0],
                 "height": 102.698                      
             })
             
@@ -316,6 +350,16 @@ class MetadataSaver:
                 "coordinate": [1, 0.0, 0.0],
                 "height": 104.105                       
             })
+                
+            elif self.df.columns[i] == 'F_plus_000S_KaS-o-_Avg1':   ##TODO: copy and pasted from another sensor!! Not correct, check the plan!
+                column_name = self.df.columns[i]
+                self.data["meta"]["Temp"].append({
+                "name": column_name,
+                "unit": "\u00b0C",
+                "sample_rate": 0.0016666666666666668,   
+                "coordinate": [1, 0.0, 0.0],
+                "height": 107.438                       
+            })
 
             elif self.df.columns[i] == 'E_plus_445LVU_HS--o-_Avg1':
                 column_name = self.df.columns[i]
@@ -333,7 +377,27 @@ class MetadataSaver:
                 "name": column_name,
                 "unit": "\u00b0C",
                 "sample_rate": 0.0016666666666666668,   
-                "coordinate": [44.52, -4.74, 0.0],
+                "coordinate": [44.52, 0.0, 0.0],
+                "height": 102.698                       
+            })
+            
+            elif self.df.columns[i] == 'E_plus_080DU_HSN-o-_Avg1':
+                column_name = self.df.columns[i]
+                self.data["meta"]["Move"].append({
+                "name": column_name,
+                "unit": "\u00b0C",
+                "sample_rate": 0.0016666666666666668,   
+                "coordinate": [80.0, 0.0, 0.0],
+                "height": 107.438                        
+            })
+                
+            elif self.df.columns[i] == 'E_plus_080DU_HSN-u-_Avg1':
+                column_name = self.df.columns[i]
+                self.data["meta"]["Move"].append({
+                "name": column_name,
+                "unit": "\u00b0C",
+                "sample_rate": 0.0016666666666666668,   
+                "coordinate": [80.0, -4.74, 0.0],
                 "height": 102.698                       
             })
 
@@ -366,7 +430,7 @@ class Translator:
             "sensors": []
         }
 
-    def translator_to_sensor(self):
+    def translator_to_sensor(self, mesh, virtual_sensor_positions):
         self.MKP_meta_output_path = self.path["MKP_meta_output_path"]
 
         default_parameters_data = self._default_parameters()
@@ -383,20 +447,54 @@ class Translator:
                         "sensor_file": "",
                         "units": "meter",
                         "dimensionality": "[length]",
-                        "where": item["coordinate"]
+                        "where": query_point(item["coordinate"], mesh)[0].tolist()  ##TODO: error causing the same results for vs !
                     }
 
                     if key == "Temp":
                         sensor_data["type"] = "TemperatureSensor"
                         sensor_data["sensor_file"] = "temperature_sensor"
                         sensor_data["units"] = "kelvin"
+                        sensor_data["dimensionality"] = "[temperature]"
                 
                     elif key == "Move":
                         sensor_data["type"] = "DisplacementSensor"
                         sensor_data["sensor_file"] = "displacement_sensor"
                 
                     default_parameters_data["sensors"].append(sensor_data)
-                
+                    
+        for i in ["Sensor_u", "Sensor_o", "Sensor_n", "Sensor_s"]:
+            if i == "Sensor_u":
+                where = [-2.85, -5.17, 0.0]       ##TODO:
+            elif i == "Sensor_o":
+                 where = [-2.85, -0.2, 0.0]         ##TODO: Z axis was 4.0 before!!
+            elif i == "Sensor_n":
+                 where = [-2.25, -2.37, 0.0]
+            elif i == "Sensor_s":
+                 where = [-3.45, -2.37, 0.0]
+            sensor_data = {
+                "id": i,
+                "type": "TemperatureSensor",
+                "sensor_file": "temperature_sensor",
+                "units": "kelvin",
+                "dimensionality": "[temperature]",
+                "where": where,
+            }
+            
+            default_parameters_data["sensors"].append(sensor_data)
+            
+        for i in virtual_sensor_positions:
+            sensor_data = {
+            "id": i["name"],
+            "type": "TemperatureSensor",
+            "sensor_file": "temperature_sensor",
+            "units": "kelvin",
+            "dimensionality": "[temperature]",
+            "where": [i["x"], i["y"], i["z"]],
+            }
+            
+            default_parameters_data["sensors"].append(sensor_data)
+            
+
         with open(self.MKP_meta_output_path, "w") as f:
             json.dump(default_parameters_data, f, indent=4)
 
@@ -476,7 +574,7 @@ class Translator:
         with open(self.translated_data_path, "w") as json_file:
             json.dump(json_data, json_file, indent=4)
 
-    def save_virtual_sensor(self, displacement_values):
+    def save_virtual_sensor(self, problem):
         self.virtual_sensor_added_output_path = self.path["virtual_sensor_added_output_path"]
 
         with open(self.MKP_input_path, 'r') as f:
@@ -496,12 +594,13 @@ class Translator:
         for sensor in self.metadata["sensors"]:
             sensor_id = sensor["id"]
             position = sensor["where"]
-            displacement_value = displacement_values.sensors.get(sensor_id, None)
-            if displacement_value is not None:
-                displacement_value_list = displacement_value.data[0].tolist()
-                if sensor_id not in VS_data["virtual_sensors"]:
-                    VS_data["virtual_sensors"][sensor_id] = {"displacements": []}
-                VS_data["virtual_sensors"][sensor_id]["displacements"].append(displacement_value_list)
+            if sensor_id in ["E_plus_080DU_HSN-u-_Avg1"]:       ##TODO: To be extended to include other displacement realted sensors!!
+                displacement_value = problem.sensors.get(sensor_id, None)
+                if displacement_value is not None:
+                    displacement_value_list = displacement_value.data[-1].tolist()
+                    if sensor_id not in VS_data["virtual_sensors"]:
+                        VS_data["virtual_sensors"][sensor_id] = {"displacements": []}
+                    VS_data["virtual_sensors"][sensor_id]["displacements"].append(displacement_value_list)
 
         with open(self.virtual_sensor_added_output_path, 'w') as f:
             json.dump(VS_data, f, indent=4)

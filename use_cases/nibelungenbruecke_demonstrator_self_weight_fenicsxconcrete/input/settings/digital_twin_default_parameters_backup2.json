@@ -1,0 +1,59 @@
+{
+    "model_path": [{
+        "displacement_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh.msh",
+        "transientthermal_model_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/models/mesh_3d_thermal.msh"
+        }],
+    "output_parameters":{
+        "output_path": "./input/data",
+        "output_format": ".h5"},
+    "generation_models_list": [{
+        "digital_twin_parameters_path" : "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/settings/digital_twin_parameters.json",
+        "model_parameters": {
+            "df_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_df_output.csv",
+            "meta_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/input/sensors/API_meta_output.json",
+            "MKP_meta_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_meta_output.json",
+            "MKP_translated_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/MKP_translated.json",
+            "virtual_sensor_added_output_path":"../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/sensors/virtual_sensor_added_translated.json",
+            "secret_path" : "",
+            "API_request_start_time": "2023-08-11T08:00:00Z",
+            "API_request_end_time": "2023-09-11T08:01:00Z",
+            "API_request_time_step": "10min",
+            "cache_path": "",
+            "paraview_output": true,
+            "paraview_output_path": "../../../use_cases/nibelungenbruecke_demonstrator_self_weight_fenicsxconcrete/output/paraview",
+            "material_parameters":{
+                "E": 40e12,
+                "nu": 0.2,
+                "rho": 2350
+            },
+            "thermal_model_parameters": {},
+            "tension_z": 0.0,
+            "mass": 5E4,
+            "g": 9.81,
+            "initial_position": [0.0,0.0,0.0],
+            "speed": 1.0,
+            "length": 7.5,
+            "width": 5.0,
+            "height": 6.5,
+            "length_road": 95.185,
+            "width_road": 14.0,
+            "thickness_deck": 0.2,
+            "dt": 10.0,
+            "boundary_conditions": {
+                "bc1":{
+                    "model":"clamped_edge",
+                    "side_coord_1": 0.0,
+                    "coord_1": 2,
+                    "side_coord_2": 0.0,
+                    "coord_2": 1
+                },
+                "bc2":{
+                "model":"clamped_edge",
+                "side_coord_1": 95.185,
+                "coord_1": 2,
+                "side_coord_2": 0.0,
+                "coord_2": 1
+            }}
+        }
+    }]
+}

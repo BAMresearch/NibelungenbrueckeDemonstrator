@@ -1,0 +1,38 @@
+### Initialize Orchestrator
+POST http://127.0.0.1:8000/initialize_orchestrator
+Content-Type: application/json
+
+### Run Computation
+POST http://127.0.0.1:8000/run_computation
+Content-Type: application/json
+
+{
+  "input_value": {"rho": 2150},
+  "model_to_run": "Displacement_1",
+  "model_to_run": "TransientThermal_1"
+}
+
+
+### Visualizing graph
+GET http://127.0.0.1:8000/create_graph
+
+
+
+
+## Multiple input / predict_last_week !
+
+### Initialize Orchestrator
+POST http://127.0.0.1:8001/initialize_orchestrator
+Content-Type: application/json
+
+
+### Run Computation
+POST http://127.0.0.1:8001/run_computation
+Content-Type: application/json
+
+#"E": [1000000000000.0, 1500000000000.0, 1800000000000.0, 2300000000000.0, 2800000000000.0, 3300000000000.0, 3700000000000.0, 4100000000000.0, 5000000000000.0],
+    
+{
+    "rho": 2600,
+    "model_to_run": "Displacement_1"
+}

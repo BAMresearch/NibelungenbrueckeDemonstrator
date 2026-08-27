@@ -1,6 +1,7 @@
 {
     "posterior_predictive":{
         "model_path": "./input/models/mesh.msh",
+        "file_dep": "../..",
         "output_parameters":{
             "output_path": "./output/results/posterior_predictive_results",
             "output_format": ".h5"

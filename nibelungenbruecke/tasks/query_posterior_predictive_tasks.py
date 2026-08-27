@@ -1,6 +1,6 @@
 import json
 
-from nibelungenbruecke.scripts.postprocessing.posterior_predictive import posterior_predictive
+from nibelungenbruecke.scripts.postprocessing.posterior_predictive import posterior_predictive_run
 
 def task_posterior_predictive():
     postprocess_parameters_path = "./input/settings/postprocess_parameters.json"
@@ -9,7 +9,7 @@ def task_posterior_predictive():
         # TODO: Add targets for the histogram plots
 
     posterior_predictive_parameters = postprocess_parameters["posterior_predictive"]
-    return {'actions': [(posterior_predictive,[],{'parameters':posterior_predictive_parameters})],
+    return {'actions': [(posterior_predictive_run,[],{'parameters':posterior_predictive_parameters})],
             'file_dep': [posterior_predictive_parameters["model_path"],posterior_predictive_parameters["inference_data_path"],
                         postprocess_parameters_path],
             'targets': [posterior_predictive_parameters["output_parameters"]["output_path"]+posterior_predictive_parameters["output_parameters"]["output_format"]],
